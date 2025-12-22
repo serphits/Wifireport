@@ -1403,9 +1403,6 @@ body::before {
 .scan-button:active {
     animation: digitalGlitch 0.3s;
 }
-
-/* Navigation */
-.navbar {
     background: #000000;
     border-bottom: 0;
     position: sticky;

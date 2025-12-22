@@ -989,7 +989,6 @@ window.addEventListener('online', () => {
 window.addEventListener('offline', () => {
     console.log('Connection lost');
 });
-=======
 // WiFi.Report - Main JavaScript
 // Real WiFi Analysis Implementation
 
