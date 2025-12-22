@@ -3,9 +3,129 @@
 
 // Initialize loading animations on page load
 document.addEventListener('DOMContentLoaded', function() {
+    applySharedLayout();
     initHeroLoadingGrid();
     initRadarGrid();
 });
+
+function applySharedLayout() {
+    const navTemplate = `
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="logo" href="/index.html">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect x="4" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="4" y="20" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="20" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                </svg>
+                <span>WiFi.Report</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/blog.html">Blog</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>`;
+
+    const footerTemplate = `
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        </svg>
+                        <span>WiFi.Report</span>
+                    </div>
+                    <p class="footer-description">
+                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="/index.html#home">Home</a></li>
+                        <li><a href="/about.html">About</a></li>
+                        <li><a href="/index.html#features">Features</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/cookies.html">Cookie Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="/index.html#faq">FAQ</a></li>
+                        <li><a href="/index.html#contact">Contact</a></li>
+                        <li><a href="/index.html#help">Help Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                <p class="footer-note">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
+                    </svg>
+                    All analysis is performed locally in your browser for maximum privacy.
+                </p>
+            </div>
+        </div>
+    </footer>`;
+
+    const cookieTemplate = `
+    <div class="cookie-banner hidden" id="cookieBanner">
+        <div class="cookie-content">
+            <p>
+                <strong>We use cookies</strong> to enhance your experience. By continuing to visit this site, you agree to our use of cookies.
+                <a href="/cookies.html">Learn more</a>
+            </p>
+            <div class="cookie-actions">
+                <button class="cookie-btn accept" id="acceptCookies">Accept</button>
+                <button class="cookie-btn decline" id="declineCookies">Decline</button>
+            </div>
+        </div>
+    </div>`;
+
+    const nav = document.querySelector('nav.navbar');
+    if (nav) nav.outerHTML = navTemplate;
+
+    const footer = document.querySelector('footer.footer');
+    if (footer) {
+        footer.outerHTML = footerTemplate;
+    } else if (document.body) {
+        document.body.insertAdjacentHTML('beforeend', footerTemplate);
+    }
+
+    if (!document.getElementById('cookieBanner')) {
+        document.body.insertAdjacentHTML('beforeend', cookieTemplate);
+    }
+}
 
 function initHeroLoadingGrid() {
     const grid = document.getElementById('heroLoadingGrid');
@@ -55,7 +175,6 @@ class WiFiAnalyzer {
         // Initialize event listeners
         const startBtn = document.getElementById('startScan');
         const newScanBtn = document.getElementById('newScanBtn');
-        const shareBtn = document.getElementById('shareBtn');
         const mobileToggle = document.querySelector('.mobile-menu-toggle');
         
         if (startBtn) {
@@ -64,10 +183,6 @@ class WiFiAnalyzer {
         
         if (newScanBtn) {
             newScanBtn.addEventListener('click', () => this.resetAnalysis());
-        }
-        
-        if (shareBtn) {
-            shareBtn.addEventListener('click', () => this.shareResults());
         }
         
         if (mobileToggle) {
@@ -705,6 +820,9 @@ class WiFiAnalyzer {
 
         // Generate recommendations
         this.generateRecommendations();
+
+        // Update metric cards
+        this.updateSpeedMetrics();
     }
 
     animateScore(targetScore) {
@@ -814,6 +932,16 @@ class WiFiAnalyzer {
         }
         
         detailsEl.innerHTML = detailsHTML;
+    }
+
+    updateSpeedMetrics() {
+        const { downloadSpeed = 0, uploadSpeed = 0, latency = 0 } = this.results.speed.metrics || {};
+        const downloadEl = document.getElementById('downloadMetric');
+        const uploadEl = document.getElementById('uploadMetric');
+        const latencyEl = document.getElementById('latencyMetric');
+        if (downloadEl) downloadEl.textContent = `${downloadSpeed || 0} Mbps`;
+        if (uploadEl) uploadEl.textContent = `${uploadSpeed || 0} Mbps`;
+        if (latencyEl) latencyEl.textContent = `${latency || 0} ms`;
     }
 
     generateRecommendations() {
@@ -958,27 +1086,6 @@ class WiFiAnalyzer {
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    shareResults() {
-        const shareData = {
-            title: 'WiFi.Report Analysis',
-            text: `My WiFi scored ${this.overallScore}/100 on WiFi.Report! Check yours at`,
-            url: window.location.href
-        };
-
-        if (navigator.share) {
-            navigator.share(shareData)
-                .catch(err => console.error('Error sharing:', err));
-        } else {
-            // Fallback: copy to clipboard
-            const text = `${shareData.text} ${shareData.url}`;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Results link copied to clipboard!');
-            }).catch(err => {
-                console.error('Error copying to clipboard:', err);
-            });
-        }
     }
 
     initCookieConsent() {
