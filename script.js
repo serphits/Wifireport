@@ -44,7 +44,7 @@ class WiFiAnalyzer {
         this.results = {
             security: { score: 0, status: '', details: '', issues: [] },
             privacy: { score: 0, status: '', details: '', issues: [] },
-            speed: { score: 0, status: '', details: '', metrics: {} },
+            speed: { score: 0, status: '', details: '', metrics: { latency: 0, downloadSpeed: 0, uploadSpeed: 0 } },
             stability: { score: 0, status: '', details: '', metrics: {} }
         };
         this.overallScore = 0;
