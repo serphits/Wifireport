@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // WiFi.Report - Main JavaScript
 // Real WiFi Analysis Implementation
 
@@ -1982,4 +1981,3 @@ window.addEventListener('online', () => {
 window.addEventListener('offline', () => {
     console.log('Connection lost');
 });
->>>>>>> ef6f2b0b6f818f9ccfde69d7e12f1c8fd5463c1a
