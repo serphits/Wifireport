@@ -90,585 +90,6 @@
             font-weight: 600;
             font-size: 0.9375rem;
         }
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        .team-member {
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 0;
-            border: 2px solid #E0E0E0;
-            transition: all 0.3s ease;
-        }
-        .team-member:hover {
-            transform: translateY(-5px);
-            border-color: #000000;
-        }
-        .team-avatar {
-            width: 100px;
-            height: 100px;
-            background: #000000;
-            border-radius: 0;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
-            font-weight: 700;
-        }
-        .team-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        .team-role #000000
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 1rem;
-            font-size: 0.9375rem;
-        }
-        .team-bio {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            font-size: 0.9375rem;
-        }
-        .cta-section {
-            background: #000000;
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-            border-radius: 0;
-            margin: 4rem 0;
-        }
-        .cta-section h2 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-        }
-        .cta-section p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-        .cta-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1.25rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            font-family: 'Space Mono', monospace;
-            color: #000000;
-            background: white;
-            border: 2px solid white;
-            border-radius: 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .cta-button:hover {
-            transform: translateY(-2px);
-            background: transparent;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                            <rect x="4" y="4" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="13" y="4" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="22" y="4" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="4" y="13" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="13" y="13" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="22" y="13" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="4" y="22" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="13" y="22" width="6" height="6" fill="#FFFFFF"/>
-                            <rect x="22" y="22" width="6" height="6" fill="#FFFFFF"/>
-                        </svg>
-                        <span>WiFi.Report</span>
-                    </div>
-                    <p class="footer-description">
-                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
-                    </p>
-                </div>
-                <div class="footer-links">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="#features">Features</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="privacy.html">Privacy Policy</a></li>
-                        <li><a href="cookies.html">Cookie Policy</a></li>
-                        <li><a href="terms.html">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#faq">FAQ</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#help">Help Center</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
-                <p class="footer-note">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
-                    </svg>
-                    All analysis is performed locally in your browser for maximum privacy.
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Cookie Consent Banner -->
-    <div class="cookie-banner hidden" id="cookieBanner">
-        <div class="cookie-content">
-            <p>
-                <strong>We use cookies</strong> to enhance your experience. By continuing to visit this site, you agree to our use of cookies.
-                <a href="cookies.html">Learn more</a>
-            </p>
-            <div class="cookie-actions">
-                <button class="cookie-btn accept" id="acceptCookies">Accept</button>
-                <button class="cookie-btn decline" id="declineCookies">Decline</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="about-hero">
-        <h1>About WiFi.Report</h1>
-        <p>We're on a mission to help everyone understand and optimize their WiFi networks with powerful, privacy-focused analysis tools.</p>
-    </section>
-
-    <!-- About Content -->
-    <div class="about-content">
-        <!-- Our Story -->
-        <div class="about-section">
-            <h2>Our Story</h2>
-            <p>WiFi.Report was born from a simple observation: most people have no idea how their WiFi network is performing or whether it's secure. While advanced users have access to complex network diagnostic tools, everyday users are left in the dark about their connection quality, security vulnerabilities, and privacy concerns.</p>
-            <p>We set out to change that by creating a tool that's powerful enough for tech enthusiasts but simple enough for anyone to use. Our goal is to democratize network analysis and empower users with the knowledge they need to make informed decisions about their internet connection.</p>
-        </div>
-
-        <!-- Mission -->
-        <div class="about-section">
-            <h2>Our Mission</h2>
-            <p>At WiFi.Report, we believe that everyone deserves to know how their network is performing and whether their data is secure. Our mission is to:</p>
-            <ul>
-                <li>
-                    <strong>Educate Users</strong>
-                    Provide clear, actionable insights about network performance and security in language anyone can understand.
-                </li>
-                <li>
-                    <strong>Protect Privacy</strong>
-                    Build tools that respect user privacy by performing all analysis locally in the browser—no data collection, no tracking.
-                </li>
-                <li>
-                    <strong>Simplify Complexity</strong>
-                    Transform complex network metrics into easy-to-understand visualizations and recommendations.
-                </li>
-                <li>
-                    <strong>Empower Action</strong>
-                    Give users practical steps they can take to improve their network security, speed, and stability.
-                </li>
-            </ul>
-        </div>
-
-        <!-- What Makes Us Different -->
-        <div class="about-section">
-            <h2>What Makes Us Different</h2>
-            <p>WiFi.Report stands apart from other network tools in several key ways:</p>
-            <ul>
-                <li>
-                    <strong>Privacy First</strong>
-                    Unlike many online tools, we don't collect, store, or transmit your network data. Everything happens in your browser.
-                </li>
-                <li>
-                    <strong>No Installation Required</strong>
-                    Access powerful network analysis instantly from any browser—no downloads, no apps, no hassle.
-                </li>
-                <li>
-                    <strong>Real Results, Not Simulations</strong>
-                    We use actual browser APIs and real network measurements to provide accurate, actionable insights.
-                </li>
-                <li>
-                    <strong>User-Friendly Design</strong>
-                    Complex network metrics are transformed into intuitive visualizations with clear explanations.
-                </li>
-                <li>
-                    <strong>Actionable Recommendations</strong>
-                    Every analysis includes specific steps you can take to improve your network.
-                </li>
-                <li>
-                    <strong>Free and Accessible</strong>
-                    Our core analysis tools are free for everyone to use, with no hidden fees or premium paywalls.
-                </li>
-            </ul>
-        </div>
-
-        <!-- Stats -->
-        <div class="about-section">
-            <h2>By the Numbers</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-value">100%</span>
-                    <span class="stat-label">Browser-Based Analysis</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">0</span>
-                    <span class="stat-label">Data Collected</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">4</span>
-                    <span class="stat-label">Analysis Categories</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value">~30s</span>
-                    <span class="stat-label">Analysis Time</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Technology -->
-        <div class="about-section">
-            <h2>Our Technology</h2>
-            <p>WiFi.Report leverages modern web technologies to provide comprehensive network analysis without compromising your privacy:</p>
-            <ul>
-                <li>
-                    <strong>Network Information API</strong>
-                    Accesses connection type, effective speed, and RTT (Round Trip Time) data directly from your browser.
-                </li>
-                <li>
-                    <strong>Performance APIs</strong>
-                    Measures real-world latency and timing information using Navigation Timing and Resource Timing APIs.
-                </li>
-                <li>
-                    <strong>Security Context Detection</strong>
-                    Analyzes HTTPS usage, mixed content, and secure context indicators to assess connection security.
-                </li>
-                <li>
-                    <strong>IP Geolocation</strong>
-                    Uses third-party APIs to provide location context while respecting privacy boundaries.
-                </li>
-                <li>
-                    <strong>Local Processing</strong>
-                    All analysis, calculations, and recommendations are generated client-side using JavaScript.
-                </li>
-            </ul>
-        </div>
-
-        <!-- Values -->
-        <div class="about-section">
-            <h2>Our Values</h2>
-            <ul>
-                <li>
-                    <strong>Privacy is Fundamental</strong>
-                    We believe privacy is a right, not a luxury. That's why we never collect, store, or sell user data.
-                </li>
-                <li>
-                    <strong>Transparency Matters</strong>
-                    We're open about how our tools work, what data we access, and how we use it. No hidden agendas.
-                </li>
-                <li>
-                    <strong>Accessibility for All</strong>
-                    Network security and performance insights should be available to everyone, regardless of technical expertise.
-                </li>
-                <li>
-                    <strong>Continuous Improvement</strong>
-                    We're constantly working to improve our analysis algorithms and add new features based on user feedback.
-                </li>
-                <li>
-                    <strong>User Empowerment</strong>
-                    We provide information and recommendations, but you're always in control of your network decisions.
-                </li>
-            </ul>
-        </div>
-
-        <!-- Team -->
-        <div class="about-section">
-            <h2>Our Team</h2>
-            <p>WiFi.Report is built and maintained by a passionate team of developers, security experts, and user experience designers who care deeply about network privacy and performance.</p>
-            <div class="team-grid">
-                <div class="team-member">
-                    <div class="team-avatar">🔒</div>
-                    <div class="team-name">Security Team</div>
-                    <div class="team-role">Network Security</div>
-                    <p class="team-bio">Expert security professionals ensuring our analysis accurately identifies vulnerabilities and provides sound security advice.</p>
-                </div>
-                <div class="team-member">
-                    <div class="team-avatar">⚡</div>
-                    <div class="team-name">Engineering Team</div>
-                    <div class="team-role">Development</div>
-                    <p class="team-bio">Skilled engineers building reliable, fast, and privacy-focused tools using cutting-edge web technologies.</p>
-                </div>
-                <div class="team-member">
-                    <div class="team-avatar">🎨</div>
-                    <div class="team-name">Design Team</div>
-                    <div class="team-role">User Experience</div>
-                    <p class="team-bio">Talented designers creating intuitive interfaces that make complex network data easy to understand.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Future -->
-        <div class="about-section">
-            <h2>What's Next</h2>
-            <p>We're constantly working to improve WiFi.Report and add new features. Here's what's on our roadmap:</p>
-            <ul>
-                <li>
-                    <strong>Historical Tracking</strong>
-                    View your network performance over time with trend analysis (stored locally on your device).
-                </li>
-                <li>
-                    <strong>Advanced Diagnostics</strong>
-                    More detailed analysis of DNS performance, packet loss, and connection quality metrics.
-                </li>
-                <li>
-                    <strong>Router Recommendations</strong>
-                    Personalized suggestions for router settings and configurations based on your analysis.
-                </li>
-                <li>
-                    <strong>Mobile Apps</strong>
-                    Native iOS and Android apps with additional features and offline capabilities.
-                </li>
-                <li>
-                    <strong>Educational Resources</strong>
-                    Guides, tutorials, and articles to help you better understand network security and performance.
-                </li>
-            </ul>
-        </div>
-
-        <!-- CTA Section -->
-        <div class="cta-section">
-            <h2>Ready to Analyze Your Network?</h2>
-            <p>Get instant insights into your WiFi security, privacy, speed, and stability in just 30 seconds.</p>
-            <a href="index.html" class="cta-button">
-                <span>Start Free Analysis</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-        </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                            <path d="M16 8C11.58 8 7.39 9.42 4 11.9L6.12 14.68C8.88 12.64 12.33 11.5 16 11.5C19.67 11.5 23.12 12.64 25.88 14.68L28 11.9C24.61 9.42 20.42 8 16 8Z" fill="#FFFFFF"/>
-                            <path d="M16 15C13.52 15 11.18 15.69 9.17 16.91L11.29 19.69C12.66 18.96 14.28 18.5 16 18.5C17.72 18.5 19.34 18.96 20.71 19.69L22.83 16.91C20.82 15.69 18.48 15 16 15Z" fill="#FFFFFF"/>
-                            <circle cx="16" cy="24" r="3" fill="#FFFFFF"/>
-                        </svg>
-                        <span>WiFi.Report</span>
-                    </div>
-                    <p class="footer-description">
-                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
-                    </p>
-                </div>
-                <div class="footer-links">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="index.html#features">Features</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="privacy.html">Privacy Policy</a></li>
-                        <li><a href="cookies.html">Cookie Policy</a></li>
-                        <li><a href="terms.html">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#faq">FAQ</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#help">Help Center</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
-                <p class="footer-note">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
-                    </svg>
-                    All analysis is performed locally in your browser for maximum privacy.
-                </p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - WiFi.Report</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .about-hero {
-            padding: 6rem 2rem 4rem;
-            background: #FFFFFF;
-            border-bottom: 2px solid #000000;
-            text-align: center;
-        }
-        .about-hero h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-        }
-        .about-hero p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        .about-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-        .about-section {
-            margin-bottom: 4rem;
-        }
-        .about-section h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-        }
-        .about-section p {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 1rem;
-            font-size: 1.0625rem;
-        }
-        .about-section ul {
-            list-style: none;
-            margin: 1.5rem 0;
-        }
-        .about-section li {
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-color);
-            color: var(--text-secondary);
-        }
-        .about-section li strong {
-            color: var(--text-primary);
-            display: block;
-            margin-bottom: 0.25rem;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        .stat-card {
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 0;
-            border: 2px solid #000000;
-        }
-        .stat-value {
-            font-size: 3rem;
-            font-weight: 900;
-            font-family: 'Space Mono', monospace;
-            color: #000000;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        .stat-label {
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.9375rem;
-        }
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        .team-member {
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 0;
-            border: 2px solid #E0E0E0;
-            transition: all 0.3s ease;
-        }
-        .team-member:hover {
-            transform: translateY(-5px);
-            border-color: #000000;
-        }
-        .team-avatar {
-            width: 100px;
-            height: 100px;
-            background: #000000;
-            border-radius: 0;
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
-            font-weight: 700;
-        }
-        .team-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-        .team-role #000000
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 1rem;
-            font-size: 0.9375rem;
-        }
-        .team-bio {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            font-size: 0.9375rem;
-        }
         .cta-section {
             background: #000000;
             color: white;
@@ -716,7 +137,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">
+            <a class="logo" href="index.html">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                     <rect x="4" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
                     <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
@@ -731,8 +152,14 @@
                 <span>WiFi.Report</span>
             </a>
             <ul class="nav-links">
+                <li><a href="blog.html">Blog</a></li>
                 <li><a href="about.html">About</a></li>
             </ul>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
@@ -747,34 +174,130 @@
         <!-- Our Story -->
         <div class="about-section">
             <h2>Our Story</h2>
-            <p>WiFi.Report was born from a simple observation: most people have no idea how their WiFi network is performing or whether it's secure. While advanced users have access to complex network diagnostic tools, everyday users are left in the dark about their connection quality, security vulnerabilities, and privacy concerns.</p>
-            <p>We set out to change that by creating a tool that's powerful enough for tech enthusiasts but simple enough for anyone to use. Our goal is to democratize network analysis and empower users with the knowledge they need to make informed decisions about their internet connection.</p>
+            <p>WiFi.Report was born from a simple observation: most people have no idea how their WiFi network is performing or whether it's secure. We created this tool to give everyday users access to powerful network analysis.</p>
         </div>
 
         <!-- Mission -->
         <div class="about-section">
             <h2>Our Mission</h2>
-            <p>At WiFi.Report, we believe that everyone deserves to know how their network is performing and whether their data is secure. Our mission is to:</p>
-            <ul>
-                <li>
-                    <strong>Educate Users</strong>
-                    Provide clear, actionable insights about network performance and security in language anyone can understand.
-                </li>
-                <li>
-                    <strong>Protect Privacy</strong>
-                    Build tools that respect user privacy by performing all analysis locally in the browser—no data collection, no tracking.
-                </li>
-                <li>
-                    <strong>Simplify Complexity</strong>
-                    Transform complex network metrics into easy-to-understand visualizations and recommendations.
-                </li>
-                <li>
-                    <strong>Empower Action</strong>
-                    Give users practical steps they can take to improve their network security, speed, and stability.
-                </li>
-            </ul>
+            <p>At WiFi.Report, we believe everyone deserves to know how their network is performing and whether their data is secure. Our mission is to educate, protect privacy, simplify complexity, and empower action.</p>
         </div>
 
         <!-- What Makes Us Different -->
         <div class="about-section">
-            <p>WiFi.Report stands apart from other network tools in several key ways:</p>
+            <h2>What Makes Us Different</h2>
+            <ul>
+                <li><strong>Privacy First</strong> - No data collection, everything happens in your browser.</li>
+                <li><strong>No Installation Required</strong> - Access powerful analysis instantly from any browser.</li>
+                <li><strong>Real Results</strong> - Using actual browser APIs and real network measurements.</li>
+                <li><strong>User-Friendly Design</strong> - Complex metrics transformed into intuitive visualizations.</li>
+                <li><strong>Actionable Recommendations</strong> - Every analysis includes specific improvement steps.</li>
+                <li><strong>Free and Accessible</strong> - No hidden fees or premium paywalls.</li>
+            </ul>
+        </div>
+
+        <!-- Stats -->
+        <div class="about-section">
+            <h2>By the Numbers</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value">100%</span>
+                    <span class="stat-label">Browser-Based Analysis</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Data Collected</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">4</span>
+                    <span class="stat-label">Analysis Categories</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">~30s</span>
+                    <span class="stat-label">Analysis Time</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Ready to Analyze Your Network?</h2>
+            <p>Get instant insights into your WiFi security, privacy, speed, and stability in just 30 seconds.</p>
+            <a href="index.html" class="cta-button">Start Free Analysis</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        </svg>
+                        <span>WiFi.Report</span>
+                    </div>
+                    <p class="footer-description">
+                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html#home">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="index.html#features">Features</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="cookies.html">Cookie Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="index.html#faq">FAQ</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                        <li><a href="index.html#help">Help Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                <p class="footer-note">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
+                    </svg>
+                    All analysis is performed locally in your browser for maximum privacy.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Banner -->
+    <div class="cookie-banner hidden" id="cookieBanner">
+        <div class="cookie-content">
+            <p>
+                <strong>We use cookies</strong> to enhance your experience. By continuing to visit this site, you agree to our use of cookies.
+                <a href="cookies.html">Learn more</a>
+            </p>
+            <button id="acceptCookies">Got it</button>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
