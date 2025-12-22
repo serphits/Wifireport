@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: wifi-report
-    env: node
-    plan: free
-    startCommand: npm start
