@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Comprehensive WiFi analysis tool for security, privacy, speed, and stability testing",
   "scripts": {
-    "build": "mkdir -p build && cp -r *.html *.css *.js build/ 2>/dev/null || (mkdir build && copy *.html build\\ && copy *.css build\\ && copy *.js build\\)"
+    "build": "mkdir -p build && cp *.html *.css *.js build/"
   },
   "keywords": ["wifi", "analysis", "security", "network"],
   "author": "",

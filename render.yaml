@@ -1,9 +1,5 @@
 services:
   - type: static
     name: wifi-report
-    env: static
     buildCommand: npm run build
     staticPublishPath: ./build
-    routes:
-      - path: /
-        filePath: index.html
