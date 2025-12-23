@@ -1,5 +1,31 @@
 [
   {
+    "filename": "best-router-placement-signal-strength-guide.html",
+    "url": "blog/best-router-placement-signal-strength-guide.html",
+    "title": "Best Router Placement: Step-by-Step Signal Strength Guide",
+    "description": "Stop dealing with dead zones. Learn the best router placement strategies using a signal strength meter to optimize your home network for maximum coverage.",
+    "tags": [
+      "Router Placement",
+      "Wifi Signal Strength Meter"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 23, 2025",
+    "icon": "🔧"
+  },
+  {
+    "filename": "hidden-ssids-security-myth-vs-reality.html",
+    "url": "blog/hidden-ssids-security-myth-vs-reality.html",
+    "title": "Hidden SSIDs: Do They Actually Make Your Network More Secure?",
+    "description": "Is hiding your WiFi name a good security move? Discover the truth about hidden SSIDs, why they might make you less safe, and better ways to secure your network.",
+    "tags": [
+      "Hidden Ssid",
+      "Hide Wifi Name"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 23, 2025",
+    "icon": "⚡"
+  },
+  {
     "filename": "how-to-fix-wifi-authentication-error.html",
     "url": "blog/how-to-fix-wifi-authentication-error.html",
     "title": "How to Fix WiFi Authentication Error on Android & iPhone (2025)",
@@ -10,7 +36,7 @@
     ],
     "readingTime": "2 min read",
     "date": "Dec 23, 2025",
-    "icon": "📊"
+    "icon": "🔗"
   },
   {
     "filename": "why-is-my-wifi-strong-but-internet-slow.html",
@@ -23,7 +49,7 @@
     ],
     "readingTime": "3 min read",
     "date": "Dec 23, 2025",
-    "icon": "💼"
+    "icon": "📱"
   },
   {
     "filename": "boost-wifi-speed.html",
@@ -36,7 +62,7 @@
     ],
     "readingTime": "3 min read",
     "date": "Dec 22, 2025",
-    "icon": "📈"
+    "icon": "🛠️"
   },
   {
     "filename": "gaming-wifi-latency.html",
@@ -49,7 +75,7 @@
     ],
     "readingTime": "4 min read",
     "date": "Dec 22, 2025",
-    "icon": "📡"
+    "icon": "📶"
   },
   {
     "filename": "guest-network-setup.html",
@@ -62,7 +88,7 @@
     ],
     "readingTime": "3 min read",
     "date": "Dec 22, 2025",
-    "icon": "💡"
+    "icon": "📈"
   },
   {
     "filename": "mesh-wifi-vs-routers.html",
@@ -75,7 +101,7 @@
     ],
     "readingTime": "2 min read",
     "date": "Dec 22, 2025",
-    "icon": "🌟"
+    "icon": "🌐"
   },
   {
     "filename": "router-placement-guide.html",
@@ -88,7 +114,7 @@
     ],
     "readingTime": "3 min read",
     "date": "Dec 22, 2025",
-    "icon": "🛡️"
+    "icon": "🌍"
   },
   {
     "filename": "secure-home-wifi.html",
@@ -101,7 +127,7 @@
     ],
     "readingTime": "8 min read",
     "date": "Dec 22, 2025",
-    "icon": "⚠️"
+    "icon": "🎯"
   },
   {
     "filename": "troubleshooting-wifi.html",
@@ -114,7 +140,7 @@
     ],
     "readingTime": "3 min read",
     "date": "Dec 22, 2025",
-    "icon": "💻"
+    "icon": "🔍"
   },
   {
     "filename": "understanding-speed-tests.html",
@@ -127,7 +153,7 @@
     ],
     "readingTime": "3 min read",
     "date": "Dec 22, 2025",
-    "icon": "🛠️"
+    "icon": "👥"
   },
   {
     "filename": "wifi-security-wpa3-vs-wpa2.html",
@@ -140,7 +166,7 @@
     ],
     "readingTime": "4 min read",
     "date": "Dec 22, 2025",
-    "icon": "🔍"
+    "icon": "🖥️"
   },
   {
     "filename": "wifi6-vs-wifi6e.html",
@@ -153,6 +179,6 @@
     ],
     "readingTime": "6 min read",
     "date": "Dec 22, 2025",
-    "icon": "🌐"
+    "icon": "⚙️"
   }
 ]
