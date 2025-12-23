@@ -1,0 +1,132 @@
+[
+  {
+    "filename": "boost-wifi-speed.html",
+    "url": "blog/boost-wifi-speed.html",
+    "title": "10 Simple Ways to Boost Your WiFi Speed Instantly",
+    "description": "Discover proven techniques to improve your WiFi speed without upgrading your plan. Expert tips on router placement, channel optimization, and more.",
+    "tags": [
+      "Boost Wifi Speed",
+      "Improve Wifi"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 22, 2025",
+    "icon": "📡"
+  },
+  {
+    "filename": "gaming-wifi-latency.html",
+    "url": "blog/gaming-wifi-latency.html",
+    "title": "Gaming on WiFi: How to Reduce Lag and Improve Latency",
+    "description": "Master online gaming on WiFi with expert tips on reducing lag, optimizing QoS settings, choosing the right frequency band, and minimizing interference.",
+    "tags": [
+      "Gaming Wifi",
+      "Reduce Lag"
+    ],
+    "readingTime": "4 min read",
+    "date": "Dec 22, 2025",
+    "icon": "🎮"
+  },
+  {
+    "filename": "guest-network-setup.html",
+    "url": "blog/guest-network-setup.html",
+    "title": "Setting Up a Guest WiFi Network: Best Practices for 2025",
+    "description": "Learn how to create a secure guest network that protects your main network while providing convenient access to visitors. Step-by-step setup guide.",
+    "tags": [
+      "Guest Wifi",
+      "Guest Network"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 22, 2025",
+    "icon": "💼"
+  },
+  {
+    "filename": "mesh-wifi-vs-routers.html",
+    "url": "blog/mesh-wifi-vs-routers.html",
+    "title": "Mesh WiFi vs Traditional Routers: Which is Right for You?",
+    "description": "Compare mesh network systems with traditional routers. Understand pros, cons, and ideal use cases for each WiFi solution.",
+    "tags": [
+      "Mesh Wifi",
+      "Mesh Network"
+    ],
+    "readingTime": "2 min read",
+    "date": "Dec 22, 2025",
+    "icon": "📶"
+  },
+  {
+    "filename": "router-placement-guide.html",
+    "url": "blog/router-placement-guide.html",
+    "title": "Best Router Placement: The Ultimate Guide for 2025",
+    "description": "Master the art of router placement. Learn the science behind optimal WiFi positioning to eliminate dead zones and maximize signal strength throughout your home.",
+    "tags": [
+      "Router Placement",
+      "Wifi Positioning"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 22, 2025",
+    "icon": "🏠"
+  },
+  {
+    "filename": "secure-home-wifi.html",
+    "url": "blog/secure-home-wifi.html",
+    "title": "How to Secure Your Home WiFi Network from Hackers",
+    "description": "Protect your home WiFi network with expert security tips. Learn about WPA3 encryption, strong passwords, guest networks, MAC filtering, and firmware updates.",
+    "tags": [
+      "Wifi Security",
+      "Secure Wifi"
+    ],
+    "readingTime": "8 min read",
+    "date": "Dec 22, 2025",
+    "icon": "👥"
+  },
+  {
+    "filename": "troubleshooting-wifi.html",
+    "url": "blog/troubleshooting-wifi.html",
+    "title": "Troubleshooting Common WiFi Problems: Step-by-Step Guide",
+    "description": "From intermittent connections to complete outages, learn how to diagnose and fix the most common WiFi issues yourself with this comprehensive guide.",
+    "tags": [
+      "Wifi Troubleshooting",
+      "Fix Wifi Problems"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 22, 2025",
+    "icon": "🛠️"
+  },
+  {
+    "filename": "understanding-speed-tests.html",
+    "url": "blog/understanding-speed-tests.html",
+    "title": "Understanding Internet Speed Tests: What Do The Numbers Mean?",
+    "description": "Decode your speed test results. Learn about download speed, upload speed, latency, jitter, and what they mean for your daily online activities.",
+    "tags": [
+      "Speed Test",
+      "Internet Speed"
+    ],
+    "readingTime": "3 min read",
+    "date": "Dec 22, 2025",
+    "icon": "⚡"
+  },
+  {
+    "filename": "wifi-security-wpa3-vs-wpa2.html",
+    "url": "blog/wifi-security-wpa3-vs-wpa2.html",
+    "title": "Complete Guide to WiFi Security: WPA3 vs WPA2",
+    "description": "Learn the differences between WiFi security protocols WPA3 and WPA2. Understand why upgrading to WPA3 is crucial for protecting your network from modern threats.",
+    "tags": [
+      "Wpa3",
+      "Wpa2"
+    ],
+    "readingTime": "4 min read",
+    "date": "Dec 22, 2025",
+    "icon": "🔒"
+  },
+  {
+    "filename": "wifi6-vs-wifi6e.html",
+    "url": "blog/wifi6-vs-wifi6e.html",
+    "title": "WiFi 6E vs WiFi 6: Should You Upgrade Your Router?",
+    "description": "Compare WiFi 6E and WiFi 6 routers. Learn about 6GHz band benefits, device compatibility, cost analysis, and whether upgrading makes sense for your needs.",
+    "tags": [
+      "Wifi 6E",
+      "Wifi 6"
+    ],
+    "readingTime": "6 min read",
+    "date": "Dec 22, 2025",
+    "icon": "🌐"
+  }
+]

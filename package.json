@@ -4,5 +4,8 @@
   "description": "Comprehensive WiFi analysis tool for security, privacy, speed, and stability testing",
   "keywords": ["wifi", "analysis", "security", "network"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build:blog": "node generate-blog-list.js"
+  }
 }
