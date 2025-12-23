@@ -9,24 +9,23 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+import random
+
+# Pool of WiFi and tech-related emojis to rotate through
+EMOJI_POOL = [
+    '📡', '📶', '🌐', '💻', '📱', '⚡', '🔒', '🛡️',
+    '🔐', '🚀', '⚙️', '🔧', '🛠️', '💡', '🎯', '📊',
+    '🎮', '🏠', '🌟', '💼', '👥', '🔗', '📈', '🖥️',
+    '⚠️', '✅', '🔍', '🎛️', '📲', '🌍'
+]
 
 # Configuration for blog posts
 BLOG_CONFIG = {
-    # Map of filename to emoji icon
+    # Map of filename to emoji icon (optional - if not specified, picks from pool)
     'icons': {
-        'boost-wifi-speed.html': '📡',
-        'wifi-security-wpa3-vs-wpa2.html': '🔒',
-        'router-placement-guide.html': '🏠',
-        'understanding-speed-tests.html': '⚡',
-        'gaming-wifi-latency.html': '🎮',
-        'wifi6-vs-wifi6e.html': '🌐',
-        'secure-home-wifi.html': '👥',
-        'mesh-wifi-vs-routers.html': '📶',
-        'troubleshooting-wifi.html': '🛠️',
-        'guest-network-setup.html': '💼'
-    },
-    # Default icon if not specified
-    'default_icon': '📝'
+        # You can optionally specify icons for specific posts here
+        # 'your-file.html': '📡',
+    }
 }
 
 def extract_metadata(html_content, filename):
@@ -83,6 +82,11 @@ def generate_blog_list():
     # Get all HTML files
     blog_files = list(blog_dir.glob('*.html'))
     
+    # Shuffle emoji pool for random assignment
+    shuffled_emojis = EMOJI_POOL.copy()
+    random.shuffle(shuffled_emojis)
+    emoji_index = 0
+    
     blog_posts = []
     for filepath in blog_files:
         filename = filepath.name
@@ -96,7 +100,13 @@ def generate_blog_list():
             tags = generate_tags(metadata['keywords'])
             reading_time = estimate_reading_time(html_content)
             date = get_file_date(filepath)
-            icon = BLOG_CONFIG['icons'].get(filename, BLOG_CONFIG['default_icon'])
+            
+            # Get icon from config or pick from shuffled pool
+            if filename in BLOG_CONFIG['icons']:
+                icon = BLOG_CONFIG['icons'][filename]
+            else:
+                icon = shuffled_emojis[emoji_index % len(shuffled_emojis)]
+                emoji_index += 1
             
             blog_post = {
                 'filename': filename,
