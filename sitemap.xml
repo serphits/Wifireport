@@ -57,71 +57,106 @@
     
     <!-- Blog Posts -->
     <url>
+        <loc>https://wifi.report/blog/best-router-placement-signal-strength-guide.html</loc>
+        <lastmod>2025-12-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/hidden-ssids-security-myth-vs-reality.html</loc>
+        <lastmod>2025-12-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/how-to-fix-wifi-authentication-error.html</loc>
+        <lastmod>2025-12-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/why-is-my-wifi-strong-but-internet-slow.html</loc>
+        <lastmod>2025-12-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/wifi-dead-zone-mapping-home-coverage.html</loc>
+        <lastmod>2025-12-23</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
         <loc>https://wifi.report/blog/boost-wifi-speed.html</loc>
-        <lastmod>2025-12-20</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/wifi-security-wpa3-vs-wpa2.html</loc>
-        <lastmod>2025-12-18</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/router-placement-guide.html</loc>
-        <lastmod>2025-12-15</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/understanding-speed-tests.html</loc>
-        <lastmod>2025-12-12</lastmod>
+        <lastmod>2025-12-22</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <url>
         <loc>https://wifi.report/blog/gaming-wifi-latency.html</loc>
-        <lastmod>2025-12-10</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/wifi6-vs-wifi6e.html</loc>
-        <lastmod>2025-12-08</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/secure-home-wifi.html</loc>
-        <lastmod>2025-12-05</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/mesh-wifi-vs-routers.html</loc>
-        <lastmod>2025-12-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <url>
-        <loc>https://wifi.report/blog/troubleshooting-wifi.html</loc>
-        <lastmod>2025-12-01</lastmod>
+        <lastmod>2025-12-22</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <url>
         <loc>https://wifi.report/blog/guest-network-setup.html</loc>
-        <lastmod>2025-11-28</lastmod>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/mesh-wifi-vs-routers.html</loc>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/router-placement-guide.html</loc>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/secure-home-wifi.html</loc>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/troubleshooting-wifi.html</loc>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/understanding-speed-tests.html</loc>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/wifi-security-wpa3-vs-wpa2.html</loc>
+        <lastmod>2025-12-22</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/wifi6-vs-wifi6e.html</loc>
+        <lastmod>2025-12-22</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
