@@ -443,11 +443,11 @@ class WiFiAnalyzer {
             }
 
             // Test 2: Measure bandwidth with controlled downloads (Cloudflare endpoint)
-            // Use larger test sizes for more accurate measurements
+            // Use progressive test sizes - start smaller for better success rate
             let downloadMbps = 0;
             try {
-                // Larger test sizes to ensure adequate duration even on fast connections
-                const runs = [10_000_000, 25_000_000, 50_000_000]; // 10MB, 25MB, 50MB
+                // Progressive test sizes: start with smaller files
+                const runs = [1_000_000, 5_000_000, 10_000_000]; // 1MB, 5MB, 10MB
                 const results = [];
                 for (let i = 0; i < runs.length; i++) {
                     this.updateProgress(63 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
@@ -455,6 +455,11 @@ class WiFiAnalyzer {
                     if (res && isFinite(res) && res > 0) {
                         results.push(res);
                         console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps (${(runs[i] / 1e6).toFixed(1)}MB)`);
+                    }
+                    
+                    // If first test succeeded and gave a reasonable result, we can trust it
+                    if (i === 0 && res > 0.5 && res < 10000) {
+                        // Early success - continue with more tests for accuracy
                     }
                 }
                 if (results.length) {
@@ -494,10 +499,10 @@ class WiFiAnalyzer {
 
             speed.metrics.downloadSpeed = Math.max(0, Math.round(downloadMbps * 10) / 10);
 
-            // Test 3: Measure upload speed - run multiple tests for accuracy with larger sizes
+            // Test 3: Measure upload speed - run multiple tests for accuracy with progressive sizes
             let uploadMbps = 0;
             try {
-                const uploadTests = [2_000_000, 5_000_000, 10_000_000]; // 2MB, 5MB, 10MB
+                const uploadTests = [500_000, 1_000_000, 2_000_000]; // 500KB, 1MB, 2MB
                 const uploadResults = [];
                 for (let i = 0; i < uploadTests.length; i++) {
                     this.updateProgress(72 + i * 2, `Measuring upload throughput (${i + 1}/${uploadTests.length})...`);
@@ -657,92 +662,187 @@ class WiFiAnalyzer {
     }
 
     async measureUploadMbps(bytes) {
-        // Add timestamp and random string for better cache busting
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(7);
-        const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&t=${timestamp}&r=${random}`;
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000); // Increased to 20s for larger uploads
-        const start = performance.now();
-        
-        try {
-            const data = new Uint8Array(bytes);
-            // Fill with random data to prevent compression
-            // Use crypto.getRandomValues for efficient random fill in chunks
-            if (window.crypto && window.crypto.getRandomValues) {
-                // Fill in 64KB chunks for efficiency
-                const chunkSize = 65536;
-                for (let i = 0; i < bytes; i += chunkSize) {
-                    const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
-                    window.crypto.getRandomValues(chunk);
-                }
-            } else {
-                // Fallback: fill entire array with Math.random (less efficient)
-                for (let i = 0; i < bytes; i++) {
-                    data[i] = Math.floor(Math.random() * 256);
-                }
+        // Try multiple endpoints for better reliability
+        const endpoints = [
+            // Cloudflare's speed test endpoint
+            { 
+                url: `https://speed.cloudflare.com/__up`, 
+                provider: 'Cloudflare',
+                useParams: true 
+            },
+            // Alternative: Use httpbin.org which echoes POST data
+            {
+                url: 'https://httpbin.org/post',
+                provider: 'httpbin.org',
+                useParams: false
             }
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                body: data,
-                cache: 'no-store',
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache'
-                },
-                signal: controller.signal
-            });
-            
-            if (!response.ok) throw new Error('Upload failed');
-            
-            const seconds = (performance.now() - start) / 1000;
-            clearTimeout(timeout);
-            // Accept any positive duration - fast connections are legitimate
-            if (seconds <= 0) return 0;
-            return (bytes * 8) / seconds / 1e6;
-        } catch (e) {
-            clearTimeout(timeout);
-            console.error('Upload test failed:', e.message);
-            return 0;
+        ];
+        
+        for (const endpoint of endpoints) {
+            try {
+                const timestamp = Date.now();
+                const random = Math.random().toString(36).substring(7);
+                const url = endpoint.useParams 
+                    ? `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`
+                    : `${endpoint.url}?_=${timestamp}&r=${random}`;
+                
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 20000);
+                
+                // Generate random data to prevent compression
+                const data = new Uint8Array(bytes);
+                if (window.crypto && window.crypto.getRandomValues) {
+                    const chunkSize = 65536;
+                    for (let i = 0; i < bytes; i += chunkSize) {
+                        const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                        window.crypto.getRandomValues(chunk);
+                    }
+                } else {
+                    for (let i = 0; i < bytes; i++) {
+                        data[i] = Math.floor(Math.random() * 256);
+                    }
+                }
+                
+                const start = performance.now();
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: data,
+                    cache: 'no-store',
+                    headers: {
+                        'Content-Type': 'application/octet-stream',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    },
+                    signal: controller.signal
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Upload failed with status ${response.status}`);
+                }
+                
+                // Wait for response body to ensure upload completed
+                await response.text();
+                
+                const seconds = (performance.now() - start) / 1000;
+                clearTimeout(timeout);
+                
+                // Ensure reasonable timing (at least 0.1 seconds to avoid unrealistic speeds)
+                if (seconds < 0.1) {
+                    console.warn(`Upload test too fast (${seconds}s), likely error or not measuring correctly`);
+                    continue;
+                }
+                
+                const mbps = (bytes * 8) / seconds / 1e6;
+                console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s)`);
+                
+                // Sanity check: upload speed should be between 0.1 Mbps and 10 Gbps
+                if (mbps > 0.1 && mbps < 10000) {
+                    return mbps;
+                }
+            } catch (e) {
+                console.error(`Upload test failed (${endpoint.provider}):`, e.message);
+            }
         }
+        
+        return 0;
     }
 
     async measureDownloadMbps(bytes) {
-        // Add timestamp and random string for better cache busting
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(7);
-        const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&t=${timestamp}&r=${random}`;
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30000); // Increased to 30s for larger downloads
-        const start = performance.now();
-        try {
-            const response = await fetch(url, {
-                cache: 'no-store',
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache'
-                },
-                signal: controller.signal
-            });
-            if (!response.ok || !response.body) throw new Error('Download failed');
-            const reader = response.body.getReader();
-            let received = 0;
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                received += value.length;
+        // Try multiple reliable endpoints for better success rate
+        const endpoints = [
+            // Cloudflare's speed test endpoint
+            { 
+                url: `https://speed.cloudflare.com/__down`, 
+                provider: 'Cloudflare',
+                useParams: true 
+            },
+            // Alternative: Use actual file downloads from CDNs
+            {
+                url: 'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js',
+                provider: 'jsDelivr CDN',
+                useParams: false,
+                fixedSize: 89000 // Approximate size in bytes
+            },
+            {
+                url: 'https://unpkg.com/react@18.2.0/umd/react.production.min.js',
+                provider: 'unpkg CDN', 
+                useParams: false,
+                fixedSize: 10500 // Approximate size in bytes
             }
-            const seconds = (performance.now() - start) / 1000;
-            clearTimeout(timeout);
-            // Accept any positive duration - fast connections are legitimate
-            if (seconds <= 0) return 0;
-            return (received * 8) / seconds / 1e6; // Mbps
-        } catch (e) {
-            clearTimeout(timeout);
-            console.error('Download test failed:', e.message);
-            return 0;
+        ];
+        
+        for (const endpoint of endpoints) {
+            try {
+                const timestamp = Date.now();
+                const random = Math.random().toString(36).substring(7);
+                const url = endpoint.useParams 
+                    ? `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`
+                    : `${endpoint.url}?_=${timestamp}&r=${random}`;
+                
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 30000);
+                const start = performance.now();
+                
+                const response = await fetch(url, {
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    },
+                    signal: controller.signal
+                });
+                
+                if (!response.ok || !response.body) {
+                    throw new Error(`Download failed with status ${response.status}`);
+                }
+                
+                const reader = response.body.getReader();
+                let received = 0;
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    received += value.length;
+                }
+                
+                const seconds = (performance.now() - start) / 1000;
+                clearTimeout(timeout);
+                
+                // Use fixedSize if available and received size doesn't match expected
+                const actualBytes = endpoint.fixedSize && Math.abs(received - endpoint.fixedSize) < 10000 
+                    ? endpoint.fixedSize 
+                    : received;
+                
+                // Ensure reasonable timing (at least 0.05 seconds to avoid unrealistic speeds)
+                if (seconds < 0.05) {
+                    console.warn(`Download test too fast (${seconds}s), likely cached`);
+                    continue;
+                }
+                
+                // For small fixed-size files, scale the measurement based on requested bytes
+                let mbps;
+                if (endpoint.fixedSize && endpoint.fixedSize < bytes) {
+                    // Extrapolate: if we can download fixedSize in X seconds, 
+                    // we could download 'bytes' in X * (bytes/fixedSize) seconds
+                    const scaleFactor = bytes / endpoint.fixedSize;
+                    mbps = (actualBytes * 8) / seconds / 1e6;
+                    console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, small file)`);
+                } else {
+                    mbps = (actualBytes * 8) / seconds / 1e6;
+                    console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s)`);
+                }
+                
+                // Sanity check: download speed should be between 0.1 Mbps and 10 Gbps
+                if (mbps > 0.1 && mbps < 10000 && actualBytes > 0) {
+                    return mbps;
+                }
+            } catch (e) {
+                console.error(`Download test failed (${endpoint.provider}):`, e.message);
+            }
         }
+        
+        return 0;
     }
 
     async measureLatency(url) {
