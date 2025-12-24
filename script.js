@@ -164,10 +164,12 @@ class WiFiAnalyzer {
         this.results = {
             security: { score: 0, status: '', details: '', issues: [] },
             privacy: { score: 0, status: '', details: '', issues: [] },
-            speed: { score: 0, status: '', details: '', metrics: { latency: 0, downloadSpeed: 0, uploadSpeed: 0 } },
-            stability: { score: 0, status: '', details: '', metrics: {} }
+            speed: { score: 0, status: '', details: '', metrics: { latency: 0, downloadSpeed: 0, uploadSpeed: 0, jitter: 0 } },
+            stability: { score: 0, status: '', details: '', metrics: {} },
+            connection: { type: '', effectiveType: '', downlink: 0, rtt: 0, saveData: false }
         };
         this.overallScore = 0;
+        this.latencyMeasurements = [];
         this.init();
     }
 
@@ -273,28 +275,31 @@ class WiFiAnalyzer {
         this.updateProgress(10, 'Checking connection type...');
         this.updateStep('connection', 'active');
         
-        await this.delay(1000);
+        await this.delay(500);
         
         // Check connection info using Network Information API
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         
-        let connectionType = 'Unknown';
-        let effectiveType = 'Unknown';
-        
         if (connection) {
-            connectionType = connection.type || 'Unknown';
-            effectiveType = connection.effectiveType || 'Unknown';
+            this.results.connection.type = connection.type || 'Unknown';
+            this.results.connection.effectiveType = connection.effectiveType || 'Unknown';
+            this.results.connection.downlink = connection.downlink || 0;
+            this.results.connection.rtt = connection.rtt || 0;
+            this.results.connection.saveData = connection.saveData || false;
+        } else {
+            this.results.connection.type = 'Not available';
+            this.results.connection.effectiveType = 'Unknown';
         }
 
         this.updateStep('connection', 'completed');
-        this.updateProgress(20, 'Connection type identified');
+        this.updateProgress(20, 'Connection type identified: ' + this.results.connection.effectiveType);
     }
 
     async runSecurityTest() {
         this.updateProgress(25, 'Analyzing security protocols...');
         this.updateStep('security', 'active');
         
-        await this.delay(2000);
+        await this.delay(1500);
 
         const security = this.results.security;
         
@@ -309,17 +314,21 @@ class WiFiAnalyzer {
         
         let securityScore = 70; // Base score
         let issues = [];
+        let strengths = [];
         
         if (!isHTTPS) {
             securityScore -= 20;
             issues.push('Not using HTTPS connection');
         } else {
             securityScore += 10;
+            strengths.push('Using HTTPS encrypted connection');
         }
         
         if (!isSecureContext) {
             securityScore -= 15;
             issues.push('Insecure context detected');
+        } else {
+            strengths.push('Secure browser context verified');
         }
         
         // Check for mixed content
@@ -329,11 +338,33 @@ class WiFiAnalyzer {
             if (insecureResources.length > 0) {
                 securityScore -= 10;
                 issues.push(`Found ${insecureResources.length} insecure resource(s)`);
+            } else if (resources.length > 0) {
+                strengths.push('No mixed content detected');
             }
+        }
+        
+        // Check for TLS protocol info (if available through performance API)
+        if (window.performance && window.performance.getEntriesByType) {
+            const navEntry = window.performance.getEntriesByType('navigation')[0];
+            if (navEntry && navEntry.nextHopProtocol) {
+                const protocol = navEntry.nextHopProtocol;
+                if (protocol.includes('h2') || protocol.includes('h3')) {
+                    securityScore += 5;
+                    strengths.push(`Using modern protocol: ${protocol}`);
+                }
+            }
+        }
+        
+        // Check for HSTS support (Strict-Transport-Security)
+        // This is a best-effort check - we can't directly access response headers from JS
+        // but we can infer from the secure context
+        if (isHTTPS && isSecureContext) {
+            strengths.push('HTTPS enforced by browser');
         }
         
         security.score = Math.max(0, Math.min(100, securityScore));
         security.issues = issues;
+        security.strengths = strengths;
         
         if (security.score >= 80) {
             security.status = 'Excellent';
@@ -360,7 +391,7 @@ class WiFiAnalyzer {
         const speed = this.results.speed;
         
         try {
-            // Test 1: Measure latency with multiple pings
+            // Test 1: Measure latency with multiple pings for jitter calculation
             const latencies = [];
             const pingTargets = [
                 'https://www.google.com/favicon.ico',
@@ -368,21 +399,38 @@ class WiFiAnalyzer {
                 'https://www.github.com/favicon.ico'
             ];
             
-            for (let i = 0; i < pingTargets.length; i++) {
-                try {
-                    const latency = await this.measureLatency(pingTargets[i]);
-                    latencies.push(latency);
-                } catch (e) {
-                    // Skip failed pings
+            // Perform multiple pings to calculate jitter
+            for (let round = 0; round < 2; round++) {
+                for (let i = 0; i < pingTargets.length; i++) {
+                    try {
+                        const latency = await this.measureLatency(pingTargets[i]);
+                        latencies.push(latency);
+                    } catch (e) {
+                        // Skip failed pings
+                    }
+                    this.updateProgress(50 + Math.floor((round * 3 + i + 1) * 2.5), `Testing latency (${round * 3 + i + 1}/6)...`);
                 }
-                this.updateProgress(50 + (i + 1) * 5, `Testing latency (${i + 1}/3)...`);
             }
             
-            const avgLatency = latencies.length > 0 
-                ? latencies.reduce((a, b) => a + b, 0) / latencies.length 
-                : 0;
-            
-            speed.metrics.latency = Math.round(avgLatency);
+            if (latencies.length > 0) {
+                const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+                speed.metrics.latency = Math.round(avgLatency);
+                
+                // Calculate jitter (variance in latency)
+                if (latencies.length > 1) {
+                    const squaredDiffs = latencies.map(lat => Math.pow(lat - avgLatency, 2));
+                    const variance = squaredDiffs.reduce((a, b) => a + b, 0) / latencies.length;
+                    const jitter = Math.sqrt(variance);
+                    speed.metrics.jitter = Math.round(jitter * 10) / 10;
+                } else {
+                    speed.metrics.jitter = 0;
+                }
+                
+                this.latencyMeasurements = latencies;
+            } else {
+                speed.metrics.latency = 0;
+                speed.metrics.jitter = 0;
+            }
 
             // Test 2: Measure bandwidth with controlled downloads (Cloudflare endpoint)
             let downloadMbps = 0;
@@ -436,18 +484,22 @@ class WiFiAnalyzer {
                     speed.metrics.downloadSpeed = 0.5;
                     speed.metrics.uploadSpeed = 0.1;
                     speed.metrics.latency = 2000;
+                    speed.metrics.jitter = 200;
                 } else if (effectiveType === '2g') {
                     speed.metrics.downloadSpeed = 2;
                     speed.metrics.uploadSpeed = 0.5;
                     speed.metrics.latency = 500;
+                    speed.metrics.jitter = 100;
                 } else if (effectiveType === '3g') {
                     speed.metrics.downloadSpeed = 10;
                     speed.metrics.uploadSpeed = 2;
                     speed.metrics.latency = 200;
+                    speed.metrics.jitter = 50;
                 } else {
                     speed.metrics.downloadSpeed = 50;
                     speed.metrics.uploadSpeed = 10;
                     speed.metrics.latency = 50;
+                    speed.metrics.jitter = 10;
                 }
             }
 
@@ -462,36 +514,43 @@ class WiFiAnalyzer {
                 speedScore += 8;
             }
             
+            // Factor in jitter
+            if (speed.metrics.jitter < 10) {
+                speedScore += 5;
+            } else if (speed.metrics.jitter > 50) {
+                speedScore -= 5;
+            }
+            
             if (speed.metrics.downloadSpeed > 100) {
-                speedScore += 25;
-            } else if (speed.metrics.downloadSpeed > 50) {
                 speedScore += 20;
+            } else if (speed.metrics.downloadSpeed > 50) {
+                speedScore += 15;
             } else if (speed.metrics.downloadSpeed > 25) {
                 speedScore += 10;
             }
 
             if (speed.metrics.uploadSpeed > 50) {
-                speedScore += 20;
-            } else if (speed.metrics.uploadSpeed > 20) {
                 speedScore += 15;
+            } else if (speed.metrics.uploadSpeed > 20) {
+                speedScore += 10;
             } else if (speed.metrics.uploadSpeed > 5) {
-                speedScore += 8;
+                speedScore += 5;
             }
             
             speed.score = Math.min(100, speedScore);
             
             if (speed.score >= 80) {
                 speed.status = 'Excellent';
-                speed.details = `Excellent speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Perfect for gaming, 4K streaming, and video calls.`;
+                speed.details = `Excellent speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency, ${speed.metrics.jitter}ms jitter. Perfect for gaming, 4K streaming, and video calls.`;
             } else if (speed.score >= 60) {
                 speed.status = 'Good';
-                speed.details = `Good speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Suitable for most online activities.`;
+                speed.details = `Good speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency, ${speed.metrics.jitter}ms jitter. Suitable for most online activities.`;
             } else if (speed.score >= 40) {
                 speed.status = 'Fair';
-                speed.details = `Fair speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Adequate but could be improved.`;
+                speed.details = `Fair speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency, ${speed.metrics.jitter}ms jitter. Adequate but could be improved.`;
             } else {
                 speed.status = 'Poor';
-                speed.details = `Poor speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Consider upgrading your connection.`;
+                speed.details = `Poor speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency, ${speed.metrics.jitter}ms jitter. Consider upgrading your connection.`;
             }
 
         } catch (error) {
@@ -501,23 +560,24 @@ class WiFiAnalyzer {
             const effectiveType = connection?.effectiveType || '4g';
             
             // Estimate based on connection type
-            let estimatedDown = 50, estimatedUp = 10, estimatedLatency = 50;
+            let estimatedDown = 50, estimatedUp = 10, estimatedLatency = 50, estimatedJitter = 10;
             if (effectiveType === 'slow-2g') {
-                estimatedDown = 0.5; estimatedUp = 0.1; estimatedLatency = 2000;
+                estimatedDown = 0.5; estimatedUp = 0.1; estimatedLatency = 2000; estimatedJitter = 200;
             } else if (effectiveType === '2g') {
-                estimatedDown = 2; estimatedUp = 0.5; estimatedLatency = 500;
+                estimatedDown = 2; estimatedUp = 0.5; estimatedLatency = 500; estimatedJitter = 100;
             } else if (effectiveType === '3g') {
-                estimatedDown = 10; estimatedUp = 2; estimatedLatency = 200;
+                estimatedDown = 10; estimatedUp = 2; estimatedLatency = 200; estimatedJitter = 50;
             } else if (effectiveType === '4g') {
-                estimatedDown = 50; estimatedUp = 10; estimatedLatency = 50;
+                estimatedDown = 50; estimatedUp = 10; estimatedLatency = 50; estimatedJitter = 10;
             }
             
             speed.metrics.latency = estimatedLatency;
             speed.metrics.downloadSpeed = estimatedDown;
             speed.metrics.uploadSpeed = estimatedUp;
+            speed.metrics.jitter = estimatedJitter;
             speed.score = 50;
             speed.status = 'Estimated';
-            speed.details = `Estimated speed based on ${effectiveType.toUpperCase()} connection: ${estimatedDown} Mbps down, ${estimatedUp} Mbps up, ${estimatedLatency}ms latency. Actual measurements unavailable.`;
+            speed.details = `Estimated speed based on ${effectiveType.toUpperCase()} connection: ${estimatedDown} Mbps down, ${estimatedUp} Mbps up, ${estimatedLatency}ms latency, ${estimatedJitter}ms jitter. Actual measurements unavailable.`;
         }
 
         this.updateStep('speed', 'completed');
@@ -682,7 +742,7 @@ class WiFiAnalyzer {
         this.updateProgress(90, 'Evaluating privacy concerns...');
         this.updateStep('privacy', 'active');
         
-        await this.delay(2000);
+        await this.delay(1500);
 
         const privacy = this.results.privacy;
         
@@ -732,6 +792,18 @@ class WiFiAnalyzer {
                 issues.push('WebRTC enabled (potential IP leak)');
             }
             
+            // Browser fingerprinting detection
+            const fingerprintScore = this.checkBrowserFingerprint();
+            privacyScore -= fingerprintScore.deduction;
+            if (fingerprintScore.issues.length > 0) {
+                issues.push(...fingerprintScore.issues);
+            }
+            
+            // Check for tracking protection
+            if (navigator.globalPrivacyControl || navigator.doNotTrack === '1') {
+                privacyScore += 5;
+            }
+            
             privacy.score = Math.max(0, Math.min(100, privacyScore));
             privacy.issues = issues;
 
@@ -747,6 +819,66 @@ class WiFiAnalyzer {
         this.updateProgress(100, 'Analysis complete!');
         
         await this.delay(1000);
+    }
+
+    checkBrowserFingerprint() {
+        const issues = [];
+        let deduction = 0;
+        
+        // Check for unique identifiers that can be used for fingerprinting
+        
+        // Canvas fingerprinting
+        try {
+            const canvas = document.createElement('canvas');
+            if (canvas.getContext) {
+                issues.push('Canvas API available (fingerprinting risk)');
+                deduction += 3;
+            }
+        } catch (e) {
+            // Canvas not available
+        }
+        
+        // WebGL fingerprinting
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (gl) {
+                issues.push('WebGL enabled (fingerprinting risk)');
+                deduction += 3;
+            }
+        } catch (e) {
+            // WebGL not available
+        }
+        
+        // Audio fingerprinting
+        if (window.AudioContext || window.webkitAudioContext) {
+            issues.push('Audio API available (fingerprinting risk)');
+            deduction += 2;
+        }
+        
+        // Font detection
+        if (document.fonts && document.fonts.check) {
+            issues.push('Font enumeration possible (fingerprinting risk)');
+            deduction += 2;
+        }
+        
+        // Screen resolution
+        if (screen.width && screen.height && screen.colorDepth) {
+            const uniqueScreen = `${screen.width}x${screen.height}x${screen.colorDepth}`;
+            // Common resolutions get less deduction
+            const commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24'];
+            if (!commonResolutions.includes(uniqueScreen)) {
+                deduction += 2;
+            }
+        }
+        
+        // Plugins and extensions can be detected
+        if (navigator.plugins && navigator.plugins.length > 0) {
+            issues.push(`Browser plugins detected: ${navigator.plugins.length}`);
+            deduction += 2;
+        }
+        
+        return { issues, deduction };
     }
 
     async getIPInfo() {
@@ -954,41 +1086,79 @@ class WiFiAnalyzer {
             } else {
                 detailsHTML += `<p class="protected-message">✓ Your connection is protected with a VPN!</p>`;
             }
+        } else if (category === 'security' && result.strengths) {
+            // Show strengths and issues
+            detailsHTML += `<p>${result.details}</p>`;
+            if (result.strengths && result.strengths.length > 0) {
+                detailsHTML += '<div class="strengths-section"><strong>✓ Security Strengths:</strong><ul>';
+                result.strengths.forEach(strength => {
+                    detailsHTML += `<li class="strength-item">${strength}</li>`;
+                });
+                detailsHTML += '</ul></div>';
+            }
         } else {
             detailsHTML += `<p>${result.details}</p>`;
         }
         
         if (result.issues && result.issues.length > 0) {
-            detailsHTML += '<ul class="issue-list">';
+            detailsHTML += '<div class="issues-section"><strong>⚠️ Issues Found:</strong><ul class="issue-list">';
             result.issues.forEach(issue => {
                 detailsHTML += `<li>${issue}</li>`;
             });
-            detailsHTML += '</ul>';
+            detailsHTML += '</ul></div>';
         }
         
         if (result.metrics && category !== 'privacy') {
-            detailsHTML += '<ul>';
+            detailsHTML += '<div class="metrics-section"><strong>📊 Measurements:</strong><ul>';
             for (const [key, value] of Object.entries(result.metrics)) {
-                if (value !== undefined && value !== 'N/A') {
+                if (value !== undefined && value !== 'N/A' && value !== 0) {
                     const label = key.replace(/([A-Z])/g, ' $1').trim();
                     const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
-                    detailsHTML += `<li>${capitalizedLabel}: ${value}${key.includes('Speed') ? ' Mbps' : key.includes('latency') || key.includes('rtt') ? 'ms' : ''}</li>`;
+                    let unit = '';
+                    if (key.includes('Speed') || key.includes('downlink')) unit = ' Mbps';
+                    else if (key.includes('latency') || key.includes('rtt') || key.includes('jitter')) unit = ' ms';
+                    detailsHTML += `<li>${capitalizedLabel}: ${value}${unit}</li>`;
                 }
             }
-            detailsHTML += '</ul>';
+            detailsHTML += '</ul></div>';
         }
         
         detailsEl.innerHTML = detailsHTML;
     }
 
     updateSpeedMetrics() {
-        const { downloadSpeed = 0, uploadSpeed = 0, latency = 0 } = this.results.speed.metrics || {};
+        const { downloadSpeed = 0, uploadSpeed = 0, latency = 0, jitter = 0 } = this.results.speed.metrics || {};
         const downloadEl = document.getElementById('downloadMetric');
         const uploadEl = document.getElementById('uploadMetric');
         const latencyEl = document.getElementById('latencyMetric');
+        const jitterEl = document.getElementById('jitterMetric');
         if (downloadEl) downloadEl.textContent = `${downloadSpeed || 0} Mbps`;
         if (uploadEl) uploadEl.textContent = `${uploadSpeed || 0} Mbps`;
         if (latencyEl) latencyEl.textContent = `${latency || 0} ms`;
+        if (jitterEl) jitterEl.textContent = `${jitter || 0} ms`;
+        
+        // Update connection info
+        const { type = 'Unknown', effectiveType = 'Unknown', downlink = 0, rtt = 0 } = this.results.connection || {};
+        const typeEl = document.getElementById('connectionType');
+        const effTypeEl = document.getElementById('effectiveType');
+        const downlinkEl = document.getElementById('downlinkValue');
+        const rttEl = document.getElementById('rttValue');
+        
+        if (typeEl) typeEl.textContent = type || 'Unknown';
+        if (effTypeEl) {
+            effTypeEl.textContent = effectiveType ? effectiveType.toUpperCase() : 'Unknown';
+            // Add a badge class based on effective type
+            effTypeEl.className = 'connection-value';
+            if (effectiveType === '4g' || effectiveType === '5g') {
+                effTypeEl.classList.add('good-connection');
+            } else if (effectiveType === '3g') {
+                effTypeEl.classList.add('fair-connection');
+            } else if (effectiveType === '2g' || effectiveType === 'slow-2g') {
+                effTypeEl.classList.add('poor-connection');
+            }
+        }
+        if (downlinkEl) downlinkEl.textContent = downlink ? `${downlink} Mbps` : 'N/A';
+        if (rttEl) rttEl.textContent = rtt ? `${rtt} ms` : 'N/A';
     }
 
     generateRecommendations() {
@@ -1063,6 +1233,15 @@ class WiFiAnalyzer {
                     description: 'High latency detected. Use a wired ethernet connection for gaming or video calls, and close bandwidth-heavy applications.'
                 });
             }
+            
+            if (this.results.speed.metrics.jitter > 30) {
+                recommendations.push({
+                    type: 'warning',
+                    icon: '📊',
+                    title: 'High Jitter Detected',
+                    description: `Your jitter is ${this.results.speed.metrics.jitter}ms, which can cause inconsistent performance. Check for network congestion, WiFi interference, or consider upgrading your router.`
+                });
+            }
         }
 
         // Stability recommendations
@@ -1113,10 +1292,12 @@ class WiFiAnalyzer {
         this.results = {
             security: { score: 0, status: '', details: '', issues: [] },
             privacy: { score: 0, status: '', details: '', issues: [] },
-            speed: { score: 0, status: '', details: '', metrics: {} },
-            stability: { score: 0, status: '', details: '', metrics: {} }
+            speed: { score: 0, status: '', details: '', metrics: { latency: 0, downloadSpeed: 0, uploadSpeed: 0, jitter: 0 } },
+            stability: { score: 0, status: '', details: '', metrics: {} },
+            connection: { type: '', effectiveType: '', downlink: 0, rtt: 0, saveData: false }
         };
         this.overallScore = 0;
+        this.latencyMeasurements = [];
 
         // Hide results, show hero
         document.getElementById('resultsSection').classList.add('hidden');

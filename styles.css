@@ -976,6 +976,57 @@ body {
     left: 0;
 }
 
+.strengths-section,
+.issues-section,
+.metrics-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.strengths-section strong,
+.issues-section strong,
+.metrics-section strong {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.strengths-section ul {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+.strength-item {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    color: #059669;
+    font-weight: 500;
+}
+
+.strength-item::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+}
+
+.metrics-section ul {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+.metrics-section li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #E0E0E0;
+    font-family: 'Space Mono', monospace;
+}
+
+.metrics-section li:last-child {
+    border-bottom: none;
+}
+
 .category-details {
     color: var(--text-secondary);
     font-size: 0.9375rem;
@@ -1002,6 +1053,79 @@ body {
 }
 
 /* Speed Metrics */
+/* Connection Info */
+.connection-info {
+    background: white;
+    border-radius: 0;
+    border: 3px solid #000000;
+    padding: 2.5rem;
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.connection-info h3 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: -0.5px;
+    border-bottom: 2px solid #E0E0E0;
+    padding-bottom: 0.75rem;
+}
+
+.connection-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+.connection-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: #F5F5F5;
+    border-radius: 0;
+    border: 2px solid #E0E0E0;
+    transition: all 0.3s ease;
+}
+
+.connection-item:hover {
+    border-color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.connection-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+    font-family: 'Space Mono', monospace;
+}
+
+.connection-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Space Mono', monospace;
+}
+
+.connection-value.good-connection {
+    color: #059669;
+}
+
+.connection-value.fair-connection {
+    color: #d97706;
+}
+
+.connection-value.poor-connection {
+    color: #dc2626;
+}
+
 .speed-metrics {
     background: white;
     border-radius: 0;
@@ -1025,7 +1149,7 @@ body {
 
 .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
 }
 
@@ -1080,7 +1204,11 @@ body {
 /* Responsive metrics grid */
 @media (max-width: 1024px) {
     .metrics-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .connection-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -1088,18 +1216,32 @@ body {
     .metrics-grid {
         grid-template-columns: 1fr;
     }
+    
+    .connection-grid {
+        grid-template-columns: 1fr;
+    }
 
     .speed-metrics {
         padding: 1.5rem;
     }
+    
+    .connection-info {
+        padding: 1.5rem;
+    }
 
-    .speed-metrics h3 {
+    .speed-metrics h3,
+    .connection-info h3 {
         font-size: 1.25rem;
     }
 
     .metric-value {
         font-size: 1.5rem;
     }
+    
+    .connection-value {
+        font-size: 1.125rem;
+    }
+}
 }
 
 /* Recommendations */
