@@ -929,10 +929,10 @@ class WiFiAnalyzer {
             // Display IP information prominently with exposure badge
             detailsHTML += `<div class="privacy-ip-display">`;
             detailsHTML += `<div class="ip-info-row">`;
-            detailsHTML += `<span class="ip-label">Your IP:</span> `;
+            detailsHTML += `<span class="ip-label">Your IP Address</span>`;
             detailsHTML += `<span class="ip-address">${result.ipInfo.ip}</span>`;
             if (!result.isProtected) {
-                detailsHTML += ` <span class="exposed-badge">🚨 EXPOSED</span>`;
+                detailsHTML += `<span class="exposed-badge">🚨 EXPOSED</span>`;
             }
             detailsHTML += `</div>`;
             detailsHTML += `<div class="ip-details">`;
