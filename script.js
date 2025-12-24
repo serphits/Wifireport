@@ -690,15 +690,27 @@ class WiFiAnalyzer {
             // Get IP information
             const ipInfo = await this.getIPInfo();
             
+            // Store IP info for later display
+            privacy.ipInfo = ipInfo;
+            
             let privacyScore = 70; // Base score
             let issues = [];
             
-            // Check for VPN/Proxy
+            // Check for VPN/Proxy - This is the key privacy validator
             if (ipInfo.vpn) {
                 privacyScore += 20;
-                privacy.details = `Your IP (${ipInfo.ip}) appears to be using a VPN or proxy, which enhances privacy.`;
+                privacy.status = 'PROTECTED';
+                privacy.details = `Your connection is protected! IP: ${ipInfo.ip} via ${ipInfo.org}`;
+                privacy.isProtected = true;
             } else {
-                privacy.details = `Your public IP is ${ipInfo.ip} in ${ipInfo.city}, ${ipInfo.country}.`;
+                // UNPROTECTED - Major privacy concern
+                privacyScore -= 30;
+                privacy.status = 'UNPROTECTED';
+                privacy.details = `Your connection is EXPOSED! Your real IP ${ipInfo.ip} is visible to websites.`;
+                privacy.isProtected = false;
+                issues.push('No VPN detected - Your real IP is exposed');
+                issues.push(`Location exposed: ${ipInfo.city}, ${ipInfo.country}`);
+                issues.push(`ISP visible: ${ipInfo.org}`);
             }
             
             // Check Do Not Track
@@ -722,22 +734,13 @@ class WiFiAnalyzer {
             
             privacy.score = Math.max(0, Math.min(100, privacyScore));
             privacy.issues = issues;
-            
-            if (privacy.score >= 80) {
-                privacy.status = 'Excellent';
-            } else if (privacy.score >= 60) {
-                privacy.status = 'Good';
-            } else if (privacy.score >= 40) {
-                privacy.status = 'Fair';
-            } else {
-                privacy.status = 'Poor';
-            }
 
         } catch (error) {
             console.error('Privacy test error:', error);
             privacy.score = 50;
             privacy.status = 'Unknown';
             privacy.details = 'Unable to fully assess privacy status.';
+            privacy.isProtected = false;
         }
 
         this.updateStep('privacy', 'completed');
@@ -898,28 +901,77 @@ class WiFiAnalyzer {
         badgeEl.textContent = result.status;
         badgeEl.className = 'badge';
         
-        if (result.score >= 80) {
-            badgeEl.classList.add('excellent');
-        } else if (result.score >= 60) {
-            badgeEl.classList.add('good');
-        } else if (result.score >= 40) {
-            badgeEl.classList.add('warning');
+        // Special handling for privacy - use EXPOSED badge for unprotected
+        if (category === 'privacy') {
+            if (result.isProtected) {
+                badgeEl.classList.add('protected');
+            } else {
+                badgeEl.classList.add('exposed');
+                badgeEl.textContent = 'EXPOSED';
+            }
         } else {
-            badgeEl.classList.add('poor');
+            if (result.score >= 80) {
+                badgeEl.classList.add('excellent');
+            } else if (result.score >= 60) {
+                badgeEl.classList.add('good');
+            } else if (result.score >= 40) {
+                badgeEl.classList.add('warning');
+            } else {
+                badgeEl.classList.add('poor');
+            }
         }
 
-        // Update details
-        let detailsHTML = `<p>${result.details}</p>`;
+        // Update details - Special handling for privacy category
+        let detailsHTML = '';
+        
+        if (category === 'privacy' && result.ipInfo) {
+            // Display IP information prominently with exposure badge
+            detailsHTML += `<div class="privacy-ip-display">`;
+            detailsHTML += `<div class="ip-info-row">`;
+            detailsHTML += `<span class="ip-label">Your IP:</span> `;
+            detailsHTML += `<span class="ip-address">${result.ipInfo.ip}</span>`;
+            if (!result.isProtected) {
+                detailsHTML += ` <span class="exposed-badge">🚨 EXPOSED</span>`;
+            }
+            detailsHTML += `</div>`;
+            detailsHTML += `<div class="ip-details">`;
+            detailsHTML += `<div><strong>Location:</strong> ${result.ipInfo.city}, ${result.ipInfo.country}</div>`;
+            detailsHTML += `<div><strong>ISP:</strong> ${result.ipInfo.org}</div>`;
+            detailsHTML += `</div>`;
+            detailsHTML += `</div>`;
+            
+            // Add "Fix Leak" button for unprotected connections
+            if (!result.isProtected) {
+                detailsHTML += `<div class="vpn-cta">`;
+                detailsHTML += `<p class="vpn-warning">⚠️ Your real identity and location are visible to every website you visit!</p>`;
+                detailsHTML += `<div class="vpn-buttons">`;
+                detailsHTML += `<a href="https://www.expressvpn.com/order" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
+                detailsHTML += `<span class="vpn-icon">🛡️</span>`;
+                detailsHTML += `<span class="vpn-text">Fix with ExpressVPN</span>`;
+                detailsHTML += `</a>`;
+                detailsHTML += `<a href="https://nordvpn.com/pricing/" target="_blank" rel="noopener" class="vpn-button nordvpn">`;
+                detailsHTML += `<span class="vpn-icon">🔒</span>`;
+                detailsHTML += `<span class="vpn-text">Fix with NordVPN</span>`;
+                detailsHTML += `</a>`;
+                detailsHTML += `</div>`;
+                detailsHTML += `<p class="privacy-note">✓ 100% Client-Side Scan • Privacy First • No Data Stored</p>`;
+                detailsHTML += `</div>`;
+            } else {
+                detailsHTML += `<p class="protected-message">✓ Your connection is protected with a VPN!</p>`;
+            }
+        } else {
+            detailsHTML += `<p>${result.details}</p>`;
+        }
         
         if (result.issues && result.issues.length > 0) {
-            detailsHTML += '<ul>';
+            detailsHTML += '<ul class="issue-list">';
             result.issues.forEach(issue => {
                 detailsHTML += `<li>${issue}</li>`;
             });
             detailsHTML += '</ul>';
         }
         
-        if (result.metrics) {
+        if (result.metrics && category !== 'privacy') {
             detailsHTML += '<ul>';
             for (const [key, value] of Object.entries(result.metrics)) {
                 if (value !== undefined && value !== 'N/A') {

@@ -762,6 +762,201 @@ body {
     color: #000000;
 }
 
+.badge.exposed {
+    background: #DC2626;
+    color: #FFFFFF;
+    animation: pulse-exposed 2s ease-in-out infinite;
+    font-weight: 900;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+}
+
+.badge.protected {
+    background: #16A34A;
+    color: #FFFFFF;
+    font-weight: 900;
+}
+
+@keyframes pulse-exposed {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+    }
+}
+
+/* Privacy IP Display Styles */
+.privacy-ip-display {
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+}
+
+.ip-info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.ip-label {
+    font-weight: 700;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.ip-address {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #000000;
+    background: #FFFFFF;
+    padding: 0.5rem 1rem;
+    border: 2px solid #000000;
+    border-radius: 6px;
+}
+
+.exposed-badge {
+    background: #DC2626;
+    color: #FFFFFF;
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    font-weight: 900;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: pulse-exposed 2s ease-in-out infinite;
+}
+
+.ip-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #FFFFFF;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.ip-details strong {
+    color: #000000;
+    font-weight: 700;
+}
+
+/* VPN CTA Styles */
+.vpn-cta {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #FEF2F2;
+    border: 2px solid #FCA5A5;
+    border-radius: 8px;
+}
+
+.vpn-warning {
+    color: #991B1B;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.vpn-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.vpn-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    border: 2px solid transparent;
+    flex: 1;
+    min-width: 180px;
+    justify-content: center;
+}
+
+.vpn-button.expressvpn {
+    background: #DA3025;
+    color: #FFFFFF;
+    border-color: #DA3025;
+}
+
+.vpn-button.expressvpn:hover {
+    background: #C02015;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(218, 48, 37, 0.3);
+}
+
+.vpn-button.nordvpn {
+    background: #4687FF;
+    color: #FFFFFF;
+    border-color: #4687FF;
+}
+
+.vpn-button.nordvpn:hover {
+    background: #2E6FE6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(70, 135, 255, 0.3);
+}
+
+.vpn-icon {
+    font-size: 1.25rem;
+}
+
+.vpn-text {
+    font-weight: 700;
+}
+
+.privacy-note {
+    font-size: 0.8rem;
+    color: #6B7280;
+    text-align: center;
+    font-weight: 500;
+    margin-top: 0.75rem;
+}
+
+.protected-message {
+    color: #16A34A;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 1rem;
+    background: #F0FDF4;
+    border: 2px solid #86EFAC;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.issue-list {
+    list-style: none;
+    margin-top: 1rem;
+}
+
+.issue-list li {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    color: #DC2626;
+    font-weight: 500;
+}
+
+.issue-list li::before {
+    content: '⚠️';
+    position: absolute;
+    left: 0;
+}
+
 .category-details {
     color: var(--text-secondary);
     font-size: 0.9375rem;
