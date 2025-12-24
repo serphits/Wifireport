@@ -838,8 +838,9 @@ class WiFiAnalyzer {
         // Check for unique identifiers that can be used for fingerprinting
         
         // Canvas fingerprinting
+        let canvas;
         try {
-            const canvas = document.createElement('canvas');
+            canvas = document.createElement('canvas');
             if (canvas.getContext) {
                 issues.push('Canvas API available (fingerprinting risk)');
                 deduction += 3;
@@ -848,9 +849,9 @@ class WiFiAnalyzer {
             // Canvas not available
         }
         
-        // WebGL fingerprinting
+        // WebGL fingerprinting - reuse canvas if available
         try {
-            const canvas = document.createElement('canvas');
+            if (!canvas) canvas = document.createElement('canvas');
             const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
             if (gl) {
                 issues.push('WebGL enabled (fingerprinting risk)');
