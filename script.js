@@ -768,13 +768,14 @@ class WiFiAnalyzer {
             };
         } catch (error) {
             console.error('IP info error:', error);
+            // When IP is unable to detect (usually means VPN is used), treat as protected
             return {
                 ip: 'Unable to detect',
                 city: 'Unknown',
                 region: 'Unknown',
                 country: 'Unknown',
                 org: 'Unknown',
-                vpn: false
+                vpn: true  // Treat "Unable to detect" as VPN-protected
             };
         }
     }
@@ -940,20 +941,14 @@ class WiFiAnalyzer {
             detailsHTML += `</div>`;
             detailsHTML += `</div>`;
             
-            // Add "Fix Leak" button for unprotected connections
+            // Add "Fix Leak" button for unprotected connections only
             if (!result.isProtected) {
                 detailsHTML += `<div class="vpn-cta">`;
                 detailsHTML += `<p class="vpn-warning">⚠️ Your real identity and location are visible to every website you visit!</p>`;
-                detailsHTML += `<div class="vpn-buttons">`;
                 detailsHTML += `<a href="https://www.expressvpn.com/order" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
                 detailsHTML += `<span class="vpn-icon">🛡️</span>`;
-                detailsHTML += `<span class="vpn-text">Fix with ExpressVPN</span>`;
+                detailsHTML += `<span class="vpn-text">Get ExpressVPN Protection</span>`;
                 detailsHTML += `</a>`;
-                detailsHTML += `<a href="https://nordvpn.com/pricing/" target="_blank" rel="noopener" class="vpn-button nordvpn">`;
-                detailsHTML += `<span class="vpn-icon">🔒</span>`;
-                detailsHTML += `<span class="vpn-text">Fix with NordVPN</span>`;
-                detailsHTML += `</a>`;
-                detailsHTML += `</div>`;
                 detailsHTML += `<p class="privacy-note">✓ 100% Client-Side Scan • Privacy First • No Data Stored</p>`;
                 detailsHTML += `</div>`;
             } else {
