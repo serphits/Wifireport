@@ -887,6 +887,7 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 1rem;
     width: 100%;
 }
@@ -912,7 +913,6 @@ body {
     transition: all 0.3s ease;
     font-size: 0.95rem;
     border: 2px solid transparent;
-    align-self: flex-start;
 }
 
 .vpn-button.expressvpn {
@@ -1721,14 +1721,8 @@ body {
         min-width: auto;
     }
     
-    .privacy-note {
-        text-align: center;
-    }
-    
-    .protected-message {
-        text-align: center;
-    }
-    
+    .privacy-note,
+    .protected-message,
     .ip-label {
         text-align: center;
     }
