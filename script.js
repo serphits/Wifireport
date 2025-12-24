@@ -1209,8 +1209,8 @@ class WiFiAnalyzer {
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         const connectionInfoSection = document.getElementById('connectionInfo');
         
-        if (!connection || (!connection.effectiveType && !connection.type)) {
-            // API not available or no data - hide the connection info section
+        if (!connection) {
+            // API not available - hide the connection info section
             if (connectionInfoSection) {
                 connectionInfoSection.style.display = 'none';
             }
@@ -1222,6 +1222,7 @@ class WiFiAnalyzer {
             connectionInfoSection.style.display = 'block';
         }
         
+        // Get connection data from results (populated during runConnectionTest)
         const { type = 'Unknown', effectiveType = 'Unknown', downlink = 0, rtt = 0 } = this.results.connection || {};
         const typeEl = document.getElementById('connectionType');
         const effTypeEl = document.getElementById('effectiveType');
