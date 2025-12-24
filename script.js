@@ -446,8 +446,8 @@ class WiFiAnalyzer {
             // Use larger test sizes for more accurate measurements
             let downloadMbps = 0;
             try {
-                // Increased sizes and more runs for better accuracy
-                const runs = [5_000_000, 10_000_000, 25_000_000]; // 5MB, 10MB, 25MB
+                // Larger test sizes to ensure adequate duration even on fast connections
+                const runs = [10_000_000, 25_000_000, 50_000_000]; // 10MB, 25MB, 50MB
                 const results = [];
                 for (let i = 0; i < runs.length; i++) {
                     this.updateProgress(63 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
@@ -497,7 +497,7 @@ class WiFiAnalyzer {
             // Test 3: Measure upload speed - run multiple tests for accuracy with larger sizes
             let uploadMbps = 0;
             try {
-                const uploadTests = [1_000_000, 2_000_000, 5_000_000]; // 1MB, 2MB, 5MB
+                const uploadTests = [2_000_000, 5_000_000, 10_000_000]; // 2MB, 5MB, 10MB
                 const uploadResults = [];
                 for (let i = 0; i < uploadTests.length; i++) {
                     this.updateProgress(72 + i * 2, `Measuring upload throughput (${i + 1}/${uploadTests.length})...`);
@@ -687,7 +687,8 @@ class WiFiAnalyzer {
             
             const seconds = (performance.now() - start) / 1000;
             clearTimeout(timeout);
-            if (seconds === 0 || seconds < 0.1) return 0; // Reject unrealistically fast results
+            // Accept any positive duration - fast connections are legitimate
+            if (seconds <= 0) return 0;
             return (bytes * 8) / seconds / 1e6;
         } catch (e) {
             clearTimeout(timeout);
@@ -723,7 +724,8 @@ class WiFiAnalyzer {
             }
             const seconds = (performance.now() - start) / 1000;
             clearTimeout(timeout);
-            if (seconds === 0 || seconds < 0.1) return 0; // Reject unrealistically fast results
+            // Accept any positive duration - fast connections are legitimate
+            if (seconds <= 0) return 0;
             return (received * 8) / seconds / 1e6; // Mbps
         } catch (e) {
             clearTimeout(timeout);
