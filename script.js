@@ -670,10 +670,10 @@ class WiFiAnalyzer {
             // Fill with random data to prevent compression
             // Use crypto.getRandomValues for efficient random fill in chunks
             if (window.crypto && window.crypto.getRandomValues) {
-                // Fill in 64KB chunks for efficiency
-                const chunkSize = 65536;
-                for (let i = 0; i < bytes; i += chunkSize) {
-                    const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                // Fill in 64KB chunks for efficiency (crypto API limit is typically 65536 bytes)
+                const CRYPTO_CHUNK_SIZE = 65536;
+                for (let i = 0; i < bytes; i += CRYPTO_CHUNK_SIZE) {
+                    const chunk = data.subarray(i, i + Math.min(CRYPTO_CHUNK_SIZE, bytes - i));
                     window.crypto.getRandomValues(chunk);
                 }
             } else {
