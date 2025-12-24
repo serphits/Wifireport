@@ -860,41 +860,37 @@ body {
 /* VPN CTA Styles */
 .vpn-cta {
     margin-top: 1.5rem;
-    padding: 1.5rem;
+    padding: 1.25rem;
     background: #FEF2F2;
     border: 2px solid #FCA5A5;
     border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .vpn-warning {
     color: #991B1B;
     font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-}
-
-.vpn-buttons {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.4;
 }
 
 .vpn-button {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    padding: 0.875rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     border-radius: 8px;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.3s ease;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     border: 2px solid transparent;
-    flex: 1;
-    min-width: 180px;
-    justify-content: center;
+    max-width: 100%;
+    width: fit-content;
 }
 
 .vpn-button.expressvpn {
@@ -909,32 +905,21 @@ body {
     box-shadow: 0 4px 12px rgba(218, 48, 37, 0.3);
 }
 
-.vpn-button.nordvpn {
-    background: #4687FF;
-    color: #FFFFFF;
-    border-color: #4687FF;
-}
-
-.vpn-button.nordvpn:hover {
-    background: #2E6FE6;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(70, 135, 255, 0.3);
-}
-
 .vpn-icon {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
 }
 
 .vpn-text {
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .privacy-note {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #6B7280;
     text-align: center;
     font-weight: 500;
-    margin-top: 0.75rem;
+    margin: 0;
 }
 
 .protected-message {
@@ -1694,15 +1679,9 @@ body {
         line-height: 1.4;
     }
     
-    .vpn-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
     .vpn-button {
-        padding: 0.75rem 1.25rem;
+        padding: 0.7rem 1rem;
         font-size: 0.85rem;
-        min-width: auto;
         width: 100%;
     }
     
