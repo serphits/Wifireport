@@ -405,6 +405,9 @@ body {
     font-weight: 800;
     margin-bottom: 2rem;
     color: var(--text-primary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .scanning-progress {
@@ -441,6 +444,9 @@ body {
     color: var(--text-secondary);
     margin-bottom: 3rem;
     font-weight: 500;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .scanning-steps {
@@ -509,6 +515,10 @@ body {
 .step span {
     font-weight: 500;
     color: var(--text-secondary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    flex: 1;
+    min-width: 0;
 }
 
 .step.active span {
@@ -1458,9 +1468,17 @@ body {
     .footer-grid {
         grid-template-columns: 1fr 1fr;
     }
+    
+    .hero-title {
+        font-size: 2.75rem;
+    }
 }
 
 @media (max-width: 768px) {
+    .nav-container {
+        padding: 1rem 1.5rem;
+    }
+    
     .nav-links {
         display: none;
     }
@@ -1484,13 +1502,25 @@ body {
         display: flex;
     }
     
+    .hero {
+        padding: 3rem 1.5rem;
+    }
+    
     .hero-container {
         grid-template-columns: 1fr;
-        gap: 3rem;
+        gap: 2rem;
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        line-height: 1.2;
+        letter-spacing: -1px;
+        word-wrap: break-word;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        line-height: 1.6;
     }
     
     .hero-visual {
@@ -1507,44 +1537,272 @@ body {
         max-height: 300px;
     }
     
+    .scan-button {
+        width: 100%;
+        justify-content: center;
+        padding: 1.25rem 2rem;
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+    }
+    
+    .hero-note {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Scanning Section Mobile Fixes */
+    .scanning-section {
+        padding: 2rem 1rem;
+    }
+    
+    .scanning-container {
+        padding: 0 0.5rem;
+    }
+    
+    .scanning-title {
+        font-size: 1.5rem;
+        line-height: 1.3;
+        word-wrap: break-word;
+    }
+    
+    .scanning-status {
+        font-size: 0.9rem;
+        padding: 0 0.5rem;
+        word-wrap: break-word;
+    }
+    
+    .scanning-steps {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    .step {
+        padding: 0.75rem;
+        flex-wrap: nowrap;
+        gap: 0.75rem;
+    }
+    
+    .step span {
+        font-size: 0.85rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+    
+    .step-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+    
+    /* Results Section Mobile Fixes */
+    .results-section {
+        padding: 2rem 1rem;
+    }
+    
+    .results-title {
+        font-size: 1.75rem;
+        word-wrap: break-word;
+    }
+    
+    .results-subtitle {
+        font-size: 0.95rem;
+    }
+    
     .overall-score {
         grid-template-columns: 1fr;
         text-align: center;
         justify-items: center;
+        padding: 2rem 1.5rem;
+    }
+    
+    .score-info h3 {
+        font-size: 1.5rem;
+        word-wrap: break-word;
+    }
+    
+    .score-info p {
+        font-size: 1rem;
+        line-height: 1.6;
     }
     
     .category-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .category-card {
+        padding: 1.5rem;
+    }
+    
+    .category-header {
+        gap: 1rem;
+        flex-wrap: nowrap;
+    }
+    
+    .category-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+    }
+    
+    .category-info h3 {
+        font-size: 1.1rem;
+        word-wrap: break-word;
+    }
+    
+    .category-details {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        word-wrap: break-word;
+    }
+    
+    /* Privacy IP Display Mobile */
+    .privacy-ip-display {
+        padding: 1rem;
+    }
+    
+    .ip-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .ip-address {
+        font-size: 1rem;
+        word-break: break-all;
+        padding: 0.4rem 0.75rem;
+    }
+    
+    .exposed-badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.75rem;
+    }
+    
+    .ip-details {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+        word-wrap: break-word;
+    }
+    
+    .vpn-cta {
+        padding: 1rem;
+    }
+    
+    .vpn-warning {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    
+    .vpn-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .vpn-button {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.85rem;
+        min-width: auto;
+        width: 100%;
     }
     
     .recommendations {
-        padding: 1.5rem;
-        margin: 0 1rem 2rem;
+        padding: 1.5rem 1rem;
+        margin: 0 0 2rem;
     }
     
     .recommendations-title {
         font-size: 1.5rem;
         padding-bottom: 0.75rem;
+        word-wrap: break-word;
     }
     
     .recommendation-card {
         gap: 1rem;
         padding: 1rem;
         flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .recommendation-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .recommendation-content h4 {
+        font-size: 1rem;
+        word-wrap: break-word;
+    }
+    
+    .recommendation-content p {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+    
+    .results-actions {
+        gap: 0.75rem;
+    }
+    
+    .action-button {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9rem;
     }
     
     .footer-grid {
         grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .footer {
+        padding: 3rem 1.5rem 1.5rem;
     }
     
     .footer-bottom {
         flex-direction: column;
         text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .footer-bottom p {
+        font-size: 0.8rem;
     }
     
     .cookie-content {
         flex-direction: column;
         text-align: center;
+        padding: 0.5rem;
+    }
+    
+    .cookie-content p {
+        font-size: 0.85rem;
+    }
+    
+    .cookie-banner {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.75rem;
+    }
+    
+    .scan-button {
+        padding: 1rem 1.5rem;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-card {
+        padding: 2rem 1.5rem;
     }
 }
 
