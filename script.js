@@ -668,8 +668,19 @@ class WiFiAnalyzer {
         try {
             const data = new Uint8Array(bytes);
             // Fill with random data to prevent compression
-            for (let i = 0; i < bytes; i += 1024) {
-                data[i] = Math.floor(Math.random() * 256);
+            // Use crypto.getRandomValues for efficient random fill in chunks
+            if (window.crypto && window.crypto.getRandomValues) {
+                // Fill in 64KB chunks for efficiency
+                const chunkSize = 65536;
+                for (let i = 0; i < bytes; i += chunkSize) {
+                    const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                    window.crypto.getRandomValues(chunk);
+                }
+            } else {
+                // Fallback: fill entire array with Math.random (less efficient)
+                for (let i = 0; i < bytes; i++) {
+                    data[i] = Math.floor(Math.random() * 256);
+                }
             }
             
             const response = await fetch(url, {
