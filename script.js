@@ -445,18 +445,23 @@ class WiFiAnalyzer {
             // Test 2: Measure bandwidth with controlled downloads (Cloudflare endpoint)
             let downloadMbps = 0;
             try {
-                const runs = [5_000_000, 10_000_000]; // 5MB and 10MB
+                // Start with smaller test, then larger - gives better accuracy
+                const runs = [2_000_000, 5_000_000, 10_000_000]; // 2MB, 5MB, 10MB
                 const results = [];
                 for (let i = 0; i < runs.length; i++) {
-                    this.updateProgress(65 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
+                    this.updateProgress(65 + i * 2, `Measuring download throughput (${i + 1}/${runs.length})...`);
                     const res = await this.measureDownloadMbps(runs[i]);
-                    if (res && isFinite(res) && res > 0) results.push(res);
+                    if (res && isFinite(res) && res > 0) {
+                        results.push(res);
+                        console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps`);
+                    }
                 }
                 if (results.length) {
                     // Use median to reduce outliers
                     results.sort((a, b) => a - b);
                     const mid = Math.floor(results.length / 2);
                     downloadMbps = results.length % 2 ? results[mid] : (results[mid - 1] + results[mid]) / 2;
+                    console.log(`Final download speed: ${downloadMbps.toFixed(2)} Mbps (from ${results.length} measurements)`);
                 }
             } catch (e) {
                 console.error('Download measurement error:', e);
@@ -488,11 +493,25 @@ class WiFiAnalyzer {
 
             speed.metrics.downloadSpeed = Math.max(0, Math.round(downloadMbps * 10) / 10);
 
-            // Test 3: Measure upload speed
+            // Test 3: Measure upload speed - run multiple tests for accuracy
             let uploadMbps = 0;
             try {
-                const res = await this.measureUploadMbps(1_000_000);
-                if (res && isFinite(res) && res > 0) uploadMbps = res;
+                const uploadTests = [500_000, 1_000_000]; // 500KB, 1MB
+                const uploadResults = [];
+                for (let i = 0; i < uploadTests.length; i++) {
+                    const res = await this.measureUploadMbps(uploadTests[i]);
+                    if (res && isFinite(res) && res > 0) {
+                        uploadResults.push(res);
+                        console.log(`Upload test ${i + 1}: ${res.toFixed(2)} Mbps`);
+                    }
+                }
+                if (uploadResults.length > 0) {
+                    // Use median for better accuracy
+                    uploadResults.sort((a, b) => a - b);
+                    const mid = Math.floor(uploadResults.length / 2);
+                    uploadMbps = uploadResults.length % 2 ? uploadResults[mid] : (uploadResults[mid - 1] + uploadResults[mid]) / 2;
+                    console.log(`Final upload speed: ${uploadMbps.toFixed(2)} Mbps (from ${uploadResults.length} measurements)`);
+                }
             } catch (e) {
                 console.error('Upload measurement error:', e);
                 // ignore, fallback below
@@ -533,41 +552,62 @@ class WiFiAnalyzer {
                 }
             }
 
-            // Calculate speed score
-            let speedScore = 50; // Base score
+            // Calculate speed score with better thresholds
+            let speedScore = 30; // Lower base score for more accurate rating
             
+            // Latency scoring (max 20 points)
             if (speed.metrics.latency < this.thresholds.latency.good) {
-                speedScore += 15;
-            } else if (speed.metrics.latency < this.thresholds.latency.fair) {
-                speedScore += 12;
-            } else if (speed.metrics.latency < this.thresholds.latency.fair * 2) {
-                speedScore += 8;
-            }
-            
-            // Factor in jitter
-            if (speed.metrics.jitter < this.thresholds.jitter.good) {
-                speedScore += 5;
-            } else if (speed.metrics.jitter > this.thresholds.jitter.fair) {
-                speedScore -= 5;
-            }
-            
-            if (speed.metrics.downloadSpeed > 100) {
                 speedScore += 20;
-            } else if (speed.metrics.downloadSpeed > 50) {
+            } else if (speed.metrics.latency < this.thresholds.latency.fair) {
                 speedScore += 15;
-            } else if (speed.metrics.downloadSpeed > 25) {
+            } else if (speed.metrics.latency < this.thresholds.latency.fair * 2) {
                 speedScore += 10;
-            }
-
-            if (speed.metrics.uploadSpeed > 50) {
-                speedScore += 15;
-            } else if (speed.metrics.uploadSpeed > 20) {
-                speedScore += 10;
-            } else if (speed.metrics.uploadSpeed > 5) {
-                speedScore += 5;
+            } else {
+                speedScore += 5; // Poor latency
             }
             
-            speed.score = Math.min(100, speedScore);
+            // Jitter scoring (max 10 points)
+            if (speed.metrics.jitter < this.thresholds.jitter.good) {
+                speedScore += 10;
+            } else if (speed.metrics.jitter < this.thresholds.jitter.fair) {
+                speedScore += 5;
+            } else {
+                speedScore -= 5; // High jitter is a problem
+            }
+            
+            // Download speed scoring (max 30 points) - more realistic thresholds
+            if (speed.metrics.downloadSpeed >= 100) {
+                speedScore += 30;
+            } else if (speed.metrics.downloadSpeed >= 50) {
+                speedScore += 25;
+            } else if (speed.metrics.downloadSpeed >= 25) {
+                speedScore += 20;
+            } else if (speed.metrics.downloadSpeed >= 10) {
+                speedScore += 15;
+            } else if (speed.metrics.downloadSpeed >= 5) {
+                speedScore += 10;
+            } else if (speed.metrics.downloadSpeed >= 2) {
+                speedScore += 5;
+            }
+            // Below 2 Mbps gets 0 additional points
+
+            // Upload speed scoring (max 20 points) - more realistic thresholds
+            if (speed.metrics.uploadSpeed >= 50) {
+                speedScore += 20;
+            } else if (speed.metrics.uploadSpeed >= 20) {
+                speedScore += 15;
+            } else if (speed.metrics.uploadSpeed >= 10) {
+                speedScore += 12;
+            } else if (speed.metrics.uploadSpeed >= 5) {
+                speedScore += 10;
+            } else if (speed.metrics.uploadSpeed >= 2) {
+                speedScore += 7;
+            } else if (speed.metrics.uploadSpeed >= 1) {
+                speedScore += 4;
+            }
+            // Below 1 Mbps gets 0 additional points
+            
+            speed.score = Math.max(0, Math.min(100, speedScore));
             
             if (speed.score >= 80) {
                 speed.status = 'Excellent';
@@ -617,7 +657,7 @@ class WiFiAnalyzer {
     async measureUploadMbps(bytes) {
         const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&r=${Math.random()}`;
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
+        const timeout = setTimeout(() => controller.abort(), 12000); // Increased to 12s for slower connections
         const start = performance.now();
         
         try {
@@ -637,6 +677,7 @@ class WiFiAnalyzer {
             return (bytes * 8) / seconds / 1e6;
         } catch (e) {
             clearTimeout(timeout);
+            console.error('Upload test failed:', e.message);
             return 0;
         }
     }
@@ -644,7 +685,7 @@ class WiFiAnalyzer {
     async measureDownloadMbps(bytes) {
         const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&r=${Math.random()}`;
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
+        const timeout = setTimeout(() => controller.abort(), 15000); // Increased to 15s for slower connections
         const start = performance.now();
         try {
             const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
@@ -662,6 +703,7 @@ class WiFiAnalyzer {
             return (received * 8) / seconds / 1e6; // Mbps
         } catch (e) {
             clearTimeout(timeout);
+            console.error('Download test failed:', e.message);
             return 0;
         }
     }
@@ -798,35 +840,24 @@ class WiFiAnalyzer {
                 privacy.status = 'UNPROTECTED';
                 privacy.details = `Your real IP address (${ipInfo.ip}) is visible to all websites you visit.`;
                 privacy.isProtected = false;
-                issues.push(`🚨 Your IP address is visible: ${ipInfo.ip}`);
-                issues.push(`📍 Your location can be tracked: ${ipInfo.city}, ${ipInfo.country}`);
-                issues.push(`🏢 Your internet provider is visible: ${ipInfo.org}`);
+                // Only show the most important issue - IP visibility
+                issues.push(`Your IP address is visible to all websites`);
             }
             
-            // Check Do Not Track
-            if (navigator.doNotTrack === '1') {
-                privacyScore += 5;
-            } else {
-                issues.push('🔍 "Do Not Track" browser setting is disabled - websites can track your browsing');
-            }
-            
-            // Check third-party cookies
-            if (document.cookie.length > 0) {
-                privacyScore -= 5;
-                issues.push('🍪 Cookies are tracking your activity across websites');
-            }
-            
-            // Check WebRTC leak potential
+            // Check WebRTC leak potential - important for VPN users
             if (window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection) {
                 privacyScore -= 10;
-                issues.push('📹 WebRTC is enabled - this can reveal your real IP even when using a VPN');
+                if (!ipInfo.vpn) {
+                    issues.push('WebRTC can reveal your IP address');
+                }
             }
             
-            // Browser fingerprinting detection
+            // Browser fingerprinting detection - limit issues
             const fingerprintScore = this.checkBrowserFingerprint();
             privacyScore -= fingerprintScore.deduction;
+            // Only show top 2 fingerprinting issues to avoid overwhelming users
             if (fingerprintScore.issues.length > 0) {
-                issues.push(...fingerprintScore.issues);
+                issues.push(...fingerprintScore.issues.slice(0, 2));
             }
             
             // Check for tracking protection
@@ -856,13 +887,14 @@ class WiFiAnalyzer {
         let deduction = 0;
         
         // Check for unique identifiers that can be used for fingerprinting
+        // Simplified messages for user-friendliness
         
         // Canvas fingerprinting
         let canvas;
         try {
             canvas = document.createElement('canvas');
             if (canvas.getContext) {
-                issues.push('🎨 Your browser can be identified by canvas fingerprinting techniques');
+                issues.push('Browser fingerprinting is possible');
                 deduction += 3;
             }
         } catch (e) {
@@ -874,7 +906,7 @@ class WiFiAnalyzer {
             if (!canvas) canvas = document.createElement('canvas');
             const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
             if (gl) {
-                issues.push('🎮 Your graphics card information can be used to identify you');
+                issues.push('Graphics hardware can be tracked');
                 deduction += 3;
             }
         } catch (e) {
@@ -883,13 +915,13 @@ class WiFiAnalyzer {
         
         // Audio fingerprinting
         if (window.AudioContext || window.webkitAudioContext) {
-            issues.push('🔊 Your audio hardware can be used to track you across websites');
+            issues.push('Audio hardware can identify your device');
             deduction += 2;
         }
         
         // Font detection
         if (document.fonts && document.fonts.check) {
-            issues.push('🔤 Your installed fonts can be used to create a unique identifier');
+            issues.push('Installed fonts can be detected');
             deduction += 2;
         }
         
@@ -904,7 +936,7 @@ class WiFiAnalyzer {
         
         // Plugins and extensions can be detected
         if (navigator.plugins && navigator.plugins.length > 0) {
-            issues.push(`🔌 Your ${navigator.plugins.length} browser plugin(s) can be used to identify you`);
+            issues.push(`Browser plugins can identify you`);
             deduction += 2;
         }
         
@@ -1157,27 +1189,18 @@ class WiFiAnalyzer {
             detailsHTML += `</div>`;
             detailsHTML += `<div class="ip-details">`;
             detailsHTML += `<div><strong>Location:</strong> ${result.ipInfo.city}, ${result.ipInfo.country}</div>`;
-            detailsHTML += `<div><strong>Internet Provider:</strong> ${result.ipInfo.org}</div>`;
+            detailsHTML += `<div><strong>Provider:</strong> ${result.ipInfo.org}</div>`;
+            detailsHTML += `</div>`;
             detailsHTML += `</div>`;
             
-            // Add explanation
-            if (!result.isProtected) {
-                detailsHTML += `<div class="privacy-explanation">`;
-                detailsHTML += `<p><strong>What does this mean?</strong></p>`;
-                detailsHTML += `<p>Every website you visit can see this information. They can track your browsing habits, target ads to your location, and potentially identify you. Using a VPN encrypts your connection and hides your real IP address, making your internet activity private.</p>`;
-                detailsHTML += `</div>`;
-            }
-            detailsHTML += `</div>`;
-            
-            // Add "Fix Leak" button for unprotected connections only
+            // Simplified explanation for unprotected connections
             if (!result.isProtected) {
                 detailsHTML += `<div class="vpn-cta">`;
-                detailsHTML += `<p class="vpn-warning">⚠️ Your identity and location are being tracked by websites!</p>`;
+                detailsHTML += `<p class="vpn-warning">⚠️ Your IP is visible to all websites you visit</p>`;
                 detailsHTML += `<a href="https://www.expressvpn.com/order" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
                 detailsHTML += `<span class="vpn-icon">🛡️</span>`;
-                detailsHTML += `<span class="vpn-text">Protect Your Privacy with ExpressVPN</span>`;
+                detailsHTML += `<span class="vpn-text">Protect with VPN</span>`;
                 detailsHTML += `</a>`;
-                detailsHTML += `<p class="privacy-note">✓ 100% Client-Side Analysis • Your Privacy Matters • No Data Collected</p>`;
                 detailsHTML += `</div>`;
             } else {
                 detailsHTML += `<p class="protected-message">✅ Great! Your connection is protected and your real IP is hidden!</p>`;
@@ -1198,11 +1221,10 @@ class WiFiAnalyzer {
         
         if (result.issues && result.issues.length > 0) {
             if (category === 'privacy') {
-                detailsHTML += '<div class="issues-section"><strong>🔍 Privacy Concerns Detected:</strong>';
-                detailsHTML += '<p class="issues-intro">Here are some ways your online activity might be tracked:</p>';
+                detailsHTML += '<div class="issues-section"><strong>Privacy Concerns:</strong>';
                 detailsHTML += '<ul class="issue-list">';
             } else {
-                detailsHTML += '<div class="issues-section"><strong>⚠️ Issues Found:</strong><ul class="issue-list">';
+                detailsHTML += '<div class="issues-section"><strong>Issues Found:</strong><ul class="issue-list">';
             }
             result.issues.forEach(issue => {
                 detailsHTML += `<li>${issue}</li>`;
