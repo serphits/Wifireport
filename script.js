@@ -1205,7 +1205,24 @@ class WiFiAnalyzer {
         if (latencyEl) latencyEl.textContent = `${latency || 0} ms`;
         if (jitterEl) jitterEl.textContent = `${jitter || 0} ms`;
         
-        // Update connection info
+        // Check if Network Information API is available
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const connectionInfoSection = document.getElementById('connectionInfo');
+        
+        if (!connection) {
+            // API not available - hide the connection info section
+            if (connectionInfoSection) {
+                connectionInfoSection.style.display = 'none';
+            }
+            return;
+        }
+        
+        // API is available, show and update connection info
+        if (connectionInfoSection) {
+            connectionInfoSection.style.display = 'block';
+        }
+        
+        // Get connection data from results (populated during runConnectionTest)
         const { type = 'Unknown', effectiveType = 'Unknown', downlink = 0, rtt = 0 } = this.results.connection || {};
         const typeEl = document.getElementById('connectionType');
         const effTypeEl = document.getElementById('effectiveType');
