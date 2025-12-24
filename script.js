@@ -170,6 +170,16 @@ class WiFiAnalyzer {
         };
         this.overallScore = 0;
         this.latencyMeasurements = [];
+        
+        // Thresholds for metrics evaluation
+        this.thresholds = {
+            latency: { good: 50, fair: 100 },
+            jitter: { good: 10, fair: 30 }
+        };
+        
+        // Common screen resolutions for fingerprinting detection
+        this.commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24', '1536x864x24', '1280x720x24'];
+        
         this.init();
     }
 
@@ -506,18 +516,18 @@ class WiFiAnalyzer {
             // Calculate speed score
             let speedScore = 50; // Base score
             
-            if (speed.metrics.latency < 30) {
+            if (speed.metrics.latency < this.thresholds.latency.good) {
                 speedScore += 15;
-            } else if (speed.metrics.latency < 50) {
+            } else if (speed.metrics.latency < this.thresholds.latency.fair) {
                 speedScore += 12;
-            } else if (speed.metrics.latency < 100) {
+            } else if (speed.metrics.latency < this.thresholds.latency.fair * 2) {
                 speedScore += 8;
             }
             
             // Factor in jitter
-            if (speed.metrics.jitter < 10) {
+            if (speed.metrics.jitter < this.thresholds.jitter.good) {
                 speedScore += 5;
-            } else if (speed.metrics.jitter > 50) {
+            } else if (speed.metrics.jitter > this.thresholds.jitter.fair) {
                 speedScore -= 5;
             }
             
@@ -866,8 +876,7 @@ class WiFiAnalyzer {
         if (screen.width && screen.height && screen.colorDepth) {
             const uniqueScreen = `${screen.width}x${screen.height}x${screen.colorDepth}`;
             // Common resolutions get less deduction
-            const commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24'];
-            if (!commonResolutions.includes(uniqueScreen)) {
+            if (!this.commonResolutions.includes(uniqueScreen)) {
                 deduction += 2;
             }
         }
@@ -1292,7 +1301,7 @@ class WiFiAnalyzer {
                 });
             }
             
-            if (this.results.speed.metrics.jitter > 30) {
+            if (this.results.speed.metrics.jitter > this.thresholds.jitter.fair) {
                 recommendations.push({
                     type: 'warning',
                     icon: '📊',
