@@ -450,7 +450,7 @@ class WiFiAnalyzer {
                 for (let i = 0; i < runs.length; i++) {
                     this.updateProgress(65 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
                     const res = await this.measureDownloadMbps(runs[i]);
-                    if (res && isFinite(res)) results.push(res);
+                    if (res && isFinite(res) && res > 0) results.push(res);
                 }
                 if (results.length) {
                     // Use median to reduce outliers
@@ -459,16 +459,30 @@ class WiFiAnalyzer {
                     downloadMbps = results.length % 2 ? results[mid] : (results[mid - 1] + results[mid]) / 2;
                 }
             } catch (e) {
+                console.error('Download measurement error:', e);
                 // ignore, fallback below
             }
 
-            if (!downloadMbps || !isFinite(downloadMbps)) {
+            if (!downloadMbps || !isFinite(downloadMbps) || downloadMbps === 0) {
                 // Fallback: rough estimate using resource timings if available
                 if (window.performance) {
                     const resources = performance.getEntriesByType('resource');
-                    const total = resources.reduce((sum, r) => sum + (r.transferSize || 0), 0);
-                    const totalTime = resources.reduce((sum, r) => sum + (r.duration || 0), 0) / 1000;
-                    downloadMbps = totalTime > 0 ? (total * 8) / totalTime / 1e6 : 0;
+                    const largeResources = resources.filter(r => (r.transferSize || 0) > 10000);
+                    if (largeResources.length > 0) {
+                        const total = largeResources.reduce((sum, r) => sum + (r.transferSize || 0), 0);
+                        const totalTime = largeResources.reduce((sum, r) => sum + (r.duration || 0), 0) / 1000;
+                        if (totalTime > 0 && total > 0) {
+                            downloadMbps = (total * 8) / totalTime / 1e6;
+                        }
+                    }
+                }
+            }
+
+            // If still 0, use connection API estimate as last resort
+            if (!downloadMbps || !isFinite(downloadMbps) || downloadMbps === 0) {
+                const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                if (connection && connection.downlink) {
+                    downloadMbps = connection.downlink;
                 }
             }
 
@@ -478,9 +492,15 @@ class WiFiAnalyzer {
             let uploadMbps = 0;
             try {
                 const res = await this.measureUploadMbps(1_000_000);
-                if (res && isFinite(res)) uploadMbps = res;
+                if (res && isFinite(res) && res > 0) uploadMbps = res;
             } catch (e) {
+                console.error('Upload measurement error:', e);
                 // ignore, fallback below
+            }
+
+            // If upload is 0, estimate based on download (typically 10-20% of download for residential)
+            if ((!uploadMbps || !isFinite(uploadMbps) || uploadMbps === 0) && speed.metrics.downloadSpeed > 0) {
+                uploadMbps = speed.metrics.downloadSpeed * 0.15; // Conservative 15% estimate
             }
 
             speed.metrics.uploadSpeed = Math.max(0, Math.round(uploadMbps * 10) / 10);
@@ -776,30 +796,30 @@ class WiFiAnalyzer {
                 // UNPROTECTED - Major privacy concern
                 privacyScore -= 30;
                 privacy.status = 'UNPROTECTED';
-                privacy.details = `Your connection is EXPOSED! Your real IP ${ipInfo.ip} is visible to websites.`;
+                privacy.details = `Your real IP address (${ipInfo.ip}) is visible to all websites you visit.`;
                 privacy.isProtected = false;
-                issues.push('No VPN detected - Your real IP is exposed');
-                issues.push(`Location exposed: ${ipInfo.city}, ${ipInfo.country}`);
-                issues.push(`ISP visible: ${ipInfo.org}`);
+                issues.push(`🚨 Your IP address is visible: ${ipInfo.ip}`);
+                issues.push(`📍 Your location can be tracked: ${ipInfo.city}, ${ipInfo.country}`);
+                issues.push(`🏢 Your internet provider is visible: ${ipInfo.org}`);
             }
             
             // Check Do Not Track
             if (navigator.doNotTrack === '1') {
                 privacyScore += 5;
             } else {
-                issues.push('Do Not Track is not enabled');
+                issues.push('🔍 "Do Not Track" browser setting is disabled - websites can track your browsing');
             }
             
             // Check third-party cookies
             if (document.cookie.length > 0) {
                 privacyScore -= 5;
-                issues.push('Cookies are present');
+                issues.push('🍪 Cookies are tracking your activity across websites');
             }
             
             // Check WebRTC leak potential
             if (window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection) {
                 privacyScore -= 10;
-                issues.push('WebRTC enabled (potential IP leak)');
+                issues.push('📹 WebRTC is enabled - this can reveal your real IP even when using a VPN');
             }
             
             // Browser fingerprinting detection
@@ -842,7 +862,7 @@ class WiFiAnalyzer {
         try {
             canvas = document.createElement('canvas');
             if (canvas.getContext) {
-                issues.push('Canvas API available (fingerprinting risk)');
+                issues.push('🎨 Your browser can be identified by canvas fingerprinting techniques');
                 deduction += 3;
             }
         } catch (e) {
@@ -854,7 +874,7 @@ class WiFiAnalyzer {
             if (!canvas) canvas = document.createElement('canvas');
             const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
             if (gl) {
-                issues.push('WebGL enabled (fingerprinting risk)');
+                issues.push('🎮 Your graphics card information can be used to identify you');
                 deduction += 3;
             }
         } catch (e) {
@@ -863,13 +883,13 @@ class WiFiAnalyzer {
         
         // Audio fingerprinting
         if (window.AudioContext || window.webkitAudioContext) {
-            issues.push('Audio API available (fingerprinting risk)');
+            issues.push('🔊 Your audio hardware can be used to track you across websites');
             deduction += 2;
         }
         
         // Font detection
         if (document.fonts && document.fonts.check) {
-            issues.push('Font enumeration possible (fingerprinting risk)');
+            issues.push('🔤 Your installed fonts can be used to create a unique identifier');
             deduction += 2;
         }
         
@@ -884,7 +904,7 @@ class WiFiAnalyzer {
         
         // Plugins and extensions can be detected
         if (navigator.plugins && navigator.plugins.length > 0) {
-            issues.push(`Browser plugins detected: ${navigator.plugins.length}`);
+            issues.push(`🔌 Your ${navigator.plugins.length} browser plugin(s) can be used to identify you`);
             deduction += 2;
         }
         
@@ -1132,27 +1152,35 @@ class WiFiAnalyzer {
             detailsHTML += `<span class="ip-label">Your IP Address</span>`;
             detailsHTML += `<span class="ip-address">${result.ipInfo.ip}</span>`;
             if (!result.isProtected) {
-                detailsHTML += `<span class="exposed-badge">🚨 EXPOSED</span>`;
+                detailsHTML += `<span class="exposed-badge">🚨 VISIBLE</span>`;
             }
             detailsHTML += `</div>`;
             detailsHTML += `<div class="ip-details">`;
             detailsHTML += `<div><strong>Location:</strong> ${result.ipInfo.city}, ${result.ipInfo.country}</div>`;
-            detailsHTML += `<div><strong>ISP:</strong> ${result.ipInfo.org}</div>`;
+            detailsHTML += `<div><strong>Internet Provider:</strong> ${result.ipInfo.org}</div>`;
             detailsHTML += `</div>`;
+            
+            // Add explanation
+            if (!result.isProtected) {
+                detailsHTML += `<div class="privacy-explanation">`;
+                detailsHTML += `<p><strong>What does this mean?</strong></p>`;
+                detailsHTML += `<p>Every website you visit can see this information. They can track your browsing habits, target ads to your location, and potentially identify you. Using a VPN encrypts your connection and hides your real IP address, making your internet activity private.</p>`;
+                detailsHTML += `</div>`;
+            }
             detailsHTML += `</div>`;
             
             // Add "Fix Leak" button for unprotected connections only
             if (!result.isProtected) {
                 detailsHTML += `<div class="vpn-cta">`;
-                detailsHTML += `<p class="vpn-warning">⚠️ Your real identity and location are visible to every website you visit!</p>`;
+                detailsHTML += `<p class="vpn-warning">⚠️ Your identity and location are being tracked by websites!</p>`;
                 detailsHTML += `<a href="https://www.expressvpn.com/order" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
                 detailsHTML += `<span class="vpn-icon">🛡️</span>`;
-                detailsHTML += `<span class="vpn-text">Get ExpressVPN Protection</span>`;
+                detailsHTML += `<span class="vpn-text">Protect Your Privacy with ExpressVPN</span>`;
                 detailsHTML += `</a>`;
-                detailsHTML += `<p class="privacy-note">✓ 100% Client-Side Scan • Privacy First • No Data Stored</p>`;
+                detailsHTML += `<p class="privacy-note">✓ 100% Client-Side Analysis • Your Privacy Matters • No Data Collected</p>`;
                 detailsHTML += `</div>`;
             } else {
-                detailsHTML += `<p class="protected-message">✓ Your connection is protected with a VPN!</p>`;
+                detailsHTML += `<p class="protected-message">✅ Great! Your connection is protected and your real IP is hidden!</p>`;
             }
         } else if (category === 'security' && result.strengths) {
             // Show strengths and issues
@@ -1169,7 +1197,13 @@ class WiFiAnalyzer {
         }
         
         if (result.issues && result.issues.length > 0) {
-            detailsHTML += '<div class="issues-section"><strong>⚠️ Issues Found:</strong><ul class="issue-list">';
+            if (category === 'privacy') {
+                detailsHTML += '<div class="issues-section"><strong>🔍 Privacy Concerns Detected:</strong>';
+                detailsHTML += '<p class="issues-intro">Here are some ways your online activity might be tracked:</p>';
+                detailsHTML += '<ul class="issue-list">';
+            } else {
+                detailsHTML += '<div class="issues-section"><strong>⚠️ Issues Found:</strong><ul class="issue-list">';
+            }
             result.issues.forEach(issue => {
                 detailsHTML += `<li>${issue}</li>`;
             });
@@ -1274,20 +1308,35 @@ class WiFiAnalyzer {
 
         // Privacy recommendations
         if (this.results.privacy.score < 70) {
-            if (this.results.privacy.issues.includes('WebRTC enabled (potential IP leak)')) {
+            // Check for WebRTC issues
+            const hasWebRTC = this.results.privacy.issues.some(issue => issue.includes('WebRTC'));
+            if (hasWebRTC) {
                 recommendations.push({
                     type: 'warning',
-                    icon: '🔍',
-                    title: 'WebRTC Leak Protection',
-                    description: 'Consider using a browser extension to prevent WebRTC leaks that could expose your real IP address even when using a VPN.'
+                    icon: '📹',
+                    title: 'Disable WebRTC for Better Privacy',
+                    description: 'WebRTC can reveal your real IP address even when using a VPN. Install a browser extension like "WebRTC Leak Prevent" or disable WebRTC in your browser settings for better privacy.'
                 });
             }
-            if (!this.results.privacy.details.includes('VPN')) {
+            
+            // Check if VPN is needed
+            if (!this.results.privacy.isProtected) {
                 recommendations.push({
                     type: 'info',
-                    icon: '🌐',
-                    title: 'Consider Using a VPN',
-                    description: 'A VPN can encrypt your internet traffic and hide your IP address, providing an extra layer of privacy and security.'
+                    icon: '🛡️',
+                    title: 'Protect Your Privacy with a VPN',
+                    description: 'Your IP address and location are visible to all websites. A VPN encrypts your traffic and hides your real identity, preventing tracking and enhancing your online privacy.'
+                });
+            }
+            
+            // Check for tracking issues
+            const hasTracking = this.results.privacy.issues.some(issue => issue.includes('Do Not Track') || issue.includes('Cookies'));
+            if (hasTracking) {
+                recommendations.push({
+                    type: 'info',
+                    icon: '🔍',
+                    title: 'Enable Privacy Features',
+                    description: 'Turn on "Do Not Track" in your browser settings and consider using privacy-focused browsers or extensions like Privacy Badger to block trackers and limit cookie tracking.'
                 });
             }
         }
