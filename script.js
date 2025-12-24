@@ -409,8 +409,8 @@ class WiFiAnalyzer {
                 'https://www.github.com/favicon.ico'
             ];
             
-            // Perform multiple pings to calculate jitter
-            for (let round = 0; round < 2; round++) {
+            // Perform multiple pings to calculate jitter (increased to 3 rounds for better accuracy)
+            for (let round = 0; round < 3; round++) {
                 for (let i = 0; i < pingTargets.length; i++) {
                     try {
                         const latency = await this.measureLatency(pingTargets[i]);
@@ -418,7 +418,7 @@ class WiFiAnalyzer {
                     } catch (e) {
                         // Skip failed pings
                     }
-                    this.updateProgress(50 + Math.floor((round * 3 + i + 1) * 2.5), `Testing latency (${round * 3 + i + 1}/6)...`);
+                    this.updateProgress(50 + Math.floor((round * 3 + i + 1) * 1.5), `Testing latency (${round * 3 + i + 1}/9)...`);
                 }
             }
             
@@ -443,17 +443,18 @@ class WiFiAnalyzer {
             }
 
             // Test 2: Measure bandwidth with controlled downloads (Cloudflare endpoint)
+            // Use larger test sizes for more accurate measurements
             let downloadMbps = 0;
             try {
-                // Start with smaller test, then larger - gives better accuracy
-                const runs = [2_000_000, 5_000_000, 10_000_000]; // 2MB, 5MB, 10MB
+                // Increased sizes and more runs for better accuracy
+                const runs = [5_000_000, 10_000_000, 25_000_000]; // 5MB, 10MB, 25MB
                 const results = [];
                 for (let i = 0; i < runs.length; i++) {
-                    this.updateProgress(65 + i * 2, `Measuring download throughput (${i + 1}/${runs.length})...`);
+                    this.updateProgress(63 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
                     const res = await this.measureDownloadMbps(runs[i]);
                     if (res && isFinite(res) && res > 0) {
                         results.push(res);
-                        console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps`);
+                        console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps (${(runs[i] / 1e6).toFixed(1)}MB)`);
                     }
                 }
                 if (results.length) {
@@ -461,7 +462,7 @@ class WiFiAnalyzer {
                     results.sort((a, b) => a - b);
                     const mid = Math.floor(results.length / 2);
                     downloadMbps = results.length % 2 ? results[mid] : (results[mid - 1] + results[mid]) / 2;
-                    console.log(`Final download speed: ${downloadMbps.toFixed(2)} Mbps (from ${results.length} measurements)`);
+                    console.log(`Final download speed: ${downloadMbps.toFixed(2)} Mbps (median from ${results.length} measurements)`);
                 }
             } catch (e) {
                 console.error('Download measurement error:', e);
@@ -493,16 +494,17 @@ class WiFiAnalyzer {
 
             speed.metrics.downloadSpeed = Math.max(0, Math.round(downloadMbps * 10) / 10);
 
-            // Test 3: Measure upload speed - run multiple tests for accuracy
+            // Test 3: Measure upload speed - run multiple tests for accuracy with larger sizes
             let uploadMbps = 0;
             try {
-                const uploadTests = [500_000, 1_000_000]; // 500KB, 1MB
+                const uploadTests = [1_000_000, 2_000_000, 5_000_000]; // 1MB, 2MB, 5MB
                 const uploadResults = [];
                 for (let i = 0; i < uploadTests.length; i++) {
+                    this.updateProgress(72 + i * 2, `Measuring upload throughput (${i + 1}/${uploadTests.length})...`);
                     const res = await this.measureUploadMbps(uploadTests[i]);
                     if (res && isFinite(res) && res > 0) {
                         uploadResults.push(res);
-                        console.log(`Upload test ${i + 1}: ${res.toFixed(2)} Mbps`);
+                        console.log(`Upload test ${i + 1}: ${res.toFixed(2)} Mbps (${(uploadTests[i] / 1e6).toFixed(1)}MB)`);
                     }
                 }
                 if (uploadResults.length > 0) {
@@ -510,7 +512,7 @@ class WiFiAnalyzer {
                     uploadResults.sort((a, b) => a - b);
                     const mid = Math.floor(uploadResults.length / 2);
                     uploadMbps = uploadResults.length % 2 ? uploadResults[mid] : (uploadResults[mid - 1] + uploadResults[mid]) / 2;
-                    console.log(`Final upload speed: ${uploadMbps.toFixed(2)} Mbps (from ${uploadResults.length} measurements)`);
+                    console.log(`Final upload speed: ${uploadMbps.toFixed(2)} Mbps (median from ${uploadResults.length} measurements)`);
                 }
             } catch (e) {
                 console.error('Upload measurement error:', e);
@@ -655,17 +657,29 @@ class WiFiAnalyzer {
     }
 
     async measureUploadMbps(bytes) {
-        const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&r=${Math.random()}`;
+        // Add timestamp and random string for better cache busting
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&t=${timestamp}&r=${random}`;
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000); // Increased to 12s for slower connections
+        const timeout = setTimeout(() => controller.abort(), 20000); // Increased to 20s for larger uploads
         const start = performance.now();
         
         try {
             const data = new Uint8Array(bytes);
+            // Fill with random data to prevent compression
+            for (let i = 0; i < bytes; i += 1024) {
+                data[i] = Math.floor(Math.random() * 256);
+            }
+            
             const response = await fetch(url, {
                 method: 'POST',
                 body: data,
                 cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                },
                 signal: controller.signal
             });
             
@@ -673,7 +687,7 @@ class WiFiAnalyzer {
             
             const seconds = (performance.now() - start) / 1000;
             clearTimeout(timeout);
-            if (seconds === 0) return 0;
+            if (seconds === 0 || seconds < 0.1) return 0; // Reject unrealistically fast results
             return (bytes * 8) / seconds / 1e6;
         } catch (e) {
             clearTimeout(timeout);
@@ -683,12 +697,22 @@ class WiFiAnalyzer {
     }
 
     async measureDownloadMbps(bytes) {
-        const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&r=${Math.random()}`;
+        // Add timestamp and random string for better cache busting
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(7);
+        const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&t=${timestamp}&r=${random}`;
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000); // Increased to 15s for slower connections
+        const timeout = setTimeout(() => controller.abort(), 30000); // Increased to 30s for larger downloads
         const start = performance.now();
         try {
-            const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+            const response = await fetch(url, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                },
+                signal: controller.signal
+            });
             if (!response.ok || !response.body) throw new Error('Download failed');
             const reader = response.body.getReader();
             let received = 0;
@@ -699,7 +723,7 @@ class WiFiAnalyzer {
             }
             const seconds = (performance.now() - start) / 1000;
             clearTimeout(timeout);
-            if (seconds === 0) return 0;
+            if (seconds === 0 || seconds < 0.1) return 0; // Reject unrealistically fast results
             return (received * 8) / seconds / 1e6; // Mbps
         } catch (e) {
             clearTimeout(timeout);
@@ -722,8 +746,10 @@ class WiFiAnalyzer {
                 resolve(end - start); // Still measure even on error
             };
             
-            // Add cache buster
-            img.src = url + '?t=' + Date.now();
+            // Add cache buster with timestamp and random string
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(7);
+            img.src = url + `?t=${timestamp}&r=${random}`;
             
             // Timeout after 5 seconds
             setTimeout(() => reject(new Error('Timeout')), 5000);
@@ -744,15 +770,42 @@ class WiFiAnalyzer {
             
             let stabilityScore = 70; // Base score
             
+            // Use latency measurements from speed test for jitter/stability analysis
+            if (this.latencyMeasurements && this.latencyMeasurements.length > 1) {
+                const latencies = this.latencyMeasurements;
+                const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+                
+                // Calculate variance for stability metric
+                const squaredDiffs = latencies.map(lat => Math.pow(lat - avgLatency, 2));
+                const variance = squaredDiffs.reduce((a, b) => a + b, 0) / latencies.length;
+                const stdDev = Math.sqrt(variance);
+                
+                stability.metrics.latencyVariance = Math.round(stdDev * 10) / 10;
+                stability.metrics.avgLatency = Math.round(avgLatency);
+                stability.metrics.minLatency = Math.round(Math.min(...latencies));
+                stability.metrics.maxLatency = Math.round(Math.max(...latencies));
+                
+                // Score based on latency variance (lower variance = more stable)
+                if (stdDev < 5) {
+                    stabilityScore += 15; // Very stable
+                } else if (stdDev < 15) {
+                    stabilityScore += 10; // Stable
+                } else if (stdDev < 30) {
+                    stabilityScore += 5; // Moderately stable
+                } else {
+                    stabilityScore -= 10; // Unstable
+                }
+            }
+            
             if (connection) {
-                // Check RTT (Round Trip Time)
-                if (connection.rtt !== undefined) {
+                // Check RTT (Round Trip Time) from Network Info API
+                if (connection.rtt !== undefined && connection.rtt > 0) {
                     stability.metrics.rtt = connection.rtt;
                     
                     if (connection.rtt < 50) {
-                        stabilityScore += 20;
-                    } else if (connection.rtt < 100) {
                         stabilityScore += 15;
+                    } else if (connection.rtt < 100) {
+                        stabilityScore += 10;
                     } else if (connection.rtt < 200) {
                         stabilityScore += 5;
                     } else {
@@ -761,7 +814,7 @@ class WiFiAnalyzer {
                 }
                 
                 // Check downlink speed
-                if (connection.downlink !== undefined) {
+                if (connection.downlink !== undefined && connection.downlink > 0) {
                     stability.metrics.downlink = connection.downlink;
                     
                     if (connection.downlink > 10) {
@@ -774,6 +827,7 @@ class WiFiAnalyzer {
                 // Check save-data mode
                 if (connection.saveData) {
                     stabilityScore -= 5;
+                    stability.metrics.saveDataMode = 'Enabled';
                 }
             }
             
@@ -785,18 +839,33 @@ class WiFiAnalyzer {
             
             stability.score = Math.max(0, Math.min(100, stabilityScore));
             
+            // Generate detailed status message
+            let detailsParts = [];
+            
+            if (stability.metrics.latencyVariance !== undefined) {
+                if (stability.metrics.latencyVariance < 5) {
+                    detailsParts.push('very consistent latency');
+                } else if (stability.metrics.latencyVariance < 15) {
+                    detailsParts.push('stable latency');
+                } else if (stability.metrics.latencyVariance < 30) {
+                    detailsParts.push('moderate latency variation');
+                } else {
+                    detailsParts.push('high latency variation');
+                }
+            }
+            
             if (stability.score >= 80) {
                 stability.status = 'Excellent';
-                stability.details = 'Your connection is very stable with consistent performance.';
+                stability.details = 'Your connection is very stable with ' + (detailsParts.length > 0 ? detailsParts.join(', ') : 'consistent performance') + '.';
             } else if (stability.score >= 60) {
                 stability.status = 'Good';
-                stability.details = 'Your connection is stable with minor fluctuations.';
+                stability.details = 'Your connection is stable with ' + (detailsParts.length > 0 ? detailsParts.join(', ') : 'minor fluctuations') + '.';
             } else if (stability.score >= 40) {
                 stability.status = 'Fair';
-                stability.details = 'Your connection shows some instability.';
+                stability.details = 'Your connection shows some instability' + (detailsParts.length > 0 ? ' with ' + detailsParts.join(', ') : '') + '.';
             } else {
                 stability.status = 'Poor';
-                stability.details = 'Your connection is unstable with frequent disruptions.';
+                stability.details = 'Your connection is unstable' + (detailsParts.length > 0 ? ' with ' + detailsParts.join(', ') : ' with frequent disruptions') + '.';
             }
 
         } catch (error) {
@@ -1234,15 +1303,34 @@ class WiFiAnalyzer {
         
         if (result.metrics && category !== 'privacy') {
             detailsHTML += '<div class="metrics-section"><strong>📊 Measurements:</strong><ul>';
-            for (const [key, value] of Object.entries(result.metrics)) {
-                if (value !== undefined && value !== 'N/A' && value !== 0) {
-                    const label = key.replace(/([A-Z])/g, ' $1').trim();
-                    const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
-                    let unit = '';
-                    if (key.includes('Speed') || key.includes('downlink')) unit = ' Mbps';
-                    else if (key.includes('latency') || key.includes('rtt') || key.includes('jitter')) unit = ' ms';
-                    detailsHTML += `<li>${capitalizedLabel}: ${value}${unit}</li>`;
+            const metricEntries = Object.entries(result.metrics);
+            if (metricEntries.length > 0) {
+                let hasVisibleMetrics = false;
+                for (const [key, value] of metricEntries) {
+                    if (value !== undefined && value !== 'N/A') {
+                        hasVisibleMetrics = true;
+                        const label = key.replace(/([A-Z])/g, ' $1').trim();
+                        const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
+                        let unit = '';
+                        let displayValue = value;
+                        
+                        if (key.includes('Speed') || key.includes('downlink')) unit = ' Mbps';
+                        else if (key.includes('latency') || key.includes('rtt') || key.includes('jitter')) unit = ' ms';
+                        
+                        // Handle 0 values - show them but indicate if not available
+                        if (value === 0 && category === 'stability') {
+                            displayValue = 'Not Available';
+                            unit = '';
+                        }
+                        
+                        detailsHTML += `<li>${capitalizedLabel}: ${displayValue}${unit}</li>`;
+                    }
                 }
+                if (!hasVisibleMetrics) {
+                    detailsHTML += '<li><em>No measurements available from Network Information API</em></li>';
+                }
+            } else {
+                detailsHTML += '<li><em>No measurements available</em></li>';
             }
             detailsHTML += '</ul></div>';
         }
