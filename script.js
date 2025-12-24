@@ -959,6 +959,64 @@ class WiFiAnalyzer {
 
         // Update metric cards
         this.updateSpeedMetrics();
+        
+        // Add connection comparison insights
+        this.addConnectionComparison();
+    }
+    
+    addConnectionComparison() {
+        const effectiveType = this.results.connection.effectiveType?.toLowerCase() || 'unknown';
+        const downloadSpeed = this.results.speed.metrics.downloadSpeed || 0;
+        const latency = this.results.speed.metrics.latency || 0;
+        
+        // Define typical ranges for each connection type
+        const typicalRanges = {
+            'slow-2g': { download: [0.1, 1], latency: [1500, 3000], label: 'Slow 2G' },
+            '2g': { download: [1, 3], latency: [300, 1000], label: '2G' },
+            '3g': { download: [3, 15], latency: [100, 300], label: '3G' },
+            '4g': { download: [15, 100], latency: [30, 100], label: '4G' },
+            '5g': { download: [100, 1000], latency: [10, 30], label: '5G' }
+        };
+        
+        if (typicalRanges[effectiveType]) {
+            const range = typicalRanges[effectiveType];
+            const connectionInfo = document.getElementById('connectionInfo');
+            
+            if (connectionInfo) {
+                let comparisonHTML = '<div class="connection-comparison">';
+                comparisonHTML += `<h4>📈 Comparison with Typical ${range.label} Performance</h4>`;
+                comparisonHTML += '<div class="comparison-grid">';
+                
+                // Download comparison
+                const downloadStatus = downloadSpeed >= range.download[0] && downloadSpeed <= range.download[1] * 1.5
+                    ? 'typical' 
+                    : downloadSpeed > range.download[1] * 1.5 
+                        ? 'better' 
+                        : 'worse';
+                comparisonHTML += `<div class="comparison-item ${downloadStatus}">`;
+                comparisonHTML += `<span class="comparison-label">Download Speed</span>`;
+                comparisonHTML += `<span class="comparison-value">Your: ${downloadSpeed} Mbps</span>`;
+                comparisonHTML += `<span class="comparison-typical">Typical: ${range.download[0]}-${range.download[1]} Mbps</span>`;
+                comparisonHTML += `<span class="comparison-indicator">${downloadStatus === 'better' ? '✓ Above Average' : downloadStatus === 'typical' ? '• Average' : '⚠ Below Average'}</span>`;
+                comparisonHTML += '</div>';
+                
+                // Latency comparison
+                const latencyStatus = latency <= range.latency[1]
+                    ? 'better'
+                    : latency <= range.latency[1] * 1.5
+                        ? 'typical'
+                        : 'worse';
+                comparisonHTML += `<div class="comparison-item ${latencyStatus}">`;
+                comparisonHTML += `<span class="comparison-label">Latency</span>`;
+                comparisonHTML += `<span class="comparison-value">Your: ${latency} ms</span>`;
+                comparisonHTML += `<span class="comparison-typical">Typical: ${range.latency[0]}-${range.latency[1]} ms</span>`;
+                comparisonHTML += `<span class="comparison-indicator">${latencyStatus === 'better' ? '✓ Better than Average' : latencyStatus === 'typical' ? '• Average' : '⚠ Worse than Average'}</span>`;
+                comparisonHTML += '</div>';
+                
+                comparisonHTML += '</div></div>';
+                connectionInfo.insertAdjacentHTML('beforeend', comparisonHTML);
+            }
+        }
     }
 
     animateScore(targetScore) {

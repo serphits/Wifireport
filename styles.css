@@ -1126,6 +1126,133 @@ body {
     color: #dc2626;
 }
 
+.connection-comparison {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #E0E0E0;
+}
+
+.connection-comparison h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-family: 'Space Mono', monospace;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.comparison-item {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: #F9FAFB;
+    border-radius: 0;
+    border: 2px solid #E0E0E0;
+    gap: 0.5rem;
+}
+
+.comparison-item.better {
+    background: #F0FDF4;
+    border-color: #059669;
+}
+
+.comparison-item.typical {
+    background: #FFFBEB;
+    border-color: #d97706;
+}
+
+.comparison-item.worse {
+    background: #FEF2F2;
+    border-color: #dc2626;
+}
+
+.comparison-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Space Mono', monospace;
+}
+
+.comparison-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Space Mono', monospace;
+}
+
+.comparison-typical {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-family: 'Space Mono', monospace;
+}
+
+.comparison-indicator {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+.comparison-item.better .comparison-indicator {
+    color: #059669;
+}
+
+.comparison-item.typical .comparison-indicator {
+    color: #d97706;
+}
+
+.comparison-item.worse .comparison-indicator {
+    color: #dc2626;
+}
+
+.metrics-help {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #E0E0E0;
+}
+
+.metrics-help h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-family: 'Space Mono', monospace;
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.help-item {
+    padding: 1rem;
+    background: #F9FAFB;
+    border-radius: 0;
+    border: 2px solid #E0E0E0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.help-item strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+}
+
+@media (max-width: 768px) {
+    .help-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .speed-metrics {
     background: white;
     border-radius: 0;
@@ -1218,6 +1345,10 @@ body {
     }
     
     .connection-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .comparison-grid {
         grid-template-columns: 1fr;
     }
 
