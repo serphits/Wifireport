@@ -761,12 +761,15 @@ class WiFiAnalyzer {
                     signal: controller.signal
                 });
                 
-                // Upload is complete when we receive response headers
-                const uploadCompleteTime = performance.now();
-                
                 if (!response.ok) {
                     throw new Error(`Upload failed with status ${response.status}`);
                 }
+                
+                // Consume the response body to ensure upload is truly complete
+                await response.text();
+                
+                // Upload is complete when response is fully received
+                const uploadCompleteTime = performance.now();
                 
                 const seconds = (uploadCompleteTime - start) / 1000;
                 clearTimeout(timeout);
@@ -801,12 +804,19 @@ class WiFiAnalyzer {
                 provider: 'Cloudflare',
                 useParams: true 
             },
-            // Fallback: Use actual file downloads from CDNs (less ideal but works)
+            // Fallback 1: Use larger CDN file
             {
-                url: 'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js',
-                provider: 'jsDelivr CDN',
+                url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
+                provider: 'jsDelivr CDN (Bootstrap)',
                 useParams: false,
-                fixedSize: 89000 // Approximate size in bytes
+                fixedSize: 216000 // ~216KB
+            },
+            // Fallback 2: Another large file
+            {
+                url: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js',
+                provider: 'cdnjs (jQuery)',
+                useParams: false,
+                fixedSize: 89000 // ~89KB
             }
         ];
         
