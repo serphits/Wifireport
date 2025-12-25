@@ -955,7 +955,7 @@ class WiFiAnalyzer {
         // Uses public CDN files and APIs for accurate measurements
         
         const endpoints = [
-            // Primary: Use GitHub's reliable CDN for test files (CORS-friendly)
+            // Primary: Use GitHub's reliable CDN for test files (CORS-friendly, very reliable)
             {
                 url: 'https://raw.githubusercontent.com/inventer-dev/speed-test-files/main',
                 provider: 'GitHub CDN',
@@ -971,20 +971,46 @@ class WiFiAnalyzer {
                     25000000: '/20MB.bin'     // 25MB (use 20MB as closest)
                 }
             },
-            // Fallback 1: httpbin.org (reliable, supports CORS, any size)
+            // Fallback 1: jsDelivr CDN (very fast, globally distributed, CORS-enabled)
+            {
+                url: 'https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist',
+                provider: 'jsDelivr CDN',
+                useParams: false,
+                fixedSize: 88000, // jquery.min.js is ~88KB
+                concurrent: false,
+                sizeMap: {
+                    512000: '/jquery.min.js',  // Repeat file multiple times for larger tests
+                    1000000: '/jquery.min.js',
+                    2000000: '/jquery.min.js',
+                    5000000: '/jquery.min.js',
+                    10000000: '/jquery.min.js',
+                    20000000: '/jquery.min.js',
+                    25000000: '/jquery.min.js'
+                }
+            },
+            // Fallback 2: httpbin.org (reliable when available, supports CORS, any size)
             {
                 url: 'https://httpbin.org/bytes',
                 provider: 'httpbin.org',
                 useParams: true,
                 concurrent: false
             },
-            // Fallback 2: Use another GitHub test file repository
+            // Fallback 3: Use cdnjs (Cloudflare's CDN, very reliable)
             {
-                url: 'https://raw.githubusercontent.com/librespeed/speedtest-cli/master/test-data',
-                provider: 'LibreSpeed GitHub',
+                url: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21',
+                provider: 'cdnjs.com',
                 useParams: false,
-                fixedSize: bytes,
-                concurrent: false
+                fixedSize: 72000, // lodash.min.js is ~72KB
+                concurrent: false,
+                sizeMap: {
+                    512000: '/lodash.min.js',
+                    1000000: '/lodash.min.js',
+                    2000000: '/lodash.min.js',
+                    5000000: '/lodash.min.js',
+                    10000000: '/lodash.min.js',
+                    20000000: '/lodash.min.js',
+                    25000000: '/lodash.min.js'
+                }
             }
         ];
         
