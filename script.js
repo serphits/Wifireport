@@ -189,6 +189,7 @@ class WiFiAnalyzer {
         // Speed test constants
         this.speedTestConstants = {
             MIN_MEASUREMENT_TIME: 0.1, // Minimum time in seconds for valid measurement
+            MIN_MEASUREMENT_BUFFER: 0.05, // Buffer added to minimum time for warnings
             CONSISTENCY_VARIANCE_THRESHOLD: 0.15, // 15% variance threshold for early stopping
             MAX_OVERHEAD_PERCENTAGE: 0.3, // Cap connection overhead at 30% of total time
             JITTER_STDDEV_WEIGHT: 0.7, // Weight for standard deviation in jitter calculation
@@ -221,6 +222,12 @@ class WiFiAnalyzer {
             }
         }
         return data;
+    }
+
+    calculateMbps(bytes, seconds) {
+        // Helper method to calculate Mbps from bytes and time
+        // Formula: (bytes * 8 bits/byte) / seconds / 1,000,000 bits/Mbps
+        return (bytes * 8) / seconds / 1e6;
     }
 
     init() {
@@ -794,6 +801,12 @@ class WiFiAnalyzer {
         // Use pre-generated data (sliced to requested size) to avoid timing overhead
         const data = this.uploadTestData.slice(0, bytes);
         
+        // Validate upload data
+        if (!data || data.length === 0) {
+            console.error('Upload test failed: invalid or empty upload data');
+            return 0;
+        }
+        
         // Try multiple endpoints for better reliability
         const endpoints = [
             // Cloudflare's speed test endpoint (best option)
@@ -867,12 +880,13 @@ class WiFiAnalyzer {
                 const seconds = uploadTime;
                 
                 // Ensure reasonable timing using constant
-                if (seconds < this.speedTestConstants.MIN_MEASUREMENT_TIME + 0.05) {
+                const minTimeThreshold = this.speedTestConstants.MIN_MEASUREMENT_TIME + this.speedTestConstants.MIN_MEASUREMENT_BUFFER;
+                if (seconds < minTimeThreshold) {
                     console.warn(`Upload test too fast (${seconds.toFixed(3)}s), response download: ${responseDownloadTime.toFixed(3)}s`);
                     // Still calculate, but note it may be less accurate
                 }
                 
-                const mbps = (bytes * 8) / Math.max(seconds, this.speedTestConstants.MIN_MEASUREMENT_TIME) / 1e6;
+                const mbps = this.calculateMbps(bytes, Math.max(seconds, this.speedTestConstants.MIN_MEASUREMENT_TIME));
                 console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, response: ${responseDownloadTime.toFixed(2)}s)`);
                 
                 // Sanity check: upload speed should be between 0.1 Mbps and 10 Gbps
@@ -984,14 +998,21 @@ class WiFiAnalyzer {
                 // Use actual bytes received, fallback to content-length if available
                 const actualBytes = received > 0 ? received : contentLength;
                 
+                // Validate that we have actual data
+                if (actualBytes <= 0) {
+                    console.error(`Download test failed (${endpoint.provider}): no data received (received: ${received}, content-length: ${contentLength})`);
+                    continue; // Try next endpoint
+                }
+                
                 // For very fast connections, ensure minimum measurement time using constant
-                if (dataTransferTime < this.speedTestConstants.MIN_MEASUREMENT_TIME + 0.05) {
+                const minTimeThreshold = this.speedTestConstants.MIN_MEASUREMENT_TIME + this.speedTestConstants.MIN_MEASUREMENT_BUFFER;
+                if (dataTransferTime < minTimeThreshold) {
                     console.warn(`Download test too fast (${dataTransferTime.toFixed(3)}s data transfer), connection overhead: ${connectionOverhead.toFixed(3)}s`);
                     // Still calculate, but note it may be less accurate
                 }
                 
                 // Calculate speed in Mbps using data transfer time with minimum floor
-                const mbps = (actualBytes * 8) / Math.max(dataTransferTime, this.speedTestConstants.MIN_MEASUREMENT_TIME) / 1e6;
+                const mbps = this.calculateMbps(actualBytes, Math.max(dataTransferTime, this.speedTestConstants.MIN_MEASUREMENT_TIME));
                 console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${dataTransferTime.toFixed(2)}s, overhead: ${connectionOverhead.toFixed(2)}s)`);
                 
                 // Sanity check: download speed should be between 0.1 Mbps and 10 Gbps
