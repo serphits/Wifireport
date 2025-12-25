@@ -190,13 +190,15 @@ class WiFiAnalyzer {
         
         // Speed test constants
         this.speedTestConstants = {
-            MIN_MEASUREMENT_TIME: 0.1, // Minimum time in seconds for valid measurement
-            MIN_MEASUREMENT_BUFFER: 0.05, // Buffer added to minimum time for warnings
+            MIN_MEASUREMENT_TIME: 3.0, // Minimum time in seconds for valid measurement (increased for accuracy)
+            MIN_MEASUREMENT_BUFFER: 0.5, // Buffer added to minimum time for warnings
+            TARGET_TEST_DURATION: 5.0, // Target duration for each speed test in seconds
             CONSISTENCY_VARIANCE_THRESHOLD: 0.15, // 15% variance threshold for early stopping
             MAX_OVERHEAD_PERCENTAGE: 0.3, // Cap connection overhead at 30% of total time
             JITTER_STDDEV_WEIGHT: 0.7, // Weight for standard deviation in jitter calculation
             HIGH_SPEED_DOWNLOAD_THRESHOLD: 200, // Mbps threshold to trigger larger downloads
-            HIGH_SPEED_UPLOAD_THRESHOLD: 100 // Mbps threshold to trigger larger uploads
+            HIGH_SPEED_UPLOAD_THRESHOLD: 100, // Mbps threshold to trigger larger uploads
+            MAX_TEST_TIMEOUT: 60000 // Maximum timeout for a single test (60 seconds)
         };
         
         // Common screen resolutions for fingerprinting detection
@@ -209,8 +211,8 @@ class WiFiAnalyzer {
     }
     
     generateTestData() {
-        // Pre-generate 10MB of test data once
-        const maxSize = 10_000_000;
+        // Pre-generate 100MB of test data once to support large upload tests
+        const maxSize = 100_000_000; // Increased from 10MB to 100MB for larger uploads
         const data = new Uint8Array(maxSize);
         if (window.crypto && window.crypto.getRandomValues) {
             const chunkSize = 65536;
@@ -519,62 +521,53 @@ class WiFiAnalyzer {
             if (shouldWarmup) {
                 this.updateProgress(62, 'Warming up connection...');
                 try {
-                    await this.measureDownloadMbps(100_000); // 100KB warmup
-                    await this.measureUploadMbps(100_000);   // 100KB warmup
+                    await this.measureDownloadMbps(5_000_000); // 5MB warmup (increased from 100KB)
+                    await this.measureUploadMbps(1_000_000);   // 1MB warmup (increased from 100KB)
                 } catch (e) {
                     console.log('Warmup test error (non-critical):', e.message);
                 }
             }
 
             // Test 2: Measure bandwidth with controlled downloads
-            // Use adaptive test sizes based on estimated connection speed
+            // Use much larger test sizes and ensure minimum test duration for accuracy
             let downloadMbps = 0;
             try {
-                // Adaptive sizing: use larger files for more accurate measurements
+                // Use significantly larger files to ensure tests take enough time for accurate measurements
+                // Each test should ideally take 3-5 seconds to complete
                 let runs;
                 if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-                    runs = [500_000, 1_000_000]; // 0.5MB, 1MB for slow connections
+                    // For slow connections: 2MB, 5MB, 10MB (will take 5+ seconds on slow 2G)
+                    runs = [2_000_000, 5_000_000, 10_000_000];
                 } else if (effectiveType === '3g') {
-                    runs = [2_000_000, 5_000_000]; // 2MB, 5MB for 3G
+                    // For 3G: 10MB, 25MB, 50MB (will take 3-5 seconds on typical 3G)
+                    runs = [10_000_000, 25_000_000, 50_000_000];
                 } else {
-                    // For fast connections, use larger test sizes for better accuracy
-                    // May add 100MB if >200 Mbps detected on first test
-                    runs = [10_000_000, 25_000_000, 50_000_000]; // 10MB, 25MB, 50MB
+                    // For fast connections: 50MB, 100MB, 200MB (will take 3-5 seconds on 100+ Mbps)
+                    // This ensures we measure sustained throughput, not just burst speed
+                    runs = [50_000_000, 100_000_000, 200_000_000];
                 }
                 
                 const results = [];
                 for (let i = 0; i < runs.length; i++) {
-                    this.updateProgress(64 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
+                    this.updateProgress(64 + i * 4, `Measuring download throughput (${i + 1}/${runs.length})...`);
                     const res = await this.measureDownloadMbps(runs[i]);
                     if (res && isFinite(res) && res > 0) {
                         results.push(res);
                         console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps (${(runs[i] / 1e6).toFixed(1)}MB)`);
                         
-                        // Adaptive optimization: if first test shows very high speed (>200 Mbps),
-                        // skip to even larger test sizes for better accuracy
-                        if (i === 0 && res > this.speedTestConstants.HIGH_SPEED_DOWNLOAD_THRESHOLD && runs.length < 4) {
-                            console.log(`High-speed connection detected (${res.toFixed(0)} Mbps), adding 100MB test`);
-                            runs.push(100_000_000); // Add 100MB test for very fast connections
+                        // Adaptive optimization: if first test shows extremely high speed (>500 Mbps),
+                        // add even larger test for better accuracy
+                        if (i === 0 && res > 500 && runs.length < 4) {
+                            console.log(`Very high-speed connection detected (${res.toFixed(0)} Mbps), adding 500MB test`);
+                            runs.push(500_000_000); // Add 500MB test for gigabit+ connections
                         }
                     }
                     
-                    // Progressive measurement: if tests are consistent, we can stop early
-                    if (i >= 1 && results.length >= 2) {
-                        const prevResult = results[results.length - 2];
-                        const currResult = results[results.length - 1];
-                        // Avoid division by zero
-                        if (prevResult > 0) {
-                            const variance = Math.abs(currResult - prevResult) / prevResult;
-                            if (variance < this.speedTestConstants.CONSISTENCY_VARIANCE_THRESHOLD) {
-                                // Results are consistent (within threshold), we can stop
-                                console.log(`Download tests consistent (variance: ${(variance * 100).toFixed(1)}%), stopping early`);
-                                break;
-                            }
-                        }
-                    }
+                    // Note: Removed early stopping to ensure all tests complete for better accuracy
+                    // Always run all planned tests for reliable median calculation
                 }
                 if (results.length) {
-                    // Use median to reduce outliers, or average if consistent
+                    // Use median to reduce outliers - with more tests this is more reliable
                     results.sort((a, b) => a - b);
                     const mid = Math.floor(results.length / 2);
                     downloadMbps = results.length % 2 ? results[mid] : (results[mid - 1] + results[mid]) / 2;
@@ -610,53 +603,45 @@ class WiFiAnalyzer {
 
             speed.metrics.downloadSpeed = Math.max(0, Math.round(downloadMbps * 10) / 10);
 
-            // Test 3: Measure upload speed - adaptive sizing based on connection type
+            // Test 3: Measure upload speed - adaptive sizing with much larger tests
             let uploadMbps = 0;
             try {
-                // Adaptive sizing for uploads - larger sizes for more accurate measurements
+                // Use significantly larger upload sizes to ensure tests take enough time
+                // Each test should ideally take 3-5 seconds to complete
                 let uploadTests;
                 if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-                    uploadTests = [250_000, 500_000]; // 250KB, 500KB for slow connections
+                    // For slow connections: 1MB, 2MB, 5MB (will take 5+ seconds on slow 2G)
+                    uploadTests = [1_000_000, 2_000_000, 5_000_000];
                 } else if (effectiveType === '3g') {
-                    uploadTests = [500_000, 1_000_000]; // 500KB, 1MB for 3G
+                    // For 3G: 5MB, 10MB, 20MB (will take 3-5 seconds on typical 3G)
+                    uploadTests = [5_000_000, 10_000_000, 20_000_000];
                 } else {
-                    // For fast connections, use larger test sizes
-                    // May add 25MB if >100 Mbps detected on first test
-                    uploadTests = [2_000_000, 5_000_000, 10_000_000]; // 2MB, 5MB, 10MB
+                    // For fast connections: 20MB, 50MB, 100MB (will take 3-5 seconds on 50+ Mbps)
+                    // This ensures we measure sustained upload throughput
+                    uploadTests = [20_000_000, 50_000_000, 100_000_000];
                 }
                 
                 const uploadResults = [];
                 for (let i = 0; i < uploadTests.length; i++) {
-                    this.updateProgress(72 + i * 3, `Measuring upload throughput (${i + 1}/${uploadTests.length})...`);
+                    this.updateProgress(76 + i * 4, `Measuring upload throughput (${i + 1}/${uploadTests.length})...`);
                     const res = await this.measureUploadMbps(uploadTests[i]);
                     if (res && isFinite(res) && res > 0) {
                         uploadResults.push(res);
                         console.log(`Upload test ${i + 1}: ${res.toFixed(2)} Mbps (${(uploadTests[i] / 1e6).toFixed(1)}MB)`);
                         
-                        // Adaptive optimization: if first test shows very high upload speed (>100 Mbps),
+                        // Adaptive optimization: if first test shows extremely high upload speed (>200 Mbps),
                         // add larger test for better accuracy
-                        if (i === 0 && res > this.speedTestConstants.HIGH_SPEED_UPLOAD_THRESHOLD && uploadTests.length < 4) {
-                            console.log(`High-speed upload detected (${res.toFixed(0)} Mbps), adding 25MB test`);
-                            uploadTests.push(25_000_000); // Add 25MB test for very fast uploads
+                        if (i === 0 && res > 200 && uploadTests.length < 4) {
+                            console.log(`Very high-speed upload detected (${res.toFixed(0)} Mbps), adding 200MB test`);
+                            uploadTests.push(200_000_000); // Add 200MB test for very fast uploads
                         }
                     }
                     
-                    // Progressive measurement: stop early if results are consistent
-                    if (i >= 1 && uploadResults.length >= 2) {
-                        const prevResult = uploadResults[uploadResults.length - 2];
-                        const currResult = uploadResults[uploadResults.length - 1];
-                        // Avoid division by zero
-                        if (prevResult > 0) {
-                            const variance = Math.abs(currResult - prevResult) / prevResult;
-                            if (variance < this.speedTestConstants.CONSISTENCY_VARIANCE_THRESHOLD) {
-                                console.log(`Upload tests consistent (variance: ${(variance * 100).toFixed(1)}%), stopping early`);
-                                break;
-                            }
-                        }
-                    }
+                    // Note: Removed early stopping to ensure all tests complete for better accuracy
+                    // Always run all planned tests for reliable median calculation
                 }
                 if (uploadResults.length > 0) {
-                    // Use median for better accuracy
+                    // Use median for better accuracy - with more tests this is more reliable
                     uploadResults.sort((a, b) => a - b);
                     const mid = Math.floor(uploadResults.length / 2);
                     uploadMbps = uploadResults.length % 2 ? uploadResults[mid] : (uploadResults[mid - 1] + uploadResults[mid]) / 2;
@@ -801,12 +786,31 @@ class WiFiAnalyzer {
         }
 
         this.updateStep('speed', 'completed');
-        this.updateProgress(70, 'Speed test complete');
+        this.updateProgress(88, 'Speed test complete');
     }
 
     async measureUploadMbps(bytes) {
-        // Use pre-generated data (sliced to requested size) to avoid timing overhead
-        const data = this.uploadTestData.slice(0, bytes);
+        // Generate or reuse test data based on size needed
+        let data;
+        if (bytes <= this.uploadTestData.length) {
+            // Use pre-generated data (sliced to requested size) to avoid timing overhead
+            data = this.uploadTestData.slice(0, bytes);
+        } else {
+            // For very large uploads (>100MB), generate on-demand
+            console.log(`Generating ${(bytes / 1e6).toFixed(1)}MB of test data for large upload...`);
+            data = new Uint8Array(bytes);
+            if (window.crypto && window.crypto.getRandomValues) {
+                const chunkSize = 65536;
+                for (let i = 0; i < bytes; i += chunkSize) {
+                    const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                    window.crypto.getRandomValues(chunk);
+                }
+            } else {
+                for (let i = 0; i < bytes; i++) {
+                    data[i] = Math.floor(Math.random() * 256);
+                }
+            }
+        }
         
         // Validate upload data
         if (!data || data.length === 0) {
@@ -839,7 +843,7 @@ class WiFiAnalyzer {
                     : `${endpoint.url}?_=${timestamp}&r=${random}`;
                 
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 30000);
+                const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
                 
                 // Use Resource Timing API marker for better accuracy
                 const resourceTimingMark = `upload-test-${timestamp}`;
@@ -941,7 +945,7 @@ class WiFiAnalyzer {
                     : `${endpoint.url}?_=${timestamp}&r=${random}`;
                 
                 const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), 30000);
+                const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
                 
                 // Use Resource Timing API for more accurate measurement
                 const resourceTimingMark = `download-test-${timestamp}`;
@@ -1107,7 +1111,7 @@ class WiFiAnalyzer {
     }
 
     async runStabilityTest() {
-        this.updateProgress(75, 'Measuring connection stability...');
+        this.updateProgress(89, 'Measuring connection stability...');
         this.updateStep('stability', 'active');
         
         await this.delay(2000);
@@ -1226,11 +1230,11 @@ class WiFiAnalyzer {
         }
 
         this.updateStep('stability', 'completed');
-        this.updateProgress(85, 'Stability test complete');
+        this.updateProgress(93, 'Stability test complete');
     }
 
     async runPrivacyTest() {
-        this.updateProgress(90, 'Evaluating privacy concerns...');
+        this.updateProgress(94, 'Evaluating privacy concerns...');
         this.updateStep('privacy', 'active');
         
         await this.delay(1500);
