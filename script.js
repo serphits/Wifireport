@@ -1133,24 +1133,22 @@ class WiFiAnalyzer {
                     
                     try {
                         while (true) {
-                            const chunkStartTime = performance.now();
                             const { done, value } = await reader.read();
+                            const chunkReceivedTime = performance.now();
                             
                             if (done) {
-                                lastChunkTime = performance.now();
+                                lastChunkTime = chunkReceivedTime;
                                 break;
                             }
                             
                             // Track when first data arrives (actual transfer start, not connection setup)
                             if (!transferStartTime) {
-                                transferStartTime = chunkStartTime;
+                                transferStartTime = chunkReceivedTime;
+                                firstByteTime = chunkReceivedTime;
                             }
                             
-                            if (!firstByteTime) {
-                                firstByteTime = chunkStartTime;
-                            }
                             received += value.length;
-                            lastChunkTime = performance.now();
+                            lastChunkTime = chunkReceivedTime;
                         }
                     } finally {
                         reader.releaseLock();
@@ -1171,14 +1169,24 @@ class WiFiAnalyzer {
                 // transferStartTime to lastChunkTime gives us pure data transfer time (excludes connection setup)
                 // This is critical for accurate speed measurement on fast connections
                 let totalTime;
-                if (transferStartTime && lastChunkTime && (lastChunkTime - transferStartTime) > 0.1) {
-                    // Use transfer time if it's significant (> 100ms)
-                    totalTime = (lastChunkTime - transferStartTime) / 1000;
+                const transferTime = transferStartTime && lastChunkTime ? (lastChunkTime - transferStartTime) / 1000 : 0;
+                const fullTime = (endTime - startTime) / 1000;
+                
+                // Validate transfer time is reasonable
+                // If transfer time is < 0.1s for a large file, the browser probably buffered everything instantly
+                // In that case, use the full time as it's more accurate
+                const estimatedBytes = received > 0 ? received : (contentLength > 0 ? contentLength : expectedSize);
+                const minExpectedTransferTime = Math.max(0.1, estimatedBytes / 1e6 / 100); // Assume max 100 MB/s = 800 Mbps
+                
+                if (transferTime > minExpectedTransferTime && transferTime < fullTime) {
+                    // Use transfer time if it's reasonable and less than full time
+                    totalTime = transferTime;
                     console.log(`Using transfer time: ${totalTime.toFixed(3)}s (excluding ${((transferStartTime - startTime) / 1000).toFixed(3)}s connection setup)`);
                 } else {
-                    // Fallback to total time for very fast transfers
-                    totalTime = (endTime - startTime) / 1000;
-                    console.log(`Using total time: ${totalTime.toFixed(3)}s (transfer too fast to isolate)`);
+                    // Use full time if transfer time is too small or larger than full time
+                    totalTime = fullTime;
+                    const reason = transferTime <= minExpectedTransferTime ? 'transfer too fast, may be buffered' : 'transfer time > full time';
+                    console.log(`Using total time: ${totalTime.toFixed(3)}s (${reason})`);
                 }
                 
                 // Use actual bytes received, or fall back to content-length, fixed size, or expected size
@@ -1226,9 +1234,13 @@ class WiFiAnalyzer {
         // Implement multiple concurrent connections like speedtest.net
         // This saturates the bandwidth for more accurate measurements
         const numConnections = 4; // Use 4 concurrent connections
+        
+        // Instead of dividing bytes, have each connection download a full file
+        // This better matches how speedtest.net/fast.com work
+        // For a 100MB target, download 25MB x 4 connections in parallel
         const bytesPerConnection = Math.ceil(targetBytes / numConnections);
         
-        console.log(`Starting multi-connection download test (${endpoint.provider}): ${numConnections} connections x ${(bytesPerConnection / 1e6).toFixed(2)}MB`);
+        console.log(`Starting multi-connection download test (${endpoint.provider}): ${numConnections} connections x ${(bytesPerConnection / 1e6).toFixed(2)}MB = ${(targetBytes / 1e6).toFixed(2)}MB total`);
         
         const startTime = performance.now();
         const results = [];
@@ -1257,9 +1269,9 @@ class WiFiAnalyzer {
             const endTime = performance.now();
             const totalTime = (endTime - startTime) / 1000;
             
-            // Need at least some successful connections
-            if (successfulChunks.length === 0 || totalBytes === 0) {
-                throw new Error('No data received from any connection');
+            // Need at least 2 successful connections for multi-connection test to be valid
+            if (successfulChunks.length < 2 || totalBytes === 0) {
+                throw new Error(`Insufficient successful connections: ${successfulChunks.length}/${numConnections}`);
             }
             
             // Calculate overall speed
