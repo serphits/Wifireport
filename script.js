@@ -525,6 +525,13 @@ class WiFiAnalyzer {
                     if (res && isFinite(res) && res > 0) {
                         results.push(res);
                         console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps (${(runs[i] / 1e6).toFixed(1)}MB)`);
+                        
+                        // Adaptive optimization: if first test shows very high speed (>200 Mbps),
+                        // skip to even larger test sizes for better accuracy
+                        if (i === 0 && res > 200 && runs.length < 4) {
+                            console.log(`High-speed connection detected (${res.toFixed(0)} Mbps), adding 100MB test`);
+                            runs.push(100_000_000); // Add 100MB test for very fast connections
+                        }
                     }
                     
                     // Progressive measurement: if tests are consistent, we can stop early
@@ -595,6 +602,13 @@ class WiFiAnalyzer {
                     if (res && isFinite(res) && res > 0) {
                         uploadResults.push(res);
                         console.log(`Upload test ${i + 1}: ${res.toFixed(2)} Mbps (${(uploadTests[i] / 1e6).toFixed(1)}MB)`);
+                        
+                        // Adaptive optimization: if first test shows very high upload speed (>100 Mbps),
+                        // add larger test for better accuracy
+                        if (i === 0 && res > 100 && uploadTests.length < 4) {
+                            console.log(`High-speed upload detected (${res.toFixed(0)} Mbps), adding 25MB test`);
+                            uploadTests.push(25_000_000); // Add 25MB test for very fast uploads
+                        }
                     }
                     
                     // Progressive measurement: stop early if results are consistent
