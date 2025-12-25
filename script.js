@@ -762,41 +762,58 @@ class WiFiAnalyzer {
     }
 
     async measureUploadMbps(bytes) {
-        // Generate test data
-        let data;
-        if (bytes <= this.uploadTestData.length) {
-            data = this.uploadTestData.slice(0, bytes);
-        } else {
-            // For very large uploads, generate on-demand
-            data = new Uint8Array(bytes);
-            if (window.crypto && window.crypto.getRandomValues) {
-                const chunkSize = 65536;
-                for (let i = 0; i < bytes; i += chunkSize) {
-                    const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
-                    window.crypto.getRandomValues(chunk);
+        // Improved upload test with multi-connection support (like speedtest.net)
+        const endpoints = [
+            { 
+                url: `https://speed.cloudflare.com/__up`, 
+                provider: 'Cloudflare',
+                concurrent: true
+            },
+            {
+                url: 'https://httpbin.org/post',
+                provider: 'httpbin.org',
+                concurrent: false
+            }
+        ];
+        
+        // Try multi-connection upload first (most accurate)
+        for (const endpoint of endpoints) {
+            if (endpoint.concurrent) {
+                try {
+                    const result = await this.measureUploadMultiConnection(endpoint, bytes);
+                    if (result > 0.01) {
+                        return result;
+                    }
+                } catch (e) {
+                    console.error(`Multi-connection upload test failed (${endpoint.provider}):`, e.message);
                 }
             }
         }
         
-        if (!data || data.length === 0) {
-            console.error('Upload test failed: invalid data');
-            return 0;
-        }
-        
-        // Simplified upload test using reliable endpoints
-        const endpoints = [
-            { 
-                url: `https://speed.cloudflare.com/__up`, 
-                provider: 'Cloudflare'
-            },
-            {
-                url: 'https://httpbin.org/post',
-                provider: 'httpbin.org'
-            }
-        ];
-        
+        // Fallback to single connection
         for (const endpoint of endpoints) {
             try {
+                // Generate test data
+                let data;
+                if (bytes <= this.uploadTestData.length) {
+                    data = this.uploadTestData.slice(0, bytes);
+                } else {
+                    // For very large uploads, generate on-demand
+                    data = new Uint8Array(bytes);
+                    if (window.crypto && window.crypto.getRandomValues) {
+                        const chunkSize = 65536;
+                        for (let i = 0; i < bytes; i += chunkSize) {
+                            const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                            window.crypto.getRandomValues(chunk);
+                        }
+                    }
+                }
+                
+                if (!data || data.length === 0) {
+                    console.error('Upload test failed: invalid data');
+                    continue;
+                }
+                
                 const timestamp = Date.now();
                 const url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}`;
                 
@@ -832,8 +849,8 @@ class WiFiAnalyzer {
                 
                 console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s)`);
                 
-                // Sanity check
-                if (mbps > 0.1 && mbps < 10000) {
+                // Relaxed sanity check
+                if (mbps > 0.01 && mbps < 10000) {
                     return mbps;
                 }
             } catch (e) {
@@ -843,32 +860,151 @@ class WiFiAnalyzer {
         
         return 0;
     }
+    
+    async measureUploadMultiConnection(endpoint, targetBytes) {
+        // Implement multiple concurrent upload connections like speedtest.net
+        const numConnections = 3; // Use 3 concurrent connections for uploads
+        const bytesPerConnection = Math.ceil(targetBytes / numConnections);
+        
+        console.log(`Starting multi-connection upload test (${endpoint.provider}): ${numConnections} connections x ${(bytesPerConnection / 1e6).toFixed(2)}MB`);
+        
+        const startTime = performance.now();
+        const results = [];
+        
+        // Start all connections simultaneously
+        const promises = [];
+        for (let i = 0; i < numConnections; i++) {
+            promises.push(this.uploadChunk(endpoint, bytesPerConnection, i));
+        }
+        
+        // Wait for all connections to complete
+        try {
+            const chunks = await Promise.all(promises);
+            
+            // Calculate total bytes uploaded
+            let totalBytes = 0;
+            for (const chunk of chunks) {
+                if (chunk && chunk.bytes > 0) {
+                    totalBytes += chunk.bytes;
+                    results.push(chunk);
+                }
+            }
+            
+            const endTime = performance.now();
+            const totalTime = (endTime - startTime) / 1000;
+            
+            // Need at least some successful connections
+            if (results.length === 0 || totalBytes === 0) {
+                throw new Error('No data uploaded from any connection');
+            }
+            
+            // Calculate overall speed
+            const mbps = this.calculateMbps(totalBytes, totalTime);
+            console.log(`Multi-connection upload complete (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(totalBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s, ${results.length}/${numConnections} connections successful)`);
+            
+            return mbps;
+        } catch (e) {
+            throw new Error(`Multi-connection upload test failed: ${e.message}`);
+        }
+    }
+    
+    async uploadChunk(endpoint, bytes, connectionId) {
+        // Upload a chunk of data in one connection
+        try {
+            // Generate test data for this connection
+            let data;
+            if (bytes <= this.uploadTestData.length) {
+                data = this.uploadTestData.slice(0, bytes);
+            } else {
+                data = new Uint8Array(bytes);
+                if (window.crypto && window.crypto.getRandomValues) {
+                    const chunkSize = 65536;
+                    for (let i = 0; i < bytes; i += chunkSize) {
+                        const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                        window.crypto.getRandomValues(chunk);
+                    }
+                }
+            }
+            
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(7);
+            const url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}&conn=${connectionId}`;
+            
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
+            
+            const blob = new Blob([data], { type: 'application/octet-stream' });
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                body: blob,
+                cache: 'no-store',
+                headers: {
+                    'Content-Type': 'application/octet-stream',
+                    'Cache-Control': 'no-cache'
+                },
+                signal: controller.signal
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Upload failed with status ${response.status}`);
+            }
+            
+            await response.text(); // Consume response
+            clearTimeout(timeout);
+            
+            return { bytes: bytes, connectionId };
+        } catch (e) {
+            console.warn(`Upload connection ${connectionId} failed: ${e.message}`);
+            return { bytes: 0, connectionId };
+        }
+    }
 
     async measureDownloadMbps(bytes) {
-        // Simplified speed test using reliable endpoints
+        // Improved speed test using multiple concurrent connections (like speedtest.net/fast.com)
+        // This significantly improves accuracy by saturating the bandwidth
+        
         const endpoints = [
-            // Cloudflare's speed test endpoint (best option)
+            // Primary: Cloudflare's speed test endpoint
             { 
                 url: `https://speed.cloudflare.com/__down`, 
                 provider: 'Cloudflare',
-                useParams: true 
+                useParams: true,
+                concurrent: true
             },
-            // Fallback: Use a reliable test file server
+            // Fallback 1: httpbin.org (reliable, supports CORS)
             {
-                url: 'https://proof.ovh.net/files/1Mb.dat',
-                provider: 'OVH Test',
-                useParams: false,
-                fixedSize: 1_000_000  // 1MB file
+                url: 'https://httpbin.org/bytes',
+                provider: 'httpbin.org',
+                useParams: true,
+                concurrent: false
             },
-            // Fallback 2: Another test file
+            // Fallback 2: Random data generator
             {
-                url: 'https://proof.ovh.net/files/10Mb.dat',
-                provider: 'OVH Test 10MB',
+                url: 'https://random-data-api.com/api/v2/beers',
+                provider: 'Random Data API',
                 useParams: false,
-                fixedSize: 10_000_000  // 10MB file
+                concurrent: false,
+                fixedSize: 2000 // Small payload
             }
         ];
         
+        // Try multiple concurrent connections first (speedtest.net method)
+        // This is the most accurate method for measuring true bandwidth
+        for (const endpoint of endpoints) {
+            if (endpoint.concurrent) {
+                try {
+                    const result = await this.measureDownloadMultiConnection(endpoint, bytes);
+                    if (result > 0.1) {
+                        return result;
+                    }
+                } catch (e) {
+                    console.error(`Multi-connection download test failed (${endpoint.provider}):`, e.message);
+                }
+            }
+        }
+        
+        // Fallback to single connection tests
         for (const endpoint of endpoints) {
             try {
                 const timestamp = Date.now();
@@ -945,8 +1081,8 @@ class WiFiAnalyzer {
                 const mbps = this.calculateMbps(actualBytes, totalTime);
                 console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s)`);
                 
-                // Sanity check: speed should be reasonable
-                if (mbps > 0.1 && mbps < 10000 && actualBytes > 0) {
+                // Relaxed sanity check: speed should be reasonable
+                if (mbps > 0.01 && mbps < 10000 && actualBytes > 0) {
                     return mbps;
                 }
             } catch (e) {
@@ -955,6 +1091,107 @@ class WiFiAnalyzer {
         }
         
         return 0;
+    }
+    
+    async measureDownloadMultiConnection(endpoint, targetBytes) {
+        // Implement multiple concurrent connections like speedtest.net
+        // This saturates the bandwidth for more accurate measurements
+        const numConnections = 4; // Use 4 concurrent connections
+        const bytesPerConnection = Math.ceil(targetBytes / numConnections);
+        
+        console.log(`Starting multi-connection download test (${endpoint.provider}): ${numConnections} connections x ${(bytesPerConnection / 1e6).toFixed(2)}MB`);
+        
+        const startTime = performance.now();
+        const results = [];
+        
+        // Start all connections simultaneously
+        const promises = [];
+        for (let i = 0; i < numConnections; i++) {
+            promises.push(this.downloadChunk(endpoint, bytesPerConnection, i));
+        }
+        
+        // Wait for all connections to complete
+        try {
+            const chunks = await Promise.all(promises);
+            
+            // Calculate total bytes received
+            let totalBytes = 0;
+            for (const chunk of chunks) {
+                if (chunk && chunk.bytes > 0) {
+                    totalBytes += chunk.bytes;
+                    results.push(chunk);
+                }
+            }
+            
+            const endTime = performance.now();
+            const totalTime = (endTime - startTime) / 1000;
+            
+            // Need at least some successful connections
+            if (results.length === 0 || totalBytes === 0) {
+                throw new Error('No data received from any connection');
+            }
+            
+            // Calculate overall speed
+            const mbps = this.calculateMbps(totalBytes, totalTime);
+            console.log(`Multi-connection download complete (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(totalBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s, ${results.length}/${numConnections} connections successful)`);
+            
+            return mbps;
+        } catch (e) {
+            throw new Error(`Multi-connection test failed: ${e.message}`);
+        }
+    }
+    
+    async downloadChunk(endpoint, bytes, connectionId) {
+        // Download a chunk of data in one connection
+        try {
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(7);
+            const url = endpoint.useParams 
+                ? `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}&conn=${connectionId}`
+                : `${endpoint.url}?_=${timestamp}&r=${random}&conn=${connectionId}`;
+            
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
+            
+            const response = await fetch(url, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache'
+                },
+                signal: controller.signal
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Download failed with status ${response.status}`);
+            }
+            
+            // Read the response body
+            let received = 0;
+            
+            if (response.body && response.body.getReader) {
+                const reader = response.body.getReader();
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        received += value.length;
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+            } else {
+                const buffer = await response.arrayBuffer();
+                received = buffer.byteLength;
+            }
+            
+            clearTimeout(timeout);
+            
+            return { bytes: received, connectionId };
+        } catch (e) {
+            console.warn(`Connection ${connectionId} failed: ${e.message}`);
+            return { bytes: 0, connectionId };
+        }
     }
 
     async measureLatency(url) {
