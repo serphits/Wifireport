@@ -1,7 +1,8 @@
 // WiFi.Report - Main JavaScript
 // Real WiFi Analysis Implementation
 // 
-// Speed Test Improvements (v2.0):
+// Speed Test Improvements (v2.1):
+// - Fixed speed calculation floor that was capping fast connection speeds (removed 0.1s minimum)
 // - Enhanced timing accuracy using Resource Timing API and progressive measurement
 // - Streaming downloads for better accuracy on fast connections (100+ Mbps)
 // - Connection overhead compensation to separate setup time from data transfer
@@ -9,6 +10,7 @@
 // - Improved jitter calculation using RFC 3550 methodology
 // - Mobile Safari/iOS compatibility with fallback mechanisms
 // - Progressive testing that stops early when results are consistent
+// - Division by zero protection with minimal 1ms floor for edge cases
 
 // Initialize loading animations on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -227,7 +229,10 @@ class WiFiAnalyzer {
     calculateMbps(bytes, seconds) {
         // Helper method to calculate Mbps from bytes and time
         // Formula: (bytes * 8 bits/byte) / seconds / 1,000,000 bits/Mbps
-        return (bytes * 8) / seconds / 1e6;
+        // Prevent division by zero or extremely small values (< 0.001s)
+        // Values >= 0.001s (1ms) use their actual time for accurate speed calculation
+        const effectiveSeconds = Math.max(seconds, 0.001);
+        return (bytes * 8) / effectiveSeconds / 1e6;
     }
 
     init() {
@@ -888,7 +893,8 @@ class WiFiAnalyzer {
                     // Still calculate, but note it may be less accurate
                 }
                 
-                const mbps = this.calculateMbps(bytes, Math.max(seconds, this.speedTestConstants.MIN_MEASUREMENT_TIME));
+                // Don't apply minimum time floor here - calculateMbps has internal 1ms floor for division-by-zero protection
+                const mbps = this.calculateMbps(bytes, seconds);
                 console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, response: ${responseDownloadTime.toFixed(2)}s)`);
                 
                 // Sanity check: upload speed should be between 0.1 Mbps and 10 Gbps
@@ -1025,8 +1031,8 @@ class WiFiAnalyzer {
                     // Still calculate, but note it may be less accurate
                 }
                 
-                // Calculate speed in Mbps using data transfer time with minimum floor
-                const mbps = this.calculateMbps(actualBytes, Math.max(dataTransferTime, this.speedTestConstants.MIN_MEASUREMENT_TIME));
+                // Don't apply minimum time floor here - calculateMbps has internal 1ms floor for division-by-zero protection
+                const mbps = this.calculateMbps(actualBytes, dataTransferTime);
                 console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${dataTransferTime.toFixed(2)}s, overhead: ${connectionOverhead.toFixed(2)}s)`);
                 
                 // Sanity check: download speed should be between 0.1 Mbps and 10 Gbps
