@@ -745,26 +745,14 @@ class WiFiAnalyzer {
     }
 
     async measureDownloadMbps(bytes) {
-        // Try multiple reliable endpoints for better success rate
+        // Use Cloudflare's speed test endpoint which supports size parameter
+        // Fallback to any endpoint that can provide test data
         const endpoints = [
-            // Cloudflare's speed test endpoint
+            // Cloudflare's speed test endpoint - provides exactly the bytes we request
             { 
                 url: `https://speed.cloudflare.com/__down`, 
                 provider: 'Cloudflare',
                 useParams: true 
-            },
-            // Alternative: Use actual file downloads from CDNs
-            {
-                url: 'https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js',
-                provider: 'jsDelivr CDN',
-                useParams: false,
-                fixedSize: 89000 // Approximate size in bytes
-            },
-            {
-                url: 'https://unpkg.com/react@18.2.0/umd/react.production.min.js',
-                provider: 'unpkg CDN', 
-                useParams: false,
-                fixedSize: 10500 // Approximate size in bytes
             }
         ];
         
@@ -811,33 +799,29 @@ class WiFiAnalyzer {
                 const seconds = (performance.now() - start) / 1000;
                 clearTimeout(timeout);
                 
-                // Use fixedSize if available and received size doesn't match expected
-                const actualBytes = endpoint.fixedSize && Math.abs(received - endpoint.fixedSize) < 10000 
-                    ? endpoint.fixedSize 
-                    : received;
-                
                 // Ensure reasonable timing (at least 0.05 seconds to avoid unrealistic speeds)
                 if (seconds < 0.05) {
                     console.warn(`Download test too fast (${seconds}s), likely cached`);
                     continue;
                 }
                 
-                // For small fixed-size files, scale the measurement based on requested bytes
-                let mbps;
-                if (endpoint.fixedSize && endpoint.fixedSize < bytes) {
-                    // Extrapolate: if we can download fixedSize in X seconds, 
-                    // we could download 'bytes' in X * (bytes/fixedSize) seconds
-                    const scaleFactor = bytes / endpoint.fixedSize;
-                    mbps = (actualBytes * 8) / seconds / 1e6;
-                    console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, small file)`);
-                } else {
-                    mbps = (actualBytes * 8) / seconds / 1e6;
-                    console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s)`);
-                }
+                // Calculate speed
+                const mbps = (received * 8) / seconds / 1e6;
+                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(received / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s)`);
                 
                 // Sanity check: download speed should be between 0.1 Mbps and 10 Gbps
-                if (mbps > 0.1 && mbps < 10000 && actualBytes > 0) {
+                // Also ensure we downloaded a reasonable amount of data (at least 100KB)
+                // Small files give inaccurate throughput measurements
+                if (mbps > 0.1 && mbps < 10000 && received > 100000) {
+                    // Verify we got approximately the amount of data we requested (within 10%)
+                    const expectedBytes = endpoint.useParams ? bytes : received;
+                    if (endpoint.useParams && Math.abs(received - expectedBytes) / expectedBytes > 0.1) {
+                        console.warn(`Received ${received} bytes but expected ${expectedBytes} bytes`);
+                    }
                     return mbps;
+                } else if (received <= 100000) {
+                    console.warn(`Download too small (${received} bytes), trying next endpoint`);
+                    continue;
                 }
             } catch (e) {
                 console.error(`Download test failed (${endpoint.provider}):`, e.message);
