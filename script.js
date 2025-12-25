@@ -821,6 +821,9 @@ class WiFiAnalyzer {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
                 
+                // Start timing BEFORE fetch to measure actual network download time
+                const start = performance.now();
+                
                 const response = await fetch(url, {
                     cache: 'no-store',
                     headers: {
@@ -830,43 +833,30 @@ class WiFiAnalyzer {
                     signal: controller.signal
                 });
                 
-                if (!response.ok || !response.body) {
+                if (!response.ok) {
                     throw new Error(`Download failed with status ${response.status}`);
                 }
                 
-                const reader = response.body.getReader();
-                let received = 0;
-                let firstByteTime = null;
-                
-                // Start timing from first byte to exclude connection overhead
-                const start = performance.now();
-                
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    
-                    if (!firstByteTime && value.length > 0) {
-                        firstByteTime = performance.now();
-                    }
-                    
-                    received += value.length;
-                }
+                // Use arrayBuffer() to ensure we wait for complete download
+                // This is more reliable than reading from stream, especially on mobile browsers
+                const buffer = await response.arrayBuffer();
+                const received = buffer.byteLength;
                 
                 const endTime = performance.now();
                 clearTimeout(timeout);
                 
-                // Use timing from first byte to last byte for pure transfer speed
-                const transferStart = firstByteTime || start;
-                const seconds = (endTime - transferStart) / 1000;
+                // Calculate total time from fetch start to completion
+                const seconds = (endTime - start) / 1000;
                 
                 // Use fixedSize if available and received size doesn't match expected
                 const actualBytes = endpoint.fixedSize && Math.abs(received - endpoint.fixedSize) < 10000 
                     ? endpoint.fixedSize 
                     : received;
                 
-                // Ensure reasonable timing (at least 0.05 seconds to avoid unrealistic speeds)
-                if (seconds < 0.05) {
-                    console.warn(`Download test too fast (${seconds}s), likely cached`);
+                // Ensure reasonable timing (at least 0.1 seconds to avoid unrealistic speeds)
+                // Note: We now measure from fetch start, so this includes connection setup
+                if (seconds < 0.1) {
+                    console.warn(`Download test too fast (${seconds}s), likely cached or error`);
                     continue;
                 }
                 
