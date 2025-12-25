@@ -1,12 +1,14 @@
 // WiFi.Report - Main JavaScript
 // Real WiFi Analysis Implementation
 // 
-// Speed Test Improvements (v2.2 - Simplified & Faster):
-// - Simplified speed test for faster results (10-15 seconds total)
+// Speed Test Improvements (v2.3 - Multi-Connection & Accurate):
+// - Multi-connection speed tests like speedtest.net/fast.com (4 parallel downloads, 3 parallel uploads)
+// - Improved accuracy by saturating bandwidth with concurrent connections
 // - Real-time speed display during testing
-// - Reduced test sizes for quicker measurements (10-25MB downloads, 5-10MB uploads)
-// - Fixed download speed endpoint issues with reliable fallbacks
-// - Streamlined test logic for better accuracy
+// - Adaptive test sizes based on connection type (10-25MB downloads, 5-10MB uploads)
+// - Reliable endpoints with multiple fallback options
+// - Enhanced error handling and retry logic
+// - Relaxed sanity checks to detect slow connections (0.01 Mbps minimum)
 // - Mobile Safari/iOS compatibility with fallback mechanisms
 // - Division by zero protection with minimal 1ms floor for edge cases
 
