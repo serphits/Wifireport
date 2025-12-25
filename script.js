@@ -232,6 +232,17 @@ class WiFiAnalyzer {
         return (bytes * 8) / effectiveSeconds / 1e6;
     }
 
+    getActualBytes(received, contentLength, endpoint, expectedSize) {
+        // Helper method to determine actual bytes for speed calculation
+        // Falls back through multiple sources when streaming API doesn't report bytes correctly
+        // This is critical for Safari/iPhone where response.body.getReader() may fail silently
+        if (received > 0) {
+            return received;
+        }
+        // Fallback chain: contentLength -> fixedSize -> expectedSize
+        return contentLength || endpoint.fixedSize || expectedSize || 0;
+    }
+
     init() {
         // Initialize event listeners
         const startBtn = document.getElementById('startScan');
@@ -1119,10 +1130,7 @@ class WiFiAnalyzer {
                 
                 // Use actual bytes received, or fall back to content-length, fixed size, or expected size
                 // This is critical for Safari/iPhone where streaming may not report bytes correctly
-                let actualBytes = received;
-                if (actualBytes === 0) {
-                    actualBytes = contentLength || endpoint.fixedSize || expectedSize;
-                }
+                const actualBytes = this.getActualBytes(received, contentLength, endpoint, expectedSize);
                 
                 // Validate we got data
                 if (actualBytes <= 0) {
@@ -1270,10 +1278,7 @@ class WiFiAnalyzer {
             
             // Use actual bytes received, or fall back to content-length, fixed size, or expected size
             // This is critical for Safari/iPhone where streaming may not report bytes correctly
-            let actualBytes = received;
-            if (actualBytes === 0) {
-                actualBytes = contentLength || endpoint.fixedSize || expectedSize;
-            }
+            const actualBytes = this.getActualBytes(received, contentLength, endpoint, expectedSize);
             
             console.log(`Connection ${connectionId}: received ${received} bytes, using ${actualBytes} bytes (contentLength: ${contentLength}, expected: ${expectedSize})`);
             
