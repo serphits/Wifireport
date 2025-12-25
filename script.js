@@ -229,8 +229,8 @@ class WiFiAnalyzer {
     calculateMbps(bytes, seconds) {
         // Helper method to calculate Mbps from bytes and time
         // Formula: (bytes * 8 bits/byte) / seconds / 1,000,000 bits/Mbps
-        // Prevent division by zero or extremely small values (<= 0.001s)
-        // 0.001s = 1ms is a reasonable floor to prevent unrealistic calculations
+        // Prevent division by zero or extremely small values (< 0.001s)
+        // Values >= 0.001s (1ms) use their actual time for accurate speed calculation
         const effectiveSeconds = Math.max(seconds, 0.001);
         return (bytes * 8) / effectiveSeconds / 1e6;
     }
