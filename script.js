@@ -442,15 +442,24 @@ class WiFiAnalyzer {
                 speed.metrics.jitter = 0;
             }
 
+            // Warmup: Perform small test requests to establish connection and avoid cold start
+            this.updateProgress(62, 'Warming up connection...');
+            try {
+                await this.measureDownloadMbps(100_000); // 100KB warmup
+                await this.measureUploadMbps(100_000);   // 100KB warmup
+            } catch (e) {
+                console.log('Warmup test error (non-critical):', e.message);
+            }
+
             // Test 2: Measure bandwidth with controlled downloads (Cloudflare endpoint)
-            // Use progressive test sizes - start smaller for better success rate
+            // Use progressive test sizes - larger files for more accurate measurements
             let downloadMbps = 0;
             try {
-                // Progressive test sizes: start with smaller files
-                const runs = [1_000_000, 5_000_000, 10_000_000]; // 1MB, 5MB, 10MB
+                // Increased test sizes for better accuracy: 5MB, 10MB, 25MB
+                const runs = [5_000_000, 10_000_000, 25_000_000];
                 const results = [];
                 for (let i = 0; i < runs.length; i++) {
-                    this.updateProgress(63 + i * 3, `Measuring download throughput (${i + 1}/${runs.length})...`);
+                    this.updateProgress(64 + i * 2, `Measuring download throughput (${i + 1}/${runs.length})...`);
                     const res = await this.measureDownloadMbps(runs[i]);
                     if (res && isFinite(res) && res > 0) {
                         results.push(res);
@@ -502,7 +511,8 @@ class WiFiAnalyzer {
             // Test 3: Measure upload speed - run multiple tests for accuracy with progressive sizes
             let uploadMbps = 0;
             try {
-                const uploadTests = [500_000, 1_000_000, 2_000_000]; // 500KB, 1MB, 2MB
+                // Increased test sizes for better accuracy: 1MB, 2MB, 5MB
+                const uploadTests = [1_000_000, 2_000_000, 5_000_000];
                 const uploadResults = [];
                 for (let i = 0; i < uploadTests.length; i++) {
                     this.updateProgress(72 + i * 2, `Measuring upload throughput (${i + 1}/${uploadTests.length})...`);
@@ -662,6 +672,20 @@ class WiFiAnalyzer {
     }
 
     async measureUploadMbps(bytes) {
+        // Pre-generate random data once to avoid timing issues
+        const data = new Uint8Array(bytes);
+        if (window.crypto && window.crypto.getRandomValues) {
+            const chunkSize = 65536;
+            for (let i = 0; i < bytes; i += chunkSize) {
+                const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
+                window.crypto.getRandomValues(chunk);
+            }
+        } else {
+            for (let i = 0; i < bytes; i++) {
+                data[i] = Math.floor(Math.random() * 256);
+            }
+        }
+        
         // Try multiple endpoints for better reliability
         const endpoints = [
             // Cloudflare's speed test endpoint
@@ -689,20 +713,7 @@ class WiFiAnalyzer {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 20000);
                 
-                // Generate random data to prevent compression
-                const data = new Uint8Array(bytes);
-                if (window.crypto && window.crypto.getRandomValues) {
-                    const chunkSize = 65536;
-                    for (let i = 0; i < bytes; i += chunkSize) {
-                        const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
-                        window.crypto.getRandomValues(chunk);
-                    }
-                } else {
-                    for (let i = 0; i < bytes; i++) {
-                        data[i] = Math.floor(Math.random() * 256);
-                    }
-                }
-                
+                // Start timing immediately before the upload
                 const start = performance.now();
                 
                 const response = await fetch(url, {
@@ -717,9 +728,12 @@ class WiFiAnalyzer {
                     signal: controller.signal
                 });
                 
-                // Wait for response to ensure upload completed
-                await response.text();
+                // Wait for response headers (upload is complete when we get headers back)
+                if (!response.ok) {
+                    throw new Error(`Upload failed with status ${response.status}`);
+                }
                 
+                // Stop timing after receiving response confirmation
                 const seconds = (performance.now() - start) / 1000;
                 clearTimeout(timeout);
                 
@@ -779,6 +793,9 @@ class WiFiAnalyzer {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
                 
+                // Start timing BEFORE the fetch to include connection establishment
+                const start = performance.now();
+                
                 const response = await fetch(url, {
                     cache: 'no-store',
                     headers: {
@@ -794,17 +811,10 @@ class WiFiAnalyzer {
                 
                 const reader = response.body.getReader();
                 let received = 0;
-                let start = null; // Start timing on first chunk
                 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
-                    
-                    // Start timing when we receive the first chunk of data
-                    if (start === null) {
-                        start = performance.now();
-                    }
-                    
                     received += value.length;
                 }
                 
@@ -822,18 +832,9 @@ class WiFiAnalyzer {
                     continue;
                 }
                 
-                // For small fixed-size files, scale the measurement based on requested bytes
-                let mbps;
-                if (endpoint.fixedSize && endpoint.fixedSize < bytes) {
-                    // Extrapolate: if we can download fixedSize in X seconds, 
-                    // we could download 'bytes' in X * (bytes/fixedSize) seconds
-                    const scaleFactor = bytes / endpoint.fixedSize;
-                    mbps = (actualBytes * 8) / seconds / 1e6;
-                    console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, small file)`);
-                } else {
-                    mbps = (actualBytes * 8) / seconds / 1e6;
-                    console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s)`);
-                }
+                // Calculate speed in Mbps
+                const mbps = (actualBytes * 8) / seconds / 1e6;
+                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s)`);
                 
                 // Sanity check: download speed should be between 0.1 Mbps and 10 Gbps
                 if (mbps > 0.1 && mbps < 10000 && actualBytes > 0) {
