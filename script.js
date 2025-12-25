@@ -989,11 +989,12 @@ class WiFiAnalyzer {
         
         const endpoints = [
             // Primary: Use GitHub's reliable CDN for test files (CORS-friendly, very reliable)
+            // Single-connection mode for better reliability
             {
                 url: 'https://raw.githubusercontent.com/inventer-dev/speed-test-files/main',
                 provider: 'GitHub CDN',
                 useParams: false,
-                concurrent: true,
+                concurrent: false, // Changed to false for better reliability
                 sizeMap: {
                     512000: '/512KB.bin',       // 512KB
                     1000000: '/1MB.bin',        // 1MB
@@ -1002,34 +1003,39 @@ class WiFiAnalyzer {
                     10000000: '/10MB.bin',      // 10MB
                     20000000: '/20MB.bin',      // 20MB
                     25000000: '/20MB.bin',      // 25MB (use 20MB as closest)
-                    50000000: '/50MB.bin',      // 50MB - NEW for medium-fast connections
-                    100000000: '/100MB.bin',    // 100MB - NEW for fast connections (100-500 Mbps)
-                    200000000: '/100MB.bin'     // 200MB (use 100MB x2 as workaround)
+                    50000000: '/50MB.bin',      // 50MB - for medium-fast connections
+                    100000000: '/100MB.bin',    // 100MB - for fast connections (100-500 Mbps)
+                    200000000: '/100MB.bin'     // 200MB (use 100MB file, will download twice if needed)
                 }
             },
-            // Fallback 1: jsDelivr CDN (very fast, globally distributed, CORS-enabled)
-            {
-                url: 'https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist',
-                provider: 'jsDelivr CDN',
-                useParams: false,
-                fixedSize: 88000, // jquery.min.js is ~88KB
-                concurrent: false,
-                sizeMap: {
-                    512000: '/jquery.min.js',  // Repeat file multiple times for larger tests
-                    1000000: '/jquery.min.js',
-                    2000000: '/jquery.min.js',
-                    5000000: '/jquery.min.js',
-                    10000000: '/jquery.min.js',
-                    20000000: '/jquery.min.js',
-                    25000000: '/jquery.min.js'
-                }
-            },
-            // Fallback 2: httpbin.org (reliable when available, supports CORS, any size)
+            // Fallback 1: httpbin.org (reliable when available, supports CORS, any size)
+            // Uses path-based byte specification: /bytes/{n}
             {
                 url: 'https://httpbin.org/bytes',
                 provider: 'httpbin.org',
-                useParams: true,
+                usePathParam: true, // Use path-based parameter instead of query string
                 concurrent: false
+            },
+            // Fallback 2: jsDelivr CDN with large library files
+            // Use libraries with larger file sizes for better measurements
+            {
+                url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist',
+                provider: 'jsDelivr CDN (Bootstrap)',
+                useParams: false,
+                fixedSize: 212000, // bootstrap.min.css is ~212KB (2.4x larger than jQuery)
+                concurrent: false,
+                sizeMap: {
+                    512000: '/css/bootstrap.min.css',
+                    1000000: '/css/bootstrap.min.css',
+                    2000000: '/css/bootstrap.min.css',
+                    5000000: '/css/bootstrap.min.css',
+                    10000000: '/css/bootstrap.min.css',
+                    20000000: '/css/bootstrap.min.css',
+                    25000000: '/css/bootstrap.min.css',
+                    50000000: '/css/bootstrap.min.css',
+                    100000000: '/css/bootstrap.min.css',
+                    200000000: '/css/bootstrap.min.css'
+                }
             },
             // Fallback 3: Use cdnjs (Cloudflare's CDN, very reliable)
             {
@@ -1045,32 +1051,18 @@ class WiFiAnalyzer {
                     5000000: '/lodash.min.js',
                     10000000: '/lodash.min.js',
                     20000000: '/lodash.min.js',
-                    25000000: '/lodash.min.js'
+                    25000000: '/lodash.min.js',
+                    50000000: '/lodash.min.js',
+                    100000000: '/lodash.min.js',
+                    200000000: '/lodash.min.js'
                 }
             }
         ];
         
-        // Try multiple concurrent connections first (speedtest.net method)
-        // This is the most accurate method for measuring true bandwidth
-        for (const endpoint of endpoints) {
-            if (endpoint.concurrent) {
-                try {
-                    console.log(`📡 Attempting multi-connection test with ${endpoint.provider}...`);
-                    const result = await this.measureDownloadMultiConnection(endpoint, bytes);
-                    if (result > 0.01) { // Lower threshold for slow connections
-                        console.log(`✅ Multi-connection test succeeded: ${result.toFixed(2)} Mbps`);
-                        return result;
-                    } else {
-                        console.warn(`⚠️ Multi-connection test returned invalid speed: ${result.toFixed(2)} Mbps`);
-                    }
-                } catch (e) {
-                    console.error(`❌ Multi-connection download test failed (${endpoint.provider}):`, e.message);
-                }
-            }
-        }
+        // Use single-connection tests for better reliability across all network conditions
+        // Multi-connection tests can fail due to browser limits, timeouts, or CORS issues
+        console.log(`📡 Starting single-connection download test for ${(bytes / 1e6).toFixed(1)}MB...`);
         
-        // Fallback to single connection tests
-        console.log('📡 Trying single-connection fallback tests...');
         for (const endpoint of endpoints) {
             try {
                 console.log(`  Testing ${endpoint.provider}...`);
@@ -1091,7 +1083,11 @@ class WiFiAnalyzer {
                     url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
                     // Use the closest size from the map as expected size
                     expectedSize = closestSize;
+                } else if (endpoint.usePathParam) {
+                    // For endpoints like httpbin.org/bytes/{n}
+                    url = `${endpoint.url}/${bytes}?t=${timestamp}&r=${random}`;
                 } else if (endpoint.useParams) {
+                    // For endpoints with query parameters
                     url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
                 } else {
                     url = `${endpoint.url}?t=${timestamp}&r=${random}`;
@@ -1170,10 +1166,11 @@ class WiFiAnalyzer {
                 const fullTime = (endTime - startTime) / 1000;
                 
                 // Validate transfer time is reasonable
-                // If transfer time is < 0.1s for a large file, the browser probably buffered everything instantly
+                // If transfer time is < 0.05s for a large file, the browser probably buffered everything instantly
                 // In that case, use the full time as it's more accurate
                 const estimatedBytes = received > 0 ? received : (contentLength > 0 ? contentLength : expectedSize);
-                const minExpectedTransferTime = Math.max(0.1, estimatedBytes / 1e6 / 100); // Assume max 100 MB/s = 800 Mbps
+                // Assume max realistic speed of 2000 Mbps (2.5 Gbps) = 250 MB/s for fiber connections
+                const minExpectedTransferTime = Math.max(0.05, estimatedBytes / 1e6 / 250);
                 
                 if (transferTime > minExpectedTransferTime && transferTime < fullTime) {
                     // Use transfer time if it's reasonable and less than full time
