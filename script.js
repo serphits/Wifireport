@@ -717,11 +717,7 @@ class WiFiAnalyzer {
                     signal: controller.signal
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`Upload failed with status ${response.status}`);
-                }
-                
-                // Wait for response body to ensure upload completed
+                // Wait for response to ensure upload completed
                 await response.text();
                 
                 const seconds = (performance.now() - start) / 1000;
@@ -782,7 +778,6 @@ class WiFiAnalyzer {
                 
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 30000);
-                const start = performance.now();
                 
                 const response = await fetch(url, {
                     cache: 'no-store',
@@ -799,10 +794,17 @@ class WiFiAnalyzer {
                 
                 const reader = response.body.getReader();
                 let received = 0;
+                let start = null; // Start timing on first chunk
                 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
+                    
+                    // Start timing when we receive the first chunk of data
+                    if (start === null) {
+                        start = performance.now();
+                    }
+                    
                     received += value.length;
                 }
                 
