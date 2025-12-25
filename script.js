@@ -1042,6 +1042,9 @@ class WiFiAnalyzer {
                 const timestamp = Date.now();
                 const random = Math.random().toString(36).substring(7);
                 
+                // Determine expected file size from sizeMap if available
+                let expectedSize = bytes;
+                
                 // Construct URL based on endpoint type
                 let url;
                 if (endpoint.sizeMap) {
@@ -1051,6 +1054,8 @@ class WiFiAnalyzer {
                         Math.abs(curr - bytes) < Math.abs(prev - bytes) ? curr : prev
                     );
                     url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
+                    // Use the closest size from the map as expected size
+                    expectedSize = closestSize;
                 } else if (endpoint.useParams) {
                     url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
                 } else {
@@ -1112,8 +1117,12 @@ class WiFiAnalyzer {
                 // Calculate time - use full time for simplicity
                 const totalTime = (endTime - startTime) / 1000;
                 
-                // Use actual bytes received, or fixed size if specified, or content-length
-                const actualBytes = received > 0 ? received : (endpoint.fixedSize || contentLength);
+                // Use actual bytes received, or fall back to content-length, fixed size, or expected size
+                // This is critical for Safari/iPhone where streaming may not report bytes correctly
+                let actualBytes = received;
+                if (actualBytes === 0) {
+                    actualBytes = contentLength || endpoint.fixedSize || expectedSize;
+                }
                 
                 // Validate we got data
                 if (actualBytes <= 0) {
@@ -1123,7 +1132,7 @@ class WiFiAnalyzer {
                 
                 // Calculate speed
                 const mbps = this.calculateMbps(actualBytes, totalTime);
-                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s)`);
+                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s, received: ${received}, contentLength: ${contentLength})`);
                 
                 // Very relaxed sanity check for slow connections: 0.01 Mbps to 10000 Mbps
                 // This allows detection of very slow connections (dial-up, etc.)
