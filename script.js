@@ -186,6 +186,16 @@ class WiFiAnalyzer {
             jitter: { good: 10, fair: 30 }
         };
         
+        // Speed test constants
+        this.speedTestConstants = {
+            MIN_MEASUREMENT_TIME: 0.1, // Minimum time in seconds for valid measurement
+            CONSISTENCY_VARIANCE_THRESHOLD: 0.15, // 15% variance threshold for early stopping
+            MAX_OVERHEAD_PERCENTAGE: 0.3, // Cap connection overhead at 30% of total time
+            JITTER_STDDEV_WEIGHT: 0.7, // Weight for standard deviation in jitter calculation
+            HIGH_SPEED_DOWNLOAD_THRESHOLD: 200, // Mbps threshold to trigger larger downloads
+            HIGH_SPEED_UPLOAD_THRESHOLD: 100 // Mbps threshold to trigger larger uploads
+        };
+        
         // Common screen resolutions for fingerprinting detection
         this.commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24', '1536x864x24', '1280x720x24'];
         
@@ -473,9 +483,10 @@ class WiFiAnalyzer {
                         ? absoluteDiffs.reduce((a, b) => a + b, 0) / absoluteDiffs.length 
                         : 0;
                     
-                    // Use the more conservative (higher) value for user awareness
-                    // But cap it at standard deviation to avoid over-reporting
-                    const jitter = Math.min(stdDevJitter, Math.max(meanAbsoluteJitter, stdDevJitter * 0.7));
+                    // Combine both methods: use the more conservative (higher) value
+                    // but cap at standard deviation to avoid over-reporting
+                    // The 0.7 weight ensures we use at least 70% of stdDev even if meanAbsolute is lower
+                    const jitter = Math.min(stdDevJitter, Math.max(meanAbsoluteJitter, stdDevJitter * this.speedTestConstants.JITTER_STDDEV_WEIGHT));
                     speed.metrics.jitter = Math.round(jitter * 10) / 10;
                 } else {
                     speed.metrics.jitter = 0;
@@ -528,7 +539,7 @@ class WiFiAnalyzer {
                         
                         // Adaptive optimization: if first test shows very high speed (>200 Mbps),
                         // skip to even larger test sizes for better accuracy
-                        if (i === 0 && res > 200 && runs.length < 4) {
+                        if (i === 0 && res > this.speedTestConstants.HIGH_SPEED_DOWNLOAD_THRESHOLD && runs.length < 4) {
                             console.log(`High-speed connection detected (${res.toFixed(0)} Mbps), adding 100MB test`);
                             runs.push(100_000_000); // Add 100MB test for very fast connections
                         }
@@ -536,11 +547,16 @@ class WiFiAnalyzer {
                     
                     // Progressive measurement: if tests are consistent, we can stop early
                     if (i >= 1 && results.length >= 2) {
-                        const variance = Math.abs(results[results.length - 1] - results[results.length - 2]) / results[results.length - 2];
-                        if (variance < 0.15) {
-                            // Results are consistent (within 15%), we can stop
-                            console.log(`Download tests consistent (variance: ${(variance * 100).toFixed(1)}%), stopping early`);
-                            break;
+                        const prevResult = results[results.length - 2];
+                        const currResult = results[results.length - 1];
+                        // Avoid division by zero
+                        if (prevResult > 0) {
+                            const variance = Math.abs(currResult - prevResult) / prevResult;
+                            if (variance < this.speedTestConstants.CONSISTENCY_VARIANCE_THRESHOLD) {
+                                // Results are consistent (within threshold), we can stop
+                                console.log(`Download tests consistent (variance: ${(variance * 100).toFixed(1)}%), stopping early`);
+                                break;
+                            }
                         }
                     }
                 }
@@ -605,7 +621,7 @@ class WiFiAnalyzer {
                         
                         // Adaptive optimization: if first test shows very high upload speed (>100 Mbps),
                         // add larger test for better accuracy
-                        if (i === 0 && res > 100 && uploadTests.length < 4) {
+                        if (i === 0 && res > this.speedTestConstants.HIGH_SPEED_UPLOAD_THRESHOLD && uploadTests.length < 4) {
                             console.log(`High-speed upload detected (${res.toFixed(0)} Mbps), adding 25MB test`);
                             uploadTests.push(25_000_000); // Add 25MB test for very fast uploads
                         }
@@ -613,10 +629,15 @@ class WiFiAnalyzer {
                     
                     // Progressive measurement: stop early if results are consistent
                     if (i >= 1 && uploadResults.length >= 2) {
-                        const variance = Math.abs(uploadResults[uploadResults.length - 1] - uploadResults[uploadResults.length - 2]) / uploadResults[uploadResults.length - 2];
-                        if (variance < 0.15) {
-                            console.log(`Upload tests consistent (variance: ${(variance * 100).toFixed(1)}%), stopping early`);
-                            break;
+                        const prevResult = uploadResults[uploadResults.length - 2];
+                        const currResult = uploadResults[uploadResults.length - 1];
+                        // Avoid division by zero
+                        if (prevResult > 0) {
+                            const variance = Math.abs(currResult - prevResult) / prevResult;
+                            if (variance < this.speedTestConstants.CONSISTENCY_VARIANCE_THRESHOLD) {
+                                console.log(`Upload tests consistent (variance: ${(variance * 100).toFixed(1)}%), stopping early`);
+                                break;
+                            }
                         }
                     }
                 }
@@ -845,13 +866,13 @@ class WiFiAnalyzer {
                 // Use upload time for calculation, not total time
                 const seconds = uploadTime;
                 
-                // Ensure reasonable timing
-                if (seconds < 0.15) {
+                // Ensure reasonable timing using constant
+                if (seconds < this.speedTestConstants.MIN_MEASUREMENT_TIME + 0.05) {
                     console.warn(`Upload test too fast (${seconds.toFixed(3)}s), response download: ${responseDownloadTime.toFixed(3)}s`);
                     // Still calculate, but note it may be less accurate
                 }
                 
-                const mbps = (bytes * 8) / Math.max(seconds, 0.1) / 1e6;
+                const mbps = (bytes * 8) / Math.max(seconds, this.speedTestConstants.MIN_MEASUREMENT_TIME) / 1e6;
                 console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, response: ${responseDownloadTime.toFixed(2)}s)`);
                 
                 // Sanity check: upload speed should be between 0.1 Mbps and 10 Gbps
@@ -953,21 +974,24 @@ class WiFiAnalyzer {
                 clearTimeout(timeout);
                 
                 // Calculate overhead compensation
+                // Cap overhead at MAX_OVERHEAD_PERCENTAGE to handle networks with high latency
+                // where connection setup time is significant but shouldn't dominate the calculation
                 const totalTime = (endTime - startTime) / 1000;
                 const connectionOverhead = firstByteTime ? (firstByteTime - startTime) / 1000 : 0;
-                const dataTransferTime = totalTime - Math.min(connectionOverhead, totalTime * 0.3);
+                const maxOverhead = totalTime * this.speedTestConstants.MAX_OVERHEAD_PERCENTAGE;
+                const dataTransferTime = totalTime - Math.min(connectionOverhead, maxOverhead);
                 
                 // Use actual bytes received, fallback to content-length if available
                 const actualBytes = received > 0 ? received : contentLength;
                 
-                // For very fast connections, ensure minimum measurement time
-                if (dataTransferTime < 0.15) {
+                // For very fast connections, ensure minimum measurement time using constant
+                if (dataTransferTime < this.speedTestConstants.MIN_MEASUREMENT_TIME + 0.05) {
                     console.warn(`Download test too fast (${dataTransferTime.toFixed(3)}s data transfer), connection overhead: ${connectionOverhead.toFixed(3)}s`);
                     // Still calculate, but note it may be less accurate
                 }
                 
-                // Calculate speed in Mbps using data transfer time
-                const mbps = (actualBytes * 8) / Math.max(dataTransferTime, 0.1) / 1e6;
+                // Calculate speed in Mbps using data transfer time with minimum floor
+                const mbps = (actualBytes * 8) / Math.max(dataTransferTime, this.speedTestConstants.MIN_MEASUREMENT_TIME) / 1e6;
                 console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${dataTransferTime.toFixed(2)}s, overhead: ${connectionOverhead.toFixed(2)}s)`);
                 
                 // Sanity check: download speed should be between 0.1 Mbps and 10 Gbps
