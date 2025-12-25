@@ -1162,9 +1162,9 @@ class WiFiAnalyzer {
                 // Calculate speed
                 const mbps = this.calculateMbps(actualBytes, totalTime);
                 console.log(
-                    `Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps\n` +
-                    `  Size: ${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s\n` +
-                    `  Received: ${received}, ContentLength: ${contentLength}`
+                    `Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps` +
+                    `\n  Size: ${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s` +
+                    `\n  Received: ${received}, ContentLength: ${contentLength}`
                 );
                 
                 // Very relaxed sanity check for slow connections: 0.01 Mbps to 10000 Mbps
@@ -1306,9 +1306,9 @@ class WiFiAnalyzer {
             const actualBytes = this.getActualBytes(received, contentLength, endpoint, expectedSize);
             
             console.log(
-                `Connection ${connectionId}:\n` +
-                `  Received: ${received} bytes, Using: ${actualBytes} bytes\n` +
-                `  ContentLength: ${contentLength}, Expected: ${expectedSize}`
+                `Connection ${connectionId}:` +
+                `\n  Received: ${received} bytes, Using: ${actualBytes} bytes` +
+                `\n  ContentLength: ${contentLength}, Expected: ${expectedSize}`
             );
             
             return { bytes: actualBytes, connectionId };
