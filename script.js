@@ -236,11 +236,18 @@ class WiFiAnalyzer {
         // Helper method to determine actual bytes for speed calculation
         // Falls back through multiple sources when streaming API doesn't report bytes correctly
         // This is critical for Safari/iPhone where response.body.getReader() may fail silently
-        if (received > 0) {
-            return received;
+        
+        // Validate inputs - ensure numeric values
+        const validReceived = typeof received === 'number' && received > 0 ? received : 0;
+        const validContentLength = typeof contentLength === 'number' && contentLength > 0 ? contentLength : 0;
+        const validExpectedSize = typeof expectedSize === 'number' && expectedSize > 0 ? expectedSize : 0;
+        const validFixedSize = endpoint && typeof endpoint.fixedSize === 'number' && endpoint.fixedSize > 0 ? endpoint.fixedSize : 0;
+        
+        if (validReceived > 0) {
+            return validReceived;
         }
         // Fallback chain: contentLength -> fixedSize -> expectedSize
-        return contentLength || endpoint.fixedSize || expectedSize || 0;
+        return validContentLength || validFixedSize || validExpectedSize || 0;
     }
 
     init() {
@@ -1140,7 +1147,11 @@ class WiFiAnalyzer {
                 
                 // Calculate speed
                 const mbps = this.calculateMbps(actualBytes, totalTime);
-                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s, received: ${received}, contentLength: ${contentLength})`);
+                console.log(
+                    `Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps\n` +
+                    `  Size: ${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s\n` +
+                    `  Received: ${received}, ContentLength: ${contentLength}`
+                );
                 
                 // Very relaxed sanity check for slow connections: 0.01 Mbps to 10000 Mbps
                 // This allows detection of very slow connections (dial-up, etc.)
@@ -1280,7 +1291,11 @@ class WiFiAnalyzer {
             // This is critical for Safari/iPhone where streaming may not report bytes correctly
             const actualBytes = this.getActualBytes(received, contentLength, endpoint, expectedSize);
             
-            console.log(`Connection ${connectionId}: received ${received} bytes, using ${actualBytes} bytes (contentLength: ${contentLength}, expected: ${expectedSize})`);
+            console.log(
+                `Connection ${connectionId}:\n` +
+                `  Received: ${received} bytes, Using: ${actualBytes} bytes\n` +
+                `  ContentLength: ${contentLength}, Expected: ${expectedSize}`
+            );
             
             return { bytes: actualBytes, connectionId };
         } catch (e) {
