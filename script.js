@@ -1198,6 +1198,9 @@ class WiFiAnalyzer {
             const timestamp = Date.now();
             const random = Math.random().toString(36).substring(7);
             
+            // Determine expected file size from sizeMap if available
+            let expectedSize = bytes;
+            
             // Construct URL based on endpoint type
             let url;
             if (endpoint.sizeMap) {
@@ -1208,6 +1211,8 @@ class WiFiAnalyzer {
                     Math.abs(curr - bytes) < Math.abs(prev - bytes) ? curr : prev
                 );
                 url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
+                // Use the closest size from the map as expected size
+                expectedSize = closestSize;
             } else if (endpoint.useParams) {
                 url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
             } else {
@@ -1230,6 +1235,9 @@ class WiFiAnalyzer {
                 throw new Error(`Download failed with status ${response.status}`);
             }
             
+            // Get content length from headers as fallback
+            const contentLength = parseInt(response.headers.get('content-length') || '0');
+            
             // Read the response body
             let received = 0;
             
@@ -1251,7 +1259,16 @@ class WiFiAnalyzer {
             
             clearTimeout(timeout);
             
-            return { bytes: received, connectionId };
+            // Use actual bytes received, or fall back to content-length, fixed size, or expected size
+            // This is critical for Safari/iPhone where streaming may not report bytes correctly
+            let actualBytes = received;
+            if (actualBytes === 0) {
+                actualBytes = contentLength || endpoint.fixedSize || expectedSize;
+            }
+            
+            console.log(`Connection ${connectionId}: received ${received} bytes, using ${actualBytes} bytes (contentLength: ${contentLength}, expected: ${expectedSize})`);
+            
+            return { bytes: actualBytes, connectionId };
         } catch (e) {
             console.warn(`Connection ${connectionId} failed: ${e.message}`);
             return { bytes: 0, connectionId };
