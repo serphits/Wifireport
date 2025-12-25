@@ -879,16 +879,18 @@ class WiFiAnalyzer {
             promises.push(this.uploadChunk(endpoint, bytesPerConnection, i));
         }
         
-        // Wait for all connections to complete
+        // Wait for all connections to complete (use allSettled to handle partial failures)
         try {
-            const chunks = await Promise.all(promises);
+            const results = await Promise.allSettled(promises);
             
-            // Calculate total bytes uploaded
+            // Calculate total bytes uploaded from successful connections
             let totalBytes = 0;
-            for (const chunk of chunks) {
-                if (chunk && chunk.bytes > 0) {
-                    totalBytes += chunk.bytes;
-                    results.push(chunk);
+            const successfulChunks = [];
+            
+            for (const result of results) {
+                if (result.status === 'fulfilled' && result.value && result.value.bytes > 0) {
+                    totalBytes += result.value.bytes;
+                    successfulChunks.push(result.value);
                 }
             }
             
@@ -896,13 +898,13 @@ class WiFiAnalyzer {
             const totalTime = (endTime - startTime) / 1000;
             
             // Need at least some successful connections
-            if (results.length === 0 || totalBytes === 0) {
+            if (successfulChunks.length === 0 || totalBytes === 0) {
                 throw new Error('No data uploaded from any connection');
             }
             
             // Calculate overall speed
             const mbps = this.calculateMbps(totalBytes, totalTime);
-            console.log(`Multi-connection upload complete (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(totalBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s, ${results.length}/${numConnections} connections successful)`);
+            console.log(`Multi-connection upload complete (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(totalBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s, ${successfulChunks.length}/${numConnections} connections successful)`);
             
             return mbps;
         } catch (e) {
@@ -980,14 +982,6 @@ class WiFiAnalyzer {
                 provider: 'httpbin.org',
                 useParams: true,
                 concurrent: false
-            },
-            // Fallback 2: Random data generator
-            {
-                url: 'https://random-data-api.com/api/v2/beers',
-                provider: 'Random Data API',
-                useParams: false,
-                concurrent: false,
-                fixedSize: 2000 // Small payload
             }
         ];
         
@@ -1083,7 +1077,7 @@ class WiFiAnalyzer {
                 const mbps = this.calculateMbps(actualBytes, totalTime);
                 console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s)`);
                 
-                // Relaxed sanity check: speed should be reasonable
+                // Relaxed sanity check: speed should be reasonable (consistent threshold)
                 if (mbps > 0.01 && mbps < 10000 && actualBytes > 0) {
                     return mbps;
                 }
@@ -1112,16 +1106,18 @@ class WiFiAnalyzer {
             promises.push(this.downloadChunk(endpoint, bytesPerConnection, i));
         }
         
-        // Wait for all connections to complete
+        // Wait for all connections to complete (use allSettled to handle partial failures)
         try {
-            const chunks = await Promise.all(promises);
+            const results = await Promise.allSettled(promises);
             
-            // Calculate total bytes received
+            // Calculate total bytes received from successful connections
             let totalBytes = 0;
-            for (const chunk of chunks) {
-                if (chunk && chunk.bytes > 0) {
-                    totalBytes += chunk.bytes;
-                    results.push(chunk);
+            const successfulChunks = [];
+            
+            for (const result of results) {
+                if (result.status === 'fulfilled' && result.value && result.value.bytes > 0) {
+                    totalBytes += result.value.bytes;
+                    successfulChunks.push(result.value);
                 }
             }
             
@@ -1129,13 +1125,13 @@ class WiFiAnalyzer {
             const totalTime = (endTime - startTime) / 1000;
             
             // Need at least some successful connections
-            if (results.length === 0 || totalBytes === 0) {
+            if (successfulChunks.length === 0 || totalBytes === 0) {
                 throw new Error('No data received from any connection');
             }
             
             // Calculate overall speed
             const mbps = this.calculateMbps(totalBytes, totalTime);
-            console.log(`Multi-connection download complete (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(totalBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s, ${results.length}/${numConnections} connections successful)`);
+            console.log(`Multi-connection download complete (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(totalBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s, ${successfulChunks.length}/${numConnections} connections successful)`);
             
             return mbps;
         } catch (e) {
