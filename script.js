@@ -193,7 +193,8 @@ class WiFiAnalyzer {
             MIN_MEASUREMENT_TIME: 2.0, // Minimum time in seconds for valid measurement (increased for accuracy)
             MIN_MEASUREMENT_BUFFER: 0.5, // Buffer added to minimum time for warnings
             TARGET_TEST_DURATION: 8.0, // Target duration for each speed test (increased for better measurements)
-            MAX_TEST_TIMEOUT: 60000 // Maximum timeout for a single test (60 seconds for large files)
+            MAX_TEST_TIMEOUT: 60000, // Maximum timeout for a single test (60 seconds for large files)
+            MAX_REALISTIC_SPEED_MBps: 250 // Maximum realistic speed in MB/s (2000 Mbps / 8 for 2.5 Gbps fiber)
         };
         
         // Common screen resolutions for fingerprinting detection
@@ -262,6 +263,40 @@ class WiFiAnalyzer {
         if (validFixedSize > 0) return validFixedSize;
         if (validExpectedSize > 0) return validExpectedSize;
         return 0;
+    }
+
+    /**
+     * Build endpoint URL based on endpoint configuration
+     * @param {Object} endpoint - Endpoint configuration object
+     * @param {number} bytes - Number of bytes to request
+     * @param {number} timestamp - Timestamp for cache busting
+     * @param {string} random - Random string for cache busting
+     * @returns {{url: string, expectedSize: number}} URL and expected size
+     */
+    buildEndpointUrl(endpoint, bytes, timestamp, random) {
+        let url;
+        let expectedSize = bytes;
+        
+        if (endpoint.sizeMap) {
+            // For CDN endpoints with size map
+            const sizes = Object.keys(endpoint.sizeMap).map(Number).sort((a, b) => a - b);
+            const closestSize = sizes.reduce((prev, curr) => 
+                Math.abs(curr - bytes) < Math.abs(prev - bytes) ? curr : prev
+            );
+            url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
+            expectedSize = closestSize;
+        } else if (endpoint.usePathParam) {
+            // For endpoints like httpbin.org/bytes/{n}
+            url = `${endpoint.url}/${bytes}?t=${timestamp}&r=${random}`;
+        } else if (endpoint.useParams) {
+            // For endpoints with query parameters
+            url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
+        } else {
+            // Default: just add cache busting parameters
+            url = `${endpoint.url}?t=${timestamp}&r=${random}`;
+        }
+        
+        return { url, expectedSize };
     }
 
     init() {
@@ -1022,7 +1057,7 @@ class WiFiAnalyzer {
                 url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist',
                 provider: 'jsDelivr CDN (Bootstrap)',
                 useParams: false,
-                fixedSize: 212000, // bootstrap.min.css is ~212KB (2.4x larger than jQuery)
+                fixedSize: 212000, // bootstrap.min.css is ~212KB for better measurement accuracy
                 concurrent: false,
                 sizeMap: {
                     512000: '/css/bootstrap.min.css',
@@ -1069,29 +1104,8 @@ class WiFiAnalyzer {
                 const timestamp = Date.now();
                 const random = Math.random().toString(36).substring(7);
                 
-                // Determine expected file size from sizeMap if available
-                let expectedSize = bytes;
-                
-                // Construct URL based on endpoint type
-                let url;
-                if (endpoint.sizeMap) {
-                    // For CDN endpoints with size map (like jsDelivr)
-                    const sizes = Object.keys(endpoint.sizeMap).map(Number).sort((a, b) => a - b);
-                    const closestSize = sizes.reduce((prev, curr) => 
-                        Math.abs(curr - bytes) < Math.abs(prev - bytes) ? curr : prev
-                    );
-                    url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
-                    // Use the closest size from the map as expected size
-                    expectedSize = closestSize;
-                } else if (endpoint.usePathParam) {
-                    // For endpoints like httpbin.org/bytes/{n}
-                    url = `${endpoint.url}/${bytes}?t=${timestamp}&r=${random}`;
-                } else if (endpoint.useParams) {
-                    // For endpoints with query parameters
-                    url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
-                } else {
-                    url = `${endpoint.url}?t=${timestamp}&r=${random}`;
-                }
+                // Build endpoint URL using helper function
+                const { url, expectedSize } = this.buildEndpointUrl(endpoint, bytes, timestamp, random);
                 
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
@@ -1169,8 +1183,8 @@ class WiFiAnalyzer {
                 // If transfer time is < 0.05s for a large file, the browser probably buffered everything instantly
                 // In that case, use the full time as it's more accurate
                 const estimatedBytes = received > 0 ? received : (contentLength > 0 ? contentLength : expectedSize);
-                // Assume max realistic speed of 2000 Mbps (2.5 Gbps) = 250 MB/s for fiber connections
-                const minExpectedTransferTime = Math.max(0.05, estimatedBytes / 1e6 / 250);
+                // Use MAX_REALISTIC_SPEED_MBps constant for fiber connections (2000 Mbps / 8 = 250 MB/s)
+                const minExpectedTransferTime = Math.max(0.05, estimatedBytes / 1e6 / this.speedTestConstants.MAX_REALISTIC_SPEED_MBps);
                 
                 if (transferTime > minExpectedTransferTime && transferTime < fullTime) {
                     // Use transfer time if it's reasonable and less than full time
