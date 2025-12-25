@@ -188,12 +188,12 @@ class WiFiAnalyzer {
             jitter: { good: 10, fair: 30 }
         };
         
-        // Speed test constants - simplified for faster, more accurate results
+        // Speed test constants - optimized for accuracy across all connection speeds
         this.speedTestConstants = {
-            MIN_MEASUREMENT_TIME: 1.0, // Minimum time in seconds for valid measurement (reduced for speed)
+            MIN_MEASUREMENT_TIME: 2.0, // Minimum time in seconds for valid measurement (increased for accuracy)
             MIN_MEASUREMENT_BUFFER: 0.5, // Buffer added to minimum time for warnings
-            TARGET_TEST_DURATION: 2.0, // Target duration for each speed test (reduced for speed)
-            MAX_TEST_TIMEOUT: 30000 // Maximum timeout for a single test (30 seconds)
+            TARGET_TEST_DURATION: 8.0, // Target duration for each speed test (increased for better measurements)
+            MAX_TEST_TIMEOUT: 60000 // Maximum timeout for a single test (60 seconds for large files)
         };
         
         // Common screen resolutions for fingerprinting detection
@@ -553,20 +553,23 @@ class WiFiAnalyzer {
             }
 
             // Test 2: Measure bandwidth with controlled downloads
-            // Simplified and faster speed test with real-time display
+            // Use appropriately sized files to get accurate measurements (target 5-10 second tests)
             let downloadMbps = 0;
             try {
-                // Use smaller, faster tests (2-3 seconds each) for quicker results
+                // Calculate file sizes based on connection type to ensure tests run 5-10 seconds
+                // This is critical for accurate measurements on fast connections
                 let runs;
                 if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-                    // For slow connections: 1MB, 2MB (quick tests)
+                    // For slow connections (0.1-2 Mbps): 1MB, 2MB (5-10 seconds each)
                     runs = [1_000_000, 2_000_000];
                 } else if (effectiveType === '3g') {
-                    // For 3G: 5MB, 10MB (2-3 seconds each)
-                    runs = [5_000_000, 10_000_000];
+                    // For 3G (2-10 Mbps): 10MB, 20MB (8-10 seconds each)
+                    runs = [10_000_000, 20_000_000];
                 } else {
-                    // For fast connections: 10MB, 25MB (2-3 seconds each)
-                    runs = [10_000_000, 25_000_000];
+                    // For fast connections (>10 Mbps, potentially 100-1000 Mbps): use MUCH larger files
+                    // At 200 Mbps: 100MB takes 4 seconds, 200MB takes 8 seconds - perfect for accuracy!
+                    // At 1000 Mbps: 100MB takes 0.8s, 200MB takes 1.6s - still reasonable
+                    runs = [100_000_000, 200_000_000]; // 100MB, 200MB
                 }
                 
                 const results = [];
@@ -618,20 +621,20 @@ class WiFiAnalyzer {
 
             speed.metrics.downloadSpeed = Math.max(0, Math.round(downloadMbps * 10) / 10);
 
-            // Test 3: Measure upload speed - simplified and faster
+            // Test 3: Measure upload speed with appropriately sized tests
             let uploadMbps = 0;
             try {
-                // Use smaller, faster tests for quicker results
+                // Use larger tests for fast connections to get accurate measurements
                 let uploadTests;
                 if (effectiveType === 'slow-2g' || effectiveType === '2g') {
                     // For slow connections: 500KB, 1MB
                     uploadTests = [500_000, 1_000_000];
                 } else if (effectiveType === '3g') {
-                    // For 3G: 2MB, 5MB
-                    uploadTests = [2_000_000, 5_000_000];
-                } else {
-                    // For fast connections: 5MB, 10MB
+                    // For 3G: 5MB, 10MB (5-10 seconds each at 5-10 Mbps)
                     uploadTests = [5_000_000, 10_000_000];
+                } else {
+                    // For fast connections: 20MB, 50MB (will take 0.8-2s at 200 Mbps, good for accuracy)
+                    uploadTests = [20_000_000, 50_000_000];
                 }
                 
                 const uploadResults = [];
@@ -1001,13 +1004,16 @@ class WiFiAnalyzer {
                 useParams: false,
                 concurrent: true,
                 sizeMap: {
-                    512000: '/512KB.bin',     // 512KB
-                    1000000: '/1MB.bin',      // 1MB
-                    2000000: '/2MB.bin',      // 2MB  
-                    5000000: '/5MB.bin',      // 5MB
-                    10000000: '/10MB.bin',    // 10MB
-                    20000000: '/20MB.bin',    // 20MB
-                    25000000: '/20MB.bin'     // 25MB (use 20MB as closest)
+                    512000: '/512KB.bin',       // 512KB
+                    1000000: '/1MB.bin',        // 1MB
+                    2000000: '/2MB.bin',        // 2MB  
+                    5000000: '/5MB.bin',        // 5MB
+                    10000000: '/10MB.bin',      // 10MB
+                    20000000: '/20MB.bin',      // 20MB
+                    25000000: '/20MB.bin',      // 25MB (use 20MB as closest)
+                    50000000: '/50MB.bin',      // 50MB - NEW for medium-fast connections
+                    100000000: '/100MB.bin',    // 100MB - NEW for fast connections (100-500 Mbps)
+                    200000000: '/100MB.bin'     // 200MB (use 100MB x2 as workaround)
                 }
             },
             // Fallback 1: jsDelivr CDN (very fast, globally distributed, CORS-enabled)
@@ -1116,8 +1122,10 @@ class WiFiAnalyzer {
                 // Get content length from headers
                 const contentLength = parseInt(response.headers.get('content-length') || '0');
                 
-                // Read the response body
+                // Read the response body with precise timing
                 let received = 0;
+                let transferStartTime = null; // Track when data transfer actually starts
+                let lastChunkTime = null; // Track when last chunk arrives
                 
                 if (response.body && response.body.getReader) {
                     // Use streaming for accurate measurement
@@ -1125,13 +1133,24 @@ class WiFiAnalyzer {
                     
                     try {
                         while (true) {
+                            const chunkStartTime = performance.now();
                             const { done, value } = await reader.read();
-                            if (done) break;
+                            
+                            if (done) {
+                                lastChunkTime = performance.now();
+                                break;
+                            }
+                            
+                            // Track when first data arrives (actual transfer start, not connection setup)
+                            if (!transferStartTime) {
+                                transferStartTime = chunkStartTime;
+                            }
                             
                             if (!firstByteTime) {
-                                firstByteTime = performance.now();
+                                firstByteTime = chunkStartTime;
                             }
                             received += value.length;
+                            lastChunkTime = performance.now();
                         }
                     } finally {
                         reader.releaseLock();
@@ -1141,13 +1160,26 @@ class WiFiAnalyzer {
                     const buffer = await response.arrayBuffer();
                     received = buffer.byteLength;
                     firstByteTime = performance.now();
+                    transferStartTime = firstByteTime;
+                    lastChunkTime = performance.now();
                 }
                 
                 const endTime = performance.now();
                 clearTimeout(timeout);
                 
-                // Calculate time - use full time for simplicity
-                const totalTime = (endTime - startTime) / 1000;
+                // Calculate time - use actual transfer time when available
+                // transferStartTime to lastChunkTime gives us pure data transfer time (excludes connection setup)
+                // This is critical for accurate speed measurement on fast connections
+                let totalTime;
+                if (transferStartTime && lastChunkTime && (lastChunkTime - transferStartTime) > 0.1) {
+                    // Use transfer time if it's significant (> 100ms)
+                    totalTime = (lastChunkTime - transferStartTime) / 1000;
+                    console.log(`Using transfer time: ${totalTime.toFixed(3)}s (excluding ${((transferStartTime - startTime) / 1000).toFixed(3)}s connection setup)`);
+                } else {
+                    // Fallback to total time for very fast transfers
+                    totalTime = (endTime - startTime) / 1000;
+                    console.log(`Using total time: ${totalTime.toFixed(3)}s (transfer too fast to isolate)`);
+                }
                 
                 // Use actual bytes received, or fall back to content-length, fixed size, or expected size
                 // This is critical for Safari/iPhone where streaming may not report bytes correctly
@@ -1159,12 +1191,18 @@ class WiFiAnalyzer {
                     continue;
                 }
                 
-                // Calculate speed
+                // Calculate speed with detailed logging for diagnosis
                 const mbps = this.calculateMbps(actualBytes, totalTime);
+                
+                // Detailed diagnostic logging
                 console.log(
                     `Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps` +
                     `\n  Size: ${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s` +
-                    `\n  Received: ${received}, ContentLength: ${contentLength}`
+                    `\n  Received: ${received} bytes, ContentLength: ${contentLength}` +
+                    `\n  Connection setup: ${transferStartTime ? ((transferStartTime - startTime) / 1000).toFixed(3) : 'N/A'}s` +
+                    `\n  Actual transfer: ${transferStartTime && lastChunkTime ? ((lastChunkTime - transferStartTime) / 1000).toFixed(3) : 'N/A'}s` +
+                    `\n  Average throughput: ${totalTime > 0 ? ((actualBytes / 1e6) / totalTime).toFixed(2) : 'N/A'} MB/s` +
+                    `\n  Endpoint: ${url}`
                 );
                 
                 // Very relaxed sanity check for slow connections: 0.01 Mbps to 10000 Mbps
