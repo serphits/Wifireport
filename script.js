@@ -229,7 +229,7 @@ class WiFiAnalyzer {
     calculateMbps(bytes, seconds) {
         // Helper method to calculate Mbps from bytes and time
         // Formula: (bytes * 8 bits/byte) / seconds / 1,000,000 bits/Mbps
-        // Prevent division by zero or extremely small values (< 0.001s)
+        // Prevent division by zero or extremely small values (<= 0.001s)
         // 0.001s = 1ms is a reasonable floor to prevent unrealistic calculations
         const effectiveSeconds = Math.max(seconds, 0.001);
         return (bytes * 8) / effectiveSeconds / 1e6;
@@ -893,7 +893,7 @@ class WiFiAnalyzer {
                     // Still calculate, but note it may be less accurate
                 }
                 
-                // Don't apply minimum time floor to actual calculation - let fast connections report their true speed
+                // Don't apply minimum time floor here - calculateMbps has internal 1ms floor for division-by-zero protection
                 const mbps = this.calculateMbps(bytes, seconds);
                 console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${seconds.toFixed(2)}s, response: ${responseDownloadTime.toFixed(2)}s)`);
                 
@@ -1031,7 +1031,7 @@ class WiFiAnalyzer {
                     // Still calculate, but note it may be less accurate
                 }
                 
-                // Don't apply minimum time floor to actual calculation - let fast connections report their true speed
+                // Don't apply minimum time floor here - calculateMbps has internal 1ms floor for division-by-zero protection
                 const mbps = this.calculateMbps(actualBytes, dataTransferTime);
                 console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${dataTransferTime.toFixed(2)}s, overhead: ${connectionOverhead.toFixed(2)}s)`);
                 
