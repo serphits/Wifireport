@@ -764,35 +764,21 @@ class WiFiAnalyzer {
     }
 
     async measureUploadMbps(bytes) {
-        // Improved upload test with multi-connection support (like speedtest.net)
+        // Improved upload test with CORS-friendly endpoints
         const endpoints = [
-            { 
-                url: `https://speed.cloudflare.com/__up`, 
-                provider: 'Cloudflare',
-                concurrent: true
-            },
             {
                 url: 'https://httpbin.org/post',
                 provider: 'httpbin.org',
                 concurrent: false
+            },
+            {
+                url: 'https://httpbin.org/anything',
+                provider: 'httpbin.org/anything',
+                concurrent: false
             }
         ];
         
-        // Try multi-connection upload first (most accurate)
-        for (const endpoint of endpoints) {
-            if (endpoint.concurrent) {
-                try {
-                    const result = await this.measureUploadMultiConnection(endpoint, bytes);
-                    if (result > 0.01) {
-                        return result;
-                    }
-                } catch (e) {
-                    console.error(`Multi-connection upload test failed (${endpoint.provider}):`, e.message);
-                }
-            }
-        }
-        
-        // Fallback to single connection
+        // Test with single connection (httpbin.org doesn't benefit from multi-connection)
         for (const endpoint of endpoints) {
             try {
                 // Generate test data
@@ -965,22 +951,39 @@ class WiFiAnalyzer {
     }
 
     async measureDownloadMbps(bytes) {
-        // Improved speed test using multiple concurrent connections (like speedtest.net/fast.com)
-        // This significantly improves accuracy by saturating the bandwidth
+        // Improved speed test using multiple CORS-friendly methods and endpoints
+        // Uses public CDN files and APIs for accurate measurements
         
         const endpoints = [
-            // Primary: Cloudflare's speed test endpoint
-            { 
-                url: `https://speed.cloudflare.com/__down`, 
-                provider: 'Cloudflare',
-                useParams: true,
-                concurrent: true
+            // Primary: Use GitHub's reliable CDN for test files (CORS-friendly)
+            {
+                url: 'https://raw.githubusercontent.com/inventer-dev/speed-test-files/main',
+                provider: 'GitHub CDN',
+                useParams: false,
+                concurrent: true,
+                sizeMap: {
+                    512000: '/512KB.bin',     // 512KB
+                    1000000: '/1MB.bin',      // 1MB
+                    2000000: '/2MB.bin',      // 2MB  
+                    5000000: '/5MB.bin',      // 5MB
+                    10000000: '/10MB.bin',    // 10MB
+                    20000000: '/20MB.bin',    // 20MB
+                    25000000: '/20MB.bin'     // 25MB (use 20MB as closest)
+                }
             },
-            // Fallback 1: httpbin.org (reliable, supports CORS)
+            // Fallback 1: httpbin.org (reliable, supports CORS, any size)
             {
                 url: 'https://httpbin.org/bytes',
                 provider: 'httpbin.org',
                 useParams: true,
+                concurrent: false
+            },
+            // Fallback 2: Use another GitHub test file repository
+            {
+                url: 'https://raw.githubusercontent.com/librespeed/speedtest-cli/master/test-data',
+                provider: 'LibreSpeed GitHub',
+                useParams: false,
+                fixedSize: bytes,
                 concurrent: false
             }
         ];
@@ -991,7 +994,7 @@ class WiFiAnalyzer {
             if (endpoint.concurrent) {
                 try {
                     const result = await this.measureDownloadMultiConnection(endpoint, bytes);
-                    if (result > 0.1) {
+                    if (result > 0.01) { // Lower threshold for slow connections
                         return result;
                     }
                 } catch (e) {
@@ -1005,9 +1008,21 @@ class WiFiAnalyzer {
             try {
                 const timestamp = Date.now();
                 const random = Math.random().toString(36).substring(7);
-                const url = endpoint.useParams 
-                    ? `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`
-                    : `${endpoint.url}?_=${timestamp}&r=${random}`;
+                
+                // Construct URL based on endpoint type
+                let url;
+                if (endpoint.sizeMap) {
+                    // For CDN endpoints with size map (like jsDelivr)
+                    const sizes = Object.keys(endpoint.sizeMap).map(Number).sort((a, b) => a - b);
+                    const closestSize = sizes.reduce((prev, curr) => 
+                        Math.abs(curr - bytes) < Math.abs(prev - bytes) ? curr : prev
+                    );
+                    url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
+                } else if (endpoint.useParams) {
+                    url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
+                } else {
+                    url = `${endpoint.url}?t=${timestamp}&r=${random}`;
+                }
                 
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
@@ -1144,9 +1159,22 @@ class WiFiAnalyzer {
         try {
             const timestamp = Date.now();
             const random = Math.random().toString(36).substring(7);
-            const url = endpoint.useParams 
-                ? `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}&conn=${connectionId}`
-                : `${endpoint.url}?_=${timestamp}&r=${random}&conn=${connectionId}`;
+            
+            // Construct URL based on endpoint type
+            let url;
+            if (endpoint.sizeMap) {
+                // For CDN endpoints with size map (like jsDelivr)
+                // Find the closest size match
+                const sizes = Object.keys(endpoint.sizeMap).map(Number).sort((a, b) => a - b);
+                const closestSize = sizes.reduce((prev, curr) => 
+                    Math.abs(curr - bytes) < Math.abs(prev - bytes) ? curr : prev
+                );
+                url = `${endpoint.url}${endpoint.sizeMap[closestSize]}?t=${timestamp}&r=${random}`;
+            } else if (endpoint.useParams) {
+                url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}&r=${random}`;
+            } else {
+                url = `${endpoint.url}?t=${timestamp}&r=${random}`;
+            }
             
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
