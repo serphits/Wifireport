@@ -232,22 +232,36 @@ class WiFiAnalyzer {
         return (bytes * 8) / effectiveSeconds / 1e6;
     }
 
+    /**
+     * Determines actual bytes downloaded for speed calculation with fallback support.
+     * Critical for Safari/iPhone where response.body.getReader() may not report bytes correctly.
+     * 
+     * @param {number} received - Bytes reported by streaming API
+     * @param {number} contentLength - Content-Length header value
+     * @param {Object} endpoint - Endpoint configuration with optional fixedSize
+     * @param {number} expectedSize - Expected file size from sizeMap
+     * @returns {number} Actual bytes to use for speed calculation (prioritized fallback)
+     * 
+     * Fallback priority:
+     * 1. received (if > 0)
+     * 2. contentLength
+     * 3. endpoint.fixedSize
+     * 4. expectedSize
+     * 5. 0 (if all fail)
+     */
     getActualBytes(received, contentLength, endpoint, expectedSize) {
-        // Helper method to determine actual bytes for speed calculation
-        // Falls back through multiple sources when streaming API doesn't report bytes correctly
-        // This is critical for Safari/iPhone where response.body.getReader() may fail silently
-        
         // Validate inputs - ensure numeric values
         const validReceived = typeof received === 'number' && received > 0 ? received : 0;
         const validContentLength = typeof contentLength === 'number' && contentLength > 0 ? contentLength : 0;
         const validExpectedSize = typeof expectedSize === 'number' && expectedSize > 0 ? expectedSize : 0;
         const validFixedSize = endpoint && typeof endpoint.fixedSize === 'number' && endpoint.fixedSize > 0 ? endpoint.fixedSize : 0;
         
-        if (validReceived > 0) {
-            return validReceived;
-        }
-        // Fallback chain: contentLength -> fixedSize -> expectedSize
-        return validContentLength || validFixedSize || validExpectedSize || 0;
+        // Return first valid value in priority order
+        if (validReceived > 0) return validReceived;
+        if (validContentLength > 0) return validContentLength;
+        if (validFixedSize > 0) return validFixedSize;
+        if (validExpectedSize > 0) return validExpectedSize;
+        return 0;
     }
 
     init() {
