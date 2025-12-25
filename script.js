@@ -593,29 +593,20 @@ class WiFiAnalyzer {
                 }
             } catch (e) {
                 console.error('Download measurement error:', e);
-                // ignore, fallback below
+                // Don't use fallback - let it remain 0 so we know the test failed
             }
 
+            // Remove unreliable fallback methods that use page load resources
+            // These give inaccurate results (often showing 0.4 Mbps when actual speed is 200 Mbps)
+            // If the actual speed tests fail, we should report 0 or use connection API estimate
+            
             if (!downloadMbps || !isFinite(downloadMbps) || downloadMbps === 0) {
-                // Fallback: rough estimate using resource timings if available
-                if (window.performance) {
-                    const resources = performance.getEntriesByType('resource');
-                    const largeResources = resources.filter(r => (r.transferSize || 0) > 10000);
-                    if (largeResources.length > 0) {
-                        const total = largeResources.reduce((sum, r) => sum + (r.transferSize || 0), 0);
-                        const totalTime = largeResources.reduce((sum, r) => sum + (r.duration || 0), 0) / 1000;
-                        if (totalTime > 0 && total > 0) {
-                            downloadMbps = (total * 8) / totalTime / 1e6;
-                        }
-                    }
-                }
-            }
-
-            // If still 0, use connection API estimate as last resort
-            if (!downloadMbps || !isFinite(downloadMbps) || downloadMbps === 0) {
+                console.warn('⚠️ All download tests failed - trying connection API estimate');
+                // Use connection API estimate as fallback (more reliable than resource timings)
                 const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
                 if (connection && connection.downlink) {
                     downloadMbps = connection.downlink;
+                    console.log(`Using connection API downlink estimate: ${downloadMbps} Mbps`);
                 }
             }
 
@@ -1064,19 +1055,25 @@ class WiFiAnalyzer {
         for (const endpoint of endpoints) {
             if (endpoint.concurrent) {
                 try {
+                    console.log(`📡 Attempting multi-connection test with ${endpoint.provider}...`);
                     const result = await this.measureDownloadMultiConnection(endpoint, bytes);
                     if (result > 0.01) { // Lower threshold for slow connections
+                        console.log(`✅ Multi-connection test succeeded: ${result.toFixed(2)} Mbps`);
                         return result;
+                    } else {
+                        console.warn(`⚠️ Multi-connection test returned invalid speed: ${result.toFixed(2)} Mbps`);
                     }
                 } catch (e) {
-                    console.error(`Multi-connection download test failed (${endpoint.provider}):`, e.message);
+                    console.error(`❌ Multi-connection download test failed (${endpoint.provider}):`, e.message);
                 }
             }
         }
         
         // Fallback to single connection tests
+        console.log('📡 Trying single-connection fallback tests...');
         for (const endpoint of endpoints) {
             try {
+                console.log(`  Testing ${endpoint.provider}...`);
                 const timestamp = Date.now();
                 const random = Math.random().toString(36).substring(7);
                 
