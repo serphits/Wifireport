@@ -1,0 +1,13 @@
+# Test files
+test-speed.html
+
+# Temporary files
+*.tmp
+*.log
+
+# Node modules
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
