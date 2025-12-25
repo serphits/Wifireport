@@ -533,6 +533,7 @@ class WiFiAnalyzer {
                     runs = [2_000_000, 5_000_000]; // 2MB, 5MB for 3G
                 } else {
                     // For fast connections, use larger test sizes for better accuracy
+                    // May add 100MB if >200 Mbps detected on first test
                     runs = [10_000_000, 25_000_000, 50_000_000]; // 10MB, 25MB, 50MB
                 }
                 
@@ -615,6 +616,7 @@ class WiFiAnalyzer {
                     uploadTests = [500_000, 1_000_000]; // 500KB, 1MB for 3G
                 } else {
                     // For fast connections, use larger test sizes
+                    // May add 25MB if >100 Mbps detected on first test
                     uploadTests = [2_000_000, 5_000_000, 10_000_000]; // 2MB, 5MB, 10MB
                 }
                 
@@ -991,9 +993,21 @@ class WiFiAnalyzer {
                 // Cap overhead at MAX_OVERHEAD_PERCENTAGE to handle networks with high latency
                 // where connection setup time is significant but shouldn't dominate the calculation
                 const totalTime = (endTime - startTime) / 1000;
-                const connectionOverhead = firstByteTime ? (firstByteTime - startTime) / 1000 : 0;
-                const maxOverhead = totalTime * this.speedTestConstants.MAX_OVERHEAD_PERCENTAGE;
-                const dataTransferTime = totalTime - Math.min(connectionOverhead, maxOverhead);
+                
+                // Handle cases where firstByteTime might be null (fallback path without streaming)
+                // In fallback case, we can't separate overhead, so we use total time
+                let connectionOverhead = 0;
+                let dataTransferTime = totalTime;
+                
+                if (firstByteTime && firstByteTime > startTime) {
+                    connectionOverhead = (firstByteTime - startTime) / 1000;
+                    const maxOverhead = totalTime * this.speedTestConstants.MAX_OVERHEAD_PERCENTAGE;
+                    dataTransferTime = totalTime - Math.min(connectionOverhead, maxOverhead);
+                } else {
+                    // No first-byte timing available, use total time as data transfer time
+                    // This is less accurate but acceptable for fallback scenario
+                    console.log('Using total time for measurement (no first-byte timing available)');
+                }
                 
                 // Use actual bytes received, fallback to content-length if available
                 const actualBytes = received > 0 ? received : contentLength;
