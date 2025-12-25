@@ -633,11 +633,13 @@ class WiFiAnalyzer {
 
             speed.metrics.uploadSpeed = Math.max(0, Math.round(uploadMbps * 10) / 10);
 
-            // If all metrics are still 0, provide estimates
+            // If all metrics are still 0, provide conservative estimates with a warning
             if (speed.metrics.downloadSpeed === 0 && speed.metrics.uploadSpeed === 0 && speed.metrics.latency === 0) {
+                console.warn('All speed tests failed - using estimates based on connection type');
                 const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
                 const effectiveType = connection?.effectiveType || '4g';
                 
+                // Provide conservative estimates based on connection type
                 if (effectiveType === 'slow-2g') {
                     speed.metrics.downloadSpeed = 0.5;
                     speed.metrics.uploadSpeed = 0.1;
@@ -654,11 +656,16 @@ class WiFiAnalyzer {
                     speed.metrics.latency = 200;
                     speed.metrics.jitter = 50;
                 } else {
-                    speed.metrics.downloadSpeed = 50;
-                    speed.metrics.uploadSpeed = 10;
+                    // For 4G and unknown, use more conservative estimates
+                    speed.metrics.downloadSpeed = 25;
+                    speed.metrics.uploadSpeed = 5;
                     speed.metrics.latency = 50;
                     speed.metrics.jitter = 10;
                 }
+                
+                // Add a note in the status
+                speed.status = 'Estimated';
+                speed.details = `⚠️ Speed test measurements were unavailable. Showing estimates based on ${effectiveType.toUpperCase()} connection type: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Try refreshing for an actual measurement.`;
             }
 
             // Calculate speed score with better thresholds
@@ -1116,17 +1123,22 @@ class WiFiAnalyzer {
                 
                 // Calculate speed
                 const mbps = this.calculateMbps(actualBytes, totalTime);
-                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s)`);
+                console.log(`Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s)`);
                 
-                // Relaxed sanity check: speed should be reasonable (consistent threshold)
-                if (mbps > 0.01 && mbps < 10000 && actualBytes > 0) {
+                // Very relaxed sanity check for slow connections: 0.01 Mbps to 10000 Mbps
+                // This allows detection of very slow connections (dial-up, etc.)
+                if (mbps >= 0.01 && mbps < 10000 && actualBytes > 0) {
+                    console.log(`✓ Download test successful using ${endpoint.provider}`);
                     return mbps;
+                } else {
+                    console.warn(`Download test (${endpoint.provider}): speed ${mbps.toFixed(2)} Mbps out of range or invalid`);
                 }
             } catch (e) {
                 console.error(`Download test failed (${endpoint.provider}):`, e.message);
             }
         }
         
+        console.error('❌ All download test endpoints failed - no measurements available');
         return 0;
     }
     
