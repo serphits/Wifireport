@@ -1002,9 +1002,11 @@ class WiFiAnalyzer {
                     10000000: '/10MB.bin',      // 10MB
                     20000000: '/20MB.bin',      // 20MB
                     25000000: '/20MB.bin',      // 25MB (use 20MB as closest)
-                    50000000: '/50MB.bin',      // 50MB - NEW for medium-fast connections
-                    100000000: '/100MB.bin',    // 100MB - NEW for fast connections (100-500 Mbps)
-                    200000000: '/100MB.bin'     // 200MB (use 100MB x2 as workaround)
+                    50000000: '/50MB.bin',      // 50MB - for medium-fast connections
+                    100000000: '/100MB.bin',    // 100MB - for fast connections (100-500 Mbps)
+                    // Note: 200MB file doesn't exist, so we use 100MB as fallback
+                    // The multi-connection test will download 25MB x 4 = 100MB total anyway
+                    200000000: '/100MB.bin'     // 200MB (fallback to 100MB, actual size handled by test logic)
                 }
             },
             // Fallback 1: jsDelivr CDN (very fast, globally distributed, CORS-enabled)
@@ -1173,7 +1175,7 @@ class WiFiAnalyzer {
                 // If transfer time is < 0.1s for a large file, the browser probably buffered everything instantly
                 // In that case, use the full time as it's more accurate
                 const estimatedBytes = received > 0 ? received : (contentLength > 0 ? contentLength : expectedSize);
-                const minExpectedTransferTime = Math.max(0.1, estimatedBytes / 1e6 / 100); // Assume max 100 MB/s = 800 Mbps
+                const minExpectedTransferTime = Math.max(0.1, estimatedBytes / 1e6 / 200); // Assume max 200 MB/s = 1600 Mbps (gigabit+)
                 
                 if (transferTime > minExpectedTransferTime && transferTime < fullTime) {
                     // Use transfer time if it's reasonable and less than full time
@@ -1231,6 +1233,7 @@ class WiFiAnalyzer {
         // Implement multiple concurrent connections like speedtest.net
         // This saturates the bandwidth for more accurate measurements
         const numConnections = 4; // Use 4 concurrent connections
+        const minRequiredConnections = Math.ceil(numConnections / 2); // Require at least half to succeed
         
         // Instead of dividing bytes, have each connection download a full file
         // This better matches how speedtest.net/fast.com work
@@ -1266,9 +1269,9 @@ class WiFiAnalyzer {
             const endTime = performance.now();
             const totalTime = (endTime - startTime) / 1000;
             
-            // Need at least 2 successful connections for multi-connection test to be valid
-            if (successfulChunks.length < 2 || totalBytes === 0) {
-                throw new Error(`Insufficient successful connections: ${successfulChunks.length}/${numConnections}`);
+            // Need at least half of connections to succeed for multi-connection test to be valid
+            if (successfulChunks.length < minRequiredConnections || totalBytes === 0) {
+                throw new Error(`Insufficient successful connections: ${successfulChunks.length}/${numConnections} (need at least ${minRequiredConnections})`);
             }
             
             // Calculate overall speed
