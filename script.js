@@ -608,6 +608,21 @@ class WiFiAnalyzer {
                 }
                 
                 const results = [];
+
+                // On fast connections, attempt a multi-connection test first to better saturate bandwidth
+                if (effectiveType === '4g' || effectiveType === '5g') {
+                    try {
+                        const cfEndpoint = { url: 'https://speed.cloudflare.com/__down', provider: 'Cloudflare Speed', useParams: true };
+                        const target = 200_000_000; // 200MB across 4 connections
+                        const mc = await this.measureDownloadMultiConnection(cfEndpoint, target);
+                        if (mc && isFinite(mc) && mc > 0) {
+                            results.push(mc);
+                            this.updateProgress(64, `Download (multi): ${mc.toFixed(1)} Mbps`);
+                        }
+                    } catch (e) {
+                        console.warn('Multi-connection download skipped:', e.message);
+                    }
+                }
                 for (let i = 0; i < runs.length; i++) {
                     const res = await this.measureDownloadMbps(runs[i]);
                     if (res && isFinite(res) && res > 0) {
@@ -664,6 +679,20 @@ class WiFiAnalyzer {
                 }
                 
                 const uploadResults = [];
+                // On fast connections, try multi-connection upload first using Cloudflare
+                if (effectiveType === '4g' || effectiveType === '5g') {
+                    try {
+                        const cfUp = { url: 'https://speed.cloudflare.com/__up', provider: 'Cloudflare Speed' };
+                        const targetUp = 50_000_000; // 50MB across 3 connections
+                        const mcUp = await this.measureUploadMultiConnection(cfUp, targetUp);
+                        if (mcUp && isFinite(mcUp) && mcUp > 0) {
+                            uploadResults.push(mcUp);
+                            this.updateProgress(74, `Upload (multi): ${mcUp.toFixed(1)} Mbps`);
+                        }
+                    } catch (e) {
+                        console.warn('Multi-connection upload skipped:', e.message);
+                    }
+                }
                 for (let i = 0; i < uploadTests.length; i++) {
                     const res = await this.measureUploadMbps(uploadTests[i]);
                     if (res && isFinite(res) && res > 0) {
@@ -834,6 +863,11 @@ class WiFiAnalyzer {
     async measureUploadMbps(bytes) {
         // Improved upload test with CORS-friendly endpoints
         const endpoints = [
+            {
+                url: 'https://speed.cloudflare.com/__up',
+                provider: 'Cloudflare Speed',
+                concurrent: false
+            },
             {
                 url: 'https://httpbin.org/post',
                 provider: 'httpbin.org',
@@ -1023,74 +1057,38 @@ class WiFiAnalyzer {
         // Uses public CDN files and APIs for accurate measurements
         
         const endpoints = [
-            // Primary: Use GitHub's reliable CDN for test files (CORS-friendly, very reliable)
-            // Single-connection mode for better reliability
+            // Primary: Cloudflare speed test endpoint (binary, CORS-friendly)
+            {
+                url: 'https://speed.cloudflare.com/__down',
+                provider: 'Cloudflare Speed',
+                useParams: true,
+                concurrent: false
+            },
+            // Secondary: GitHub-hosted binary test files (no compression)
             {
                 url: 'https://raw.githubusercontent.com/inventer-dev/speed-test-files/main',
                 provider: 'GitHub CDN',
                 useParams: false,
-                concurrent: false, // Changed to false for better reliability
+                concurrent: false,
                 sizeMap: {
-                    512000: '/512KB.bin',       // 512KB
-                    1000000: '/1MB.bin',        // 1MB
-                    2000000: '/2MB.bin',        // 2MB  
-                    5000000: '/5MB.bin',        // 5MB
-                    10000000: '/10MB.bin',      // 10MB
-                    20000000: '/20MB.bin',      // 20MB
-                    25000000: '/20MB.bin',      // 25MB (use 20MB as closest)
-                    50000000: '/50MB.bin',      // 50MB - for medium-fast connections
-                    100000000: '/100MB.bin',    // 100MB - for fast connections (100-500 Mbps)
-                    200000000: '/100MB.bin'     // 200MB (use 100MB file, will download twice if needed)
+                    512000: '/512KB.bin',
+                    1000000: '/1MB.bin',
+                    2000000: '/2MB.bin',
+                    5000000: '/5MB.bin',
+                    10000000: '/10MB.bin',
+                    20000000: '/20MB.bin',
+                    25000000: '/20MB.bin',
+                    50000000: '/50MB.bin',
+                    100000000: '/100MB.bin',
+                    200000000: '/100MB.bin'
                 }
             },
-            // Fallback 1: httpbin.org (reliable when available, supports CORS, any size)
-            // Uses path-based byte specification: /bytes/{n}
+            // Tertiary: httpbin random bytes (binary, CORS-friendly)
             {
                 url: 'https://httpbin.org/bytes',
                 provider: 'httpbin.org',
-                usePathParam: true, // Use path-based parameter instead of query string
+                usePathParam: true,
                 concurrent: false
-            },
-            // Fallback 2: jsDelivr CDN with large library files
-            // Use libraries with larger file sizes for better measurements
-            {
-                url: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist',
-                provider: 'jsDelivr CDN (Bootstrap)',
-                useParams: false,
-                fixedSize: 212000, // bootstrap.min.css is ~212KB for better measurement accuracy
-                concurrent: false,
-                sizeMap: {
-                    512000: '/css/bootstrap.min.css',
-                    1000000: '/css/bootstrap.min.css',
-                    2000000: '/css/bootstrap.min.css',
-                    5000000: '/css/bootstrap.min.css',
-                    10000000: '/css/bootstrap.min.css',
-                    20000000: '/css/bootstrap.min.css',
-                    25000000: '/css/bootstrap.min.css',
-                    50000000: '/css/bootstrap.min.css',
-                    100000000: '/css/bootstrap.min.css',
-                    200000000: '/css/bootstrap.min.css'
-                }
-            },
-            // Fallback 3: Use cdnjs (Cloudflare's CDN, very reliable)
-            {
-                url: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21',
-                provider: 'cdnjs.com',
-                useParams: false,
-                fixedSize: 72000, // lodash.min.js is ~72KB
-                concurrent: false,
-                sizeMap: {
-                    512000: '/lodash.min.js',
-                    1000000: '/lodash.min.js',
-                    2000000: '/lodash.min.js',
-                    5000000: '/lodash.min.js',
-                    10000000: '/lodash.min.js',
-                    20000000: '/lodash.min.js',
-                    25000000: '/lodash.min.js',
-                    50000000: '/lodash.min.js',
-                    100000000: '/lodash.min.js',
-                    200000000: '/lodash.min.js'
-                }
             }
         ];
         
@@ -1126,8 +1124,9 @@ class WiFiAnalyzer {
                     throw new Error(`Download failed with status ${response.status}`);
                 }
                 
-                // Get content length from headers
+                // Get content length and encoding from headers
                 const contentLength = parseInt(response.headers.get('content-length') || '0');
+                const contentEncoding = (response.headers.get('content-encoding') || '').toLowerCase();
                 
                 // Read the response body with precise timing
                 let received = 0;
@@ -1199,7 +1198,9 @@ class WiFiAnalyzer {
                 
                 // Use actual bytes received, or fall back to content-length, fixed size, or expected size
                 // This is critical for Safari/iPhone where streaming may not report bytes correctly
-                const actualBytes = this.getActualBytes(received, contentLength, endpoint, expectedSize);
+                // If content is compressed, prefer content-length/expected sizes over decoded bytes
+                const receivedForCalc = contentEncoding && contentEncoding !== 'identity' ? 0 : received;
+                const actualBytes = this.getActualBytes(receivedForCalc, contentLength, endpoint, expectedSize);
                 
                 // Validate we got data
                 if (actualBytes <= 0) {
@@ -1335,8 +1336,9 @@ class WiFiAnalyzer {
                 throw new Error(`Download failed with status ${response.status}`);
             }
             
-            // Get content length from headers as fallback
+            // Get content length and encoding from headers as fallback
             const contentLength = parseInt(response.headers.get('content-length') || '0');
+            const contentEncoding = (response.headers.get('content-encoding') || '').toLowerCase();
             
             // Read the response body
             let received = 0;
@@ -1360,8 +1362,9 @@ class WiFiAnalyzer {
             clearTimeout(timeout);
             
             // Use actual bytes received, or fall back to content-length, fixed size, or expected size
-            // This is critical for Safari/iPhone where streaming may not report bytes correctly
-            const actualBytes = this.getActualBytes(received, contentLength, endpoint, expectedSize);
+            // If content is compressed, prefer content-length/expected sizes over decoded bytes
+            const receivedForCalc = contentEncoding && contentEncoding !== 'identity' ? 0 : received;
+            const actualBytes = this.getActualBytes(receivedForCalc, contentLength, endpoint, expectedSize);
             
             console.log(
                 `Connection ${connectionId}:` +
