@@ -1765,9 +1765,6 @@ class WiFiAnalyzer {
             detailsHTML += `<div class="ip-info-row">`;
             detailsHTML += `<span class="ip-label">Your IP Address</span>`;
             detailsHTML += `<span class="ip-address">${result.ipInfo.ip}</span>`;
-            if (!result.isProtected) {
-                detailsHTML += `<span class="exposed-badge">🚨 VISIBLE</span>`;
-            }
             detailsHTML += `</div>`;
             detailsHTML += `<div class="ip-details">`;
             detailsHTML += `<div><strong>Location:</strong> ${result.ipInfo.city}, ${result.ipInfo.country}</div>`;
@@ -1781,7 +1778,7 @@ class WiFiAnalyzer {
                 detailsHTML += `<p class="vpn-warning">⚠️ Your IP is visible to all websites you visit</p>`;
                 detailsHTML += `<a href="https://www.expressvpn.com/order" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
                 detailsHTML += `<span class="vpn-icon">🛡️</span>`;
-                detailsHTML += `<span class="vpn-text">Protect with VPN</span>`;
+                detailsHTML += `<span class="vpn-text">Protect with ExpressVPN</span>`;
                 detailsHTML += `</a>`;
                 detailsHTML += `</div>`;
             } else {
