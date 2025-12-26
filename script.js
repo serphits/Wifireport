@@ -193,7 +193,7 @@ class WiFiAnalyzer {
             MIN_MEASUREMENT_TIME: 2.0, // Minimum time in seconds for valid measurement (increased for accuracy)
             MIN_MEASUREMENT_BUFFER: 0.5, // Buffer added to minimum time for warnings
             TARGET_TEST_DURATION: 8.0, // Target duration for each speed test (increased for better measurements)
-            MAX_TEST_TIMEOUT: 60000, // Maximum timeout for a single test (60 seconds for large files)
+            MAX_TEST_TIMEOUT: 20000, // Keep each individual test under 20s to fit 30s budget
             MAX_REALISTIC_SPEED_MBps: 250 // Maximum realistic speed in MB/s (2000 Mbps / 8 for 2.5 Gbps fiber)
         };
         
@@ -401,7 +401,7 @@ class WiFiAnalyzer {
         this.updateProgress(10, 'Checking connection type...');
         this.updateStep('connection', 'active');
         
-        await this.delay(500);
+        await this.delay(150);
         
         // Check connection info using Network Information API
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -425,7 +425,7 @@ class WiFiAnalyzer {
         this.updateProgress(25, 'Analyzing security protocols...');
         this.updateStep('security', 'active');
         
-        await this.delay(1500);
+        await this.delay(300);
 
         const security = this.results.security;
         
@@ -572,49 +572,31 @@ class WiFiAnalyzer {
                 speed.metrics.jitter = 0;
             }
 
-            // Warmup: Simplified and faster
+            // Establish connection profile and quick probe to size tests within 30s budget
             const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             const effectiveType = connection?.effectiveType || '4g';
-            const shouldWarmup = effectiveType === '4g' || effectiveType === '5g';
-            
-            if (shouldWarmup) {
-                this.updateProgress(62, 'Warming up connection...');
-                try {
-                    await this.measureDownloadMbps(1_000_000); // 1MB warmup (faster)
-                    await this.measureUploadMbps(500_000);     // 500KB warmup (faster)
-                } catch (e) {
-                    console.log('Warmup test error (non-critical):', e.message);
-                }
-            }
+            this.updateProgress(60, 'Quick probe...');
+            let probeMbps = 0;
+            try {
+                const probe = await this.measureDownloadMbps(2_000_000); // ~2MB probe
+                if (probe && isFinite(probe) && probe > 0) probeMbps = probe;
+            } catch {}
 
             // Test 2: Measure bandwidth with controlled downloads
             // Use appropriately sized files to get accurate measurements (target 5-10 second tests)
             let downloadMbps = 0;
             try {
-                // Calculate file sizes based on connection type to ensure tests run 5-10 seconds
-                // This is critical for accurate measurements on fast connections
-                let runs;
-                if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-                    // For slow connections (0.1-2 Mbps): 1MB, 2MB (5-10 seconds each)
-                    runs = [1_000_000, 2_000_000];
-                } else if (effectiveType === '3g') {
-                    // For 3G (2-10 Mbps): 10MB, 20MB (8-10 seconds each)
-                    runs = [10_000_000, 20_000_000];
-                } else {
-                    // For fast connections (>10 Mbps, potentially 100-1000 Mbps): use MUCH larger files
-                    // At 200 Mbps: 100MB takes 4 seconds, 200MB takes 8 seconds - perfect for accuracy!
-                    // At 1000 Mbps: 100MB takes 0.8s, 200MB takes 1.6s - still reasonable
-                    runs = [100_000_000, 200_000_000]; // 100MB, 200MB
-                }
-                
+                // Compute target size for ~3-4s measurement using probe or downlink estimate
+                const estimateDown = probeMbps || connection?.downlink || 50;
+                const targetSeconds = 3.5;
+                const bytesForTarget = Math.max(1_000_000, Math.min(120_000_000, Math.floor((estimateDown * 1e6 / 8) * targetSeconds)));
                 const results = [];
 
-                // On fast connections, attempt a multi-connection test first to better saturate bandwidth
-                if (effectiveType === '4g' || effectiveType === '5g') {
+                // For fast links (est >= 120 Mbps), try a multi-connection pass to saturate
+                if (estimateDown >= 120) {
                     try {
                         const cfEndpoint = { url: 'https://speed.cloudflare.com/__down', provider: 'Cloudflare Speed', useParams: true };
-                        const target = 200_000_000; // 200MB across 4 connections
-                        const mc = await this.measureDownloadMultiConnection(cfEndpoint, target);
+                        const mc = await this.measureDownloadMultiConnection(cfEndpoint, Math.min(200_000_000, bytesForTarget * 2));
                         if (mc && isFinite(mc) && mc > 0) {
                             results.push(mc);
                             this.updateProgress(64, `Download (multi): ${mc.toFixed(1)} Mbps`);
@@ -623,16 +605,12 @@ class WiFiAnalyzer {
                         console.warn('Multi-connection download skipped:', e.message);
                     }
                 }
-                for (let i = 0; i < runs.length; i++) {
-                    const res = await this.measureDownloadMbps(runs[i]);
-                    if (res && isFinite(res) && res > 0) {
-                        results.push(res);
-                        console.log(`Download test ${i + 1}: ${res.toFixed(2)} Mbps (${(runs[i] / 1e6).toFixed(1)}MB)`);
-                        // Show real-time speed to user
-                        this.updateProgress(64 + i * 5, `Download: ${res.toFixed(1)} Mbps (${i + 1}/${runs.length})`);
-                    } else {
-                        this.updateProgress(64 + i * 5, `Testing download (${i + 1}/${runs.length})...`);
-                    }
+
+                // Always run a single-connection measurement sized to ~3-4s
+                const single = await this.measureDownloadMbps(bytesForTarget);
+                if (single && isFinite(single) && single > 0) {
+                    results.push(single);
+                    this.updateProgress(68, `Download: ${single.toFixed(1)} Mbps`);
                 }
                 if (results.length) {
                     // Use median to reduce outliers
@@ -665,26 +643,15 @@ class WiFiAnalyzer {
             // Test 3: Measure upload speed with appropriately sized tests
             let uploadMbps = 0;
             try {
-                // Use larger tests for fast connections to get accurate measurements
-                let uploadTests;
-                if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-                    // For slow connections: 500KB, 1MB
-                    uploadTests = [500_000, 1_000_000];
-                } else if (effectiveType === '3g') {
-                    // For 3G: 5MB, 10MB (5-10 seconds each at 5-10 Mbps)
-                    uploadTests = [5_000_000, 10_000_000];
-                } else {
-                    // For fast connections: 20MB, 50MB (will take 0.8-2s at 200 Mbps, good for accuracy)
-                    uploadTests = [20_000_000, 50_000_000];
-                }
-                
+                // Compute upload target size aiming ~2.5s
+                const estimateUpBase = downloadMbps || estimateDown || 20;
+                const targetUpSeconds = 2.5;
+                const bytesUpTarget = Math.max(500_000, Math.min(80_000_000, Math.floor((estimateUpBase * 1e6 / 8) * targetUpSeconds * 0.5))); // assume up ~50% of down
                 const uploadResults = [];
-                // On fast connections, try multi-connection upload first using Cloudflare
-                if (effectiveType === '4g' || effectiveType === '5g') {
+                if (estimateUpBase >= 120) {
                     try {
                         const cfUp = { url: 'https://speed.cloudflare.com/__up', provider: 'Cloudflare Speed' };
-                        const targetUp = 50_000_000; // 50MB across 3 connections
-                        const mcUp = await this.measureUploadMultiConnection(cfUp, targetUp);
+                        const mcUp = await this.measureUploadMultiConnection(cfUp, Math.min(100_000_000, bytesUpTarget * 2));
                         if (mcUp && isFinite(mcUp) && mcUp > 0) {
                             uploadResults.push(mcUp);
                             this.updateProgress(74, `Upload (multi): ${mcUp.toFixed(1)} Mbps`);
@@ -693,16 +660,10 @@ class WiFiAnalyzer {
                         console.warn('Multi-connection upload skipped:', e.message);
                     }
                 }
-                for (let i = 0; i < uploadTests.length; i++) {
-                    const res = await this.measureUploadMbps(uploadTests[i]);
-                    if (res && isFinite(res) && res > 0) {
-                        uploadResults.push(res);
-                        console.log(`Upload test ${i + 1}: ${res.toFixed(2)} Mbps (${(uploadTests[i] / 1e6).toFixed(1)}MB)`);
-                        // Show real-time speed to user
-                        this.updateProgress(74 + i * 5, `Upload: ${res.toFixed(1)} Mbps (${i + 1}/${uploadTests.length})`);
-                    } else {
-                        this.updateProgress(74 + i * 5, `Testing upload (${i + 1}/${uploadTests.length})...`);
-                    }
+                const upSingle = await this.measureUploadMbps(bytesUpTarget);
+                if (upSingle && isFinite(upSingle) && upSingle > 0) {
+                    uploadResults.push(upSingle);
+                    this.updateProgress(78, `Upload: ${upSingle.toFixed(1)} Mbps`);
                 }
                 if (uploadResults.length > 0) {
                     // Use median for better accuracy
@@ -1442,7 +1403,7 @@ class WiFiAnalyzer {
         this.updateProgress(89, 'Measuring connection stability...');
         this.updateStep('stability', 'active');
         
-        await this.delay(2000);
+        await this.delay(400);
 
         const stability = this.results.stability;
         
@@ -1565,7 +1526,7 @@ class WiFiAnalyzer {
         this.updateProgress(94, 'Evaluating privacy concerns...');
         this.updateStep('privacy', 'active');
         
-        await this.delay(1500);
+        await this.delay(300);
 
         const privacy = this.results.privacy;
         
