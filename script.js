@@ -582,7 +582,7 @@ class WiFiAnalyzer {
                 if (probe && isFinite(probe) && probe > 0) probeMbps = probe;
             } catch {}
 
-            // Test 2: Measure bandwidth with controlled downloads
+            // Test 2: Measure bandwidth (time-windowed + controlled)
             // Use appropriately sized files to get accurate measurements (target 5-10 second tests)
             let downloadMbps = 0;
             try {
@@ -592,25 +592,17 @@ class WiFiAnalyzer {
                 const bytesForTarget = Math.max(1_000_000, Math.min(120_000_000, Math.floor((estimateDown * 1e6 / 8) * targetSeconds)));
                 const results = [];
 
-                // For fast links (est >= 120 Mbps), try a multi-connection pass to saturate
-                if (estimateDown >= 120) {
-                    try {
-                        const cfEndpoint = { url: 'https://speed.cloudflare.com/__down', provider: 'Cloudflare Speed', useParams: true };
-                        const mc = await this.measureDownloadMultiConnection(cfEndpoint, Math.min(200_000_000, bytesForTarget * 2));
-                        if (mc && isFinite(mc) && mc > 0) {
-                            results.push(mc);
-                            this.updateProgress(64, `Download (multi): ${mc.toFixed(1)} Mbps`);
-                        }
-                    } catch (e) {
-                        console.warn('Multi-connection download skipped:', e.message);
-                    }
+                // First, run a short windowed multi-flow test to saturate bandwidth
+                const windowedDown = await this.measureDownloadWindow(estimateDown);
+                if (windowedDown && isFinite(windowedDown) && windowedDown > 0) {
+                    results.push(windowedDown);
+                    this.updateProgress(66, `Download (window): ${windowedDown.toFixed(1)} Mbps`);
                 }
-
-                // Always run a single-connection measurement sized to ~3-4s
+                // Then, a single connection sized to ~3–4s for validation
                 const single = await this.measureDownloadMbps(bytesForTarget);
                 if (single && isFinite(single) && single > 0) {
                     results.push(single);
-                    this.updateProgress(68, `Download: ${single.toFixed(1)} Mbps`);
+                    this.updateProgress(70, `Download: ${single.toFixed(1)} Mbps`);
                 }
                 if (results.length) {
                     // Use median to reduce outliers
@@ -648,18 +640,13 @@ class WiFiAnalyzer {
                 const targetUpSeconds = 2.5;
                 const bytesUpTarget = Math.max(500_000, Math.min(80_000_000, Math.floor((estimateUpBase * 1e6 / 8) * targetUpSeconds * 0.5))); // assume up ~50% of down
                 const uploadResults = [];
-                if (estimateUpBase >= 120) {
-                    try {
-                        const cfUp = { url: 'https://speed.cloudflare.com/__up', provider: 'Cloudflare Speed' };
-                        const mcUp = await this.measureUploadMultiConnection(cfUp, Math.min(100_000_000, bytesUpTarget * 2));
-                        if (mcUp && isFinite(mcUp) && mcUp > 0) {
-                            uploadResults.push(mcUp);
-                            this.updateProgress(74, `Upload (multi): ${mcUp.toFixed(1)} Mbps`);
-                        }
-                    } catch (e) {
-                        console.warn('Multi-connection upload skipped:', e.message);
-                    }
+                // Windowed multi-flow upload test
+                const windowedUp = await this.measureUploadWindow(estimateUpBase);
+                if (windowedUp && isFinite(windowedUp) && windowedUp > 0) {
+                    uploadResults.push(windowedUp);
+                    this.updateProgress(74, `Upload (window): ${windowedUp.toFixed(1)} Mbps`);
                 }
+                // Single-connection upload validation
                 const upSingle = await this.measureUploadMbps(bytesUpTarget);
                 if (upSingle && isFinite(upSingle) && upSingle > 0) {
                     uploadResults.push(upSingle);
@@ -1252,6 +1239,129 @@ class WiFiAnalyzer {
         } catch (e) {
             throw new Error(`Multi-connection test failed: ${e.message}`);
         }
+    }
+    
+    async measureDownloadWindow(estimateMbps) {
+        // Time-windowed download test: runs multiple flows concurrently for ~4s
+        const durationSeconds = 4.0;
+        const startTime = performance.now();
+        const endpoints = [
+            { url: 'https://raw.githubusercontent.com/inventer-dev/speed-test-files/main', provider: 'GitHub CDN', useParams: false, sizeMap: { 1000000: '/1MB.bin', 5000000: '/5MB.bin', 10000000: '/10MB.bin', 20000000: '/20MB.bin', 50000000: '/50MB.bin', 100000000: '/100MB.bin' } },
+            { url: 'https://httpbin.org/bytes', provider: 'httpbin.org', usePathParam: true }
+        ];
+        const concurrent = estimateMbps >= 120 ? 6 : 4;
+        const targetSeconds = 3.5;
+        const chunkBytes = Math.max(1_000_000, Math.min(120_000_000, Math.floor((Math.max(estimateMbps, 10) * 1e6 / 8) * targetSeconds)));
+        let totalBytes = 0;
+        const runFlow = async (flowId) => {
+            let epIndex = flowId % endpoints.length;
+            while ((performance.now() - startTime) / 1000 < durationSeconds) {
+                const endpoint = endpoints[epIndex];
+                const ts = Date.now();
+                const rand = Math.random().toString(36).substring(7);
+                const { url, expectedSize } = this.buildEndpointUrl(endpoint, chunkBytes, ts, rand);
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
+                try {
+                    const fetchStart = performance.now();
+                    const response = await fetch(url, {
+                        cache: 'no-store',
+                        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' },
+                        signal: controller.signal
+                    });
+                    if (!response.ok) throw new Error(`Status ${response.status}`);
+                    const contentLength = parseInt(response.headers.get('content-length') || '0');
+                    const contentEncoding = (response.headers.get('content-encoding') || '').toLowerCase();
+                    let received = 0;
+                    if (response.body && response.body.getReader) {
+                        const reader = response.body.getReader();
+                        try {
+                            while (true) {
+                                const { done, value } = await reader.read();
+                                if (done) break;
+                                received += value.length;
+                            }
+                        } finally {
+                            reader.releaseLock();
+                        }
+                    } else {
+                        const buffer = await response.arrayBuffer();
+                        received = buffer.byteLength;
+                    }
+                    clearTimeout(timeout);
+                    const bytesForCalc = contentEncoding && contentEncoding !== 'identity' ? 0 : received;
+                    const actual = this.getActualBytes(bytesForCalc, contentLength, endpoint, expectedSize);
+                    if (actual > 0) totalBytes += actual;
+                } catch (e) {
+                    clearTimeout(timeout);
+                    epIndex = (epIndex + 1) % endpoints.length; // rotate on error
+                }
+            }
+        };
+        const flows = [];
+        for (let i = 0; i < concurrent; i++) flows.push(runFlow(i));
+        await Promise.allSettled(flows);
+        const elapsed = (performance.now() - startTime) / 1000;
+        return this.calculateMbps(totalBytes, elapsed);
+    }
+    
+    async measureUploadWindow(estimateMbps) {
+        // Time-windowed upload test: runs multiple flows concurrently for ~3s
+        const durationSeconds = 3.0;
+        const startTime = performance.now();
+        const endpoints = [
+            { url: 'https://httpbin.org/post', provider: 'httpbin.org' },
+            { url: 'https://httpbin.org/anything', provider: 'httpbin.org/anything' }
+        ];
+        const concurrent = estimateMbps >= 120 ? 3 : 2;
+        const targetSeconds = 2.5;
+        const assumedUp = Math.max(estimateMbps * 0.5, 5); // assume upload ~50% of download
+        const chunkBytes = Math.max(500_000, Math.min(80_000_000, Math.floor((assumedUp * 1e6 / 8) * targetSeconds)));
+        let totalBytes = 0;
+        const runFlow = async (flowId) => {
+            let epIndex = flowId % endpoints.length;
+            while ((performance.now() - startTime) / 1000 < durationSeconds) {
+                const endpoint = endpoints[epIndex];
+                const ts = Date.now();
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
+                try {
+                    let data;
+                    if (chunkBytes <= this.uploadTestData.length) {
+                        data = this.uploadTestData.slice(0, chunkBytes);
+                    } else {
+                        data = new Uint8Array(chunkBytes);
+                        if (window.crypto && window.crypto.getRandomValues) {
+                            const cs = 65536;
+                            for (let i = 0; i < chunkBytes; i += cs) {
+                                const chunk = new Uint8Array(data.buffer, i, Math.min(cs, chunkBytes - i));
+                                window.crypto.getRandomValues(chunk);
+                            }
+                        }
+                    }
+                    const blob = new Blob([data], { type: 'application/octet-stream' });
+                    const response = await fetch(`${endpoint.url}?t=${ts}`, {
+                        method: 'POST',
+                        body: blob,
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/octet-stream', 'Cache-Control': 'no-cache' },
+                        signal: controller.signal
+                    });
+                    if (!response.ok) throw new Error(`Status ${response.status}`);
+                    await response.text();
+                    clearTimeout(timeout);
+                    totalBytes += chunkBytes;
+                } catch (e) {
+                    clearTimeout(timeout);
+                    epIndex = (epIndex + 1) % endpoints.length;
+                }
+            }
+        };
+        const flows = [];
+        for (let i = 0; i < concurrent; i++) flows.push(runFlow(i));
+        await Promise.allSettled(flows);
+        const elapsed = (performance.now() - startTime) / 1000;
+        return this.calculateMbps(totalBytes, elapsed);
     }
     
     async downloadChunk(endpoint, bytes, connectionId) {
