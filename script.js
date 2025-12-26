@@ -572,48 +572,29 @@ class WiFiAnalyzer {
                 speed.metrics.jitter = 0;
             }
 
-            // Establish connection profile and quick probe to size tests within 30s budget
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            const effectiveType = connection?.effectiveType || '4g';
-            this.updateProgress(60, 'Quick probe...');
-            let probeMbps = 0;
-            try {
-                const probe = await this.measureDownloadMbps(2_000_000); // ~2MB probe
-                if (probe && isFinite(probe) && probe > 0) probeMbps = probe;
-            } catch {}
-
-            // Test 2: Measure bandwidth (time-windowed + controlled)
-            // Use appropriately sized files to get accurate measurements (target 5-10 second tests)
+            // Test 2: Measure download speed (simple direct test like extension)
+            this.updateProgress(62, 'Testing download speed...');
             let downloadMbps = 0;
             try {
-                // Compute target size for ~3-4s measurement using probe or downlink estimate
-                const estimateDown = probeMbps || connection?.downlink || 50;
-                const targetSeconds = 3.5;
-                const bytesForTarget = Math.max(1_000_000, Math.min(120_000_000, Math.floor((estimateDown * 1e6 / 8) * targetSeconds)));
+                // Run 3 tests with increasing sizes
+                const tests = [5_000_000, 10_000_000, 20_000_000]; // 5MB, 10MB, 20MB
                 const results = [];
-
-                // First, run a short windowed multi-flow test to saturate bandwidth
-                const windowedDown = await this.measureDownloadWindow(estimateDown);
-                if (windowedDown && isFinite(windowedDown) && windowedDown > 0) {
-                    results.push(windowedDown);
-                    this.updateProgress(66, `Download (window): ${windowedDown.toFixed(1)} Mbps`);
+                
+                for (let i = 0; i < tests.length; i++) {
+                    const result = await this.measureDownloadMbps(tests[i]);
+                    if (result && isFinite(result) && result > 0) {
+                        results.push(result);
+                        this.updateProgress(62 + (i + 1) * 3, `Download: ${result.toFixed(1)} Mbps`);
+                    }
                 }
-                // Then, a single connection sized to ~3–4s for validation
-                const single = await this.measureDownloadMbps(bytesForTarget);
-                if (single && isFinite(single) && single > 0) {
-                    results.push(single);
-                    this.updateProgress(70, `Download: ${single.toFixed(1)} Mbps`);
-                }
-                if (results.length) {
-                    // Use median to reduce outliers
-                    results.sort((a, b) => a - b);
-                    const mid = Math.floor(results.length / 2);
-                    downloadMbps = results.length % 2 ? results[mid] : (results[mid - 1] + results[mid]) / 2;
-                    console.log(`Final download speed: ${downloadMbps.toFixed(2)} Mbps (median from ${results.length} measurements)`);
+                
+                if (results.length > 0) {
+                    // Use the maximum result (best bandwidth saturation)
+                    downloadMbps = Math.max(...results);
+                    console.log(`Final download speed: ${downloadMbps.toFixed(2)} Mbps (max from ${results.length} tests)`);
                 }
             } catch (e) {
                 console.error('Download measurement error:', e);
-                // Don't use fallback - let it remain 0 so we know the test failed
             }
 
             // Remove unreliable fallback methods that use page load resources
@@ -632,36 +613,29 @@ class WiFiAnalyzer {
 
             speed.metrics.downloadSpeed = Math.max(0, Math.round(downloadMbps * 10) / 10);
 
-            // Test 3: Measure upload speed with appropriately sized tests
+            // Test 3: Measure upload speed (simple direct test like extension)
+            this.updateProgress(72, 'Testing upload speed...');
             let uploadMbps = 0;
             try {
-                // Compute upload target size aiming ~2.5s
-                const estimateUpBase = downloadMbps || estimateDown || 20;
-                const targetUpSeconds = 2.5;
-                const bytesUpTarget = Math.max(500_000, Math.min(80_000_000, Math.floor((estimateUpBase * 1e6 / 8) * targetUpSeconds * 0.5))); // assume up ~50% of down
+                // Run 2 tests with moderate sizes
+                const uploadTests = [2_000_000, 5_000_000]; // 2MB, 5MB
                 const uploadResults = [];
-                // Windowed multi-flow upload test
-                const windowedUp = await this.measureUploadWindow(estimateUpBase);
-                if (windowedUp && isFinite(windowedUp) && windowedUp > 0) {
-                    uploadResults.push(windowedUp);
-                    this.updateProgress(74, `Upload (window): ${windowedUp.toFixed(1)} Mbps`);
+                
+                for (let i = 0; i < uploadTests.length; i++) {
+                    const result = await this.measureUploadMbps(uploadTests[i]);
+                    if (result && isFinite(result) && result > 0) {
+                        uploadResults.push(result);
+                        this.updateProgress(72 + (i + 1) * 3, `Upload: ${result.toFixed(1)} Mbps`);
+                    }
                 }
-                // Single-connection upload validation
-                const upSingle = await this.measureUploadMbps(bytesUpTarget);
-                if (upSingle && isFinite(upSingle) && upSingle > 0) {
-                    uploadResults.push(upSingle);
-                    this.updateProgress(78, `Upload: ${upSingle.toFixed(1)} Mbps`);
-                }
+                
                 if (uploadResults.length > 0) {
-                    // Use median for better accuracy
-                    uploadResults.sort((a, b) => a - b);
-                    const mid = Math.floor(uploadResults.length / 2);
-                    uploadMbps = uploadResults.length % 2 ? uploadResults[mid] : (uploadResults[mid - 1] + uploadResults[mid]) / 2;
-                    console.log(`Final upload speed: ${uploadMbps.toFixed(2)} Mbps (median from ${uploadResults.length} measurements)`);
+                    // Use the maximum result
+                    uploadMbps = Math.max(...uploadResults);
+                    console.log(`Final upload speed: ${uploadMbps.toFixed(2)} Mbps (max from ${uploadResults.length} tests)`);
                 }
             } catch (e) {
                 console.error('Upload measurement error:', e);
-                // ignore, fallback below
             }
 
             // If upload is 0, estimate based on download (typically 10-20% of download for residential)
@@ -809,94 +783,36 @@ class WiFiAnalyzer {
     }
 
     async measureUploadMbps(bytes) {
-        // Improved upload test with CORS-friendly endpoints
-        const endpoints = [
-            {
-                url: 'https://speed.cloudflare.com/__up',
-                provider: 'Cloudflare Speed',
-                concurrent: false
-            },
-            {
-                url: 'https://httpbin.org/post',
-                provider: 'httpbin.org',
-                concurrent: false
-            },
-            {
-                url: 'https://httpbin.org/anything',
-                provider: 'httpbin.org/anything',
-                concurrent: false
-            }
-        ];
+        // Simple direct upload test using Cloudflare (same as extension)
+        const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&r=${Math.random()}`;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000);
+        const start = performance.now();
         
-        // Test with single connection (httpbin.org doesn't benefit from multi-connection)
-        for (const endpoint of endpoints) {
-            try {
-                // Generate test data
-                let data;
-                if (bytes <= this.uploadTestData.length) {
-                    data = this.uploadTestData.slice(0, bytes);
-                } else {
-                    // For very large uploads, generate on-demand
-                    data = new Uint8Array(bytes);
-                    if (window.crypto && window.crypto.getRandomValues) {
-                        const chunkSize = 65536;
-                        for (let i = 0; i < bytes; i += chunkSize) {
-                            const chunk = new Uint8Array(data.buffer, i, Math.min(chunkSize, bytes - i));
-                            window.crypto.getRandomValues(chunk);
-                        }
-                    }
-                }
-                
-                if (!data || data.length === 0) {
-                    console.error('Upload test failed: invalid data');
-                    continue;
-                }
-                
-                const timestamp = Date.now();
-                const url = `${endpoint.url}?bytes=${bytes}&t=${timestamp}`;
-                
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
-                
-                const blob = new Blob([data], { type: 'application/octet-stream' });
-                
-                const startTime = performance.now();
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    body: blob,
-                    cache: 'no-store',
-                    headers: {
-                        'Content-Type': 'application/octet-stream',
-                        'Cache-Control': 'no-cache'
-                    },
-                    signal: controller.signal
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Upload failed with status ${response.status}`);
-                }
-                
-                await response.text(); // Consume response
-                
-                const endTime = performance.now();
-                clearTimeout(timeout);
-                
-                const totalTime = (endTime - startTime) / 1000;
-                const mbps = this.calculateMbps(bytes, totalTime);
-                
-                console.log(`Upload test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps (${(bytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(2)}s)`);
-                
-                // Relaxed sanity check
-                if (mbps > 0.01 && mbps < 10000) {
-                    return mbps;
-                }
-            } catch (e) {
-                console.error(`Upload test failed (${endpoint.provider}):`, e.message);
+        try {
+            const data = new Uint8Array(bytes);
+            if (window.crypto && window.crypto.getRandomValues) {
+                window.crypto.getRandomValues(data);
             }
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                body: data,
+                cache: 'no-store',
+                signal: controller.signal
+            });
+            
+            if (!response.ok) return 0;
+            await response.text();
+            
+            const seconds = (performance.now() - start) / 1000;
+            clearTimeout(timeout);
+            if (seconds === 0) return 0;
+            return (bytes * 8) / seconds / 1e6;
+        } catch (e) {
+            clearTimeout(timeout);
+            return 0;
         }
-        
-        return 0;
     }
     
     async measureUploadMultiConnection(endpoint, targetBytes) {
@@ -1001,191 +917,35 @@ class WiFiAnalyzer {
     }
 
     async measureDownloadMbps(bytes) {
-        // Improved speed test using multiple CORS-friendly methods and endpoints
-        // Uses public CDN files and APIs for accurate measurements
+        // Simple direct download test using Cloudflare (same as extension)
+        const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&r=${Math.random()}`;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000);
+        const start = performance.now();
         
-        const endpoints = [
-            // Primary: Cloudflare speed test endpoint (binary, CORS-friendly)
-            {
-                url: 'https://speed.cloudflare.com/__down',
-                provider: 'Cloudflare Speed',
-                useParams: true,
-                concurrent: false
-            },
-            // Secondary: GitHub-hosted binary test files (no compression)
-            {
-                url: 'https://raw.githubusercontent.com/inventer-dev/speed-test-files/main',
-                provider: 'GitHub CDN',
-                useParams: false,
-                concurrent: false,
-                sizeMap: {
-                    512000: '/512KB.bin',
-                    1000000: '/1MB.bin',
-                    2000000: '/2MB.bin',
-                    5000000: '/5MB.bin',
-                    10000000: '/10MB.bin',
-                    20000000: '/20MB.bin',
-                    25000000: '/20MB.bin',
-                    50000000: '/50MB.bin',
-                    100000000: '/100MB.bin',
-                    200000000: '/100MB.bin'
-                }
-            },
-            // Tertiary: httpbin random bytes (binary, CORS-friendly)
-            {
-                url: 'https://httpbin.org/bytes',
-                provider: 'httpbin.org',
-                usePathParam: true,
-                concurrent: false
+        try {
+            const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+            if (!response.ok || !response.body) return 0;
+            
+            const reader = response.body.getReader();
+            let received = 0;
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                received += value.length;
             }
-        ];
-        
-        // Use single-connection tests for better reliability across all network conditions
-        // Multi-connection tests can fail due to browser limits, timeouts, or CORS issues
-        console.log(`📡 Starting single-connection download test for ${(bytes / 1e6).toFixed(1)}MB...`);
-        
-        for (const endpoint of endpoints) {
-            try {
-                console.log(`  Testing ${endpoint.provider}...`);
-                const timestamp = Date.now();
-                const random = Math.random().toString(36).substring(7);
-                
-                // Build endpoint URL using helper function
-                const { url, expectedSize } = this.buildEndpointUrl(endpoint, bytes, timestamp, random);
-                
-                const controller = new AbortController();
-                const timeout = setTimeout(() => controller.abort(), this.speedTestConstants.MAX_TEST_TIMEOUT);
-                
-                const startTime = performance.now();
-                let firstByteTime = null;
-                
-                const response = await fetch(url, {
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache'
-                    },
-                    signal: controller.signal
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Download failed with status ${response.status}`);
-                }
-                
-                // Get content length and encoding from headers
-                const contentLength = parseInt(response.headers.get('content-length') || '0');
-                const contentEncoding = (response.headers.get('content-encoding') || '').toLowerCase();
-                
-                // Read the response body with precise timing
-                let received = 0;
-                let transferStartTime = null; // Track when data transfer actually starts
-                let lastChunkTime = null; // Track when last chunk arrives
-                
-                if (response.body && response.body.getReader) {
-                    // Use streaming for accurate measurement
-                    const reader = response.body.getReader();
-                    
-                    try {
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            const chunkReceivedTime = performance.now();
-                            
-                            if (done) {
-                                lastChunkTime = chunkReceivedTime;
-                                break;
-                            }
-                            
-                            // Track when first data arrives (actual transfer start, not connection setup)
-                            if (!transferStartTime) {
-                                transferStartTime = chunkReceivedTime;
-                                firstByteTime = chunkReceivedTime;
-                            }
-                            
-                            received += value.length;
-                            lastChunkTime = chunkReceivedTime;
-                        }
-                    } finally {
-                        reader.releaseLock();
-                    }
-                } else {
-                    // Fallback for older browsers
-                    const buffer = await response.arrayBuffer();
-                    received = buffer.byteLength;
-                    firstByteTime = performance.now();
-                    transferStartTime = firstByteTime;
-                    lastChunkTime = performance.now();
-                }
-                
-                const endTime = performance.now();
-                clearTimeout(timeout);
-                
-                // Calculate time - use actual transfer time when available
-                // transferStartTime to lastChunkTime gives us pure data transfer time (excludes connection setup)
-                // This is critical for accurate speed measurement on fast connections
-                let totalTime;
-                const transferTime = transferStartTime && lastChunkTime ? (lastChunkTime - transferStartTime) / 1000 : 0;
-                const fullTime = (endTime - startTime) / 1000;
-                
-                // Validate transfer time is reasonable
-                // If transfer time is < 0.05s for a large file, the browser probably buffered everything instantly
-                // In that case, use the full time as it's more accurate
-                const estimatedBytes = received > 0 ? received : (contentLength > 0 ? contentLength : expectedSize);
-                // Use MAX_REALISTIC_SPEED_MBps constant for fiber connections (2000 Mbps / 8 = 250 MB/s)
-                const minExpectedTransferTime = Math.max(0.05, estimatedBytes / 1e6 / this.speedTestConstants.MAX_REALISTIC_SPEED_MBps);
-                
-                if (transferTime > minExpectedTransferTime && transferTime < fullTime) {
-                    // Use transfer time if it's reasonable and less than full time
-                    totalTime = transferTime;
-                    console.log(`Using transfer time: ${totalTime.toFixed(3)}s (excluding ${((transferStartTime - startTime) / 1000).toFixed(3)}s connection setup)`);
-                } else {
-                    // Use full time if transfer time is too small or larger than full time
-                    totalTime = fullTime;
-                    const reason = transferTime <= minExpectedTransferTime ? 'transfer too fast, may be buffered' : 'transfer time > full time';
-                    console.log(`Using total time: ${totalTime.toFixed(3)}s (${reason})`);
-                }
-                
-                // Use actual bytes received, or fall back to content-length, fixed size, or expected size
-                // This is critical for Safari/iPhone where streaming may not report bytes correctly
-                // If content is compressed, prefer content-length/expected sizes over decoded bytes
-                const receivedForCalc = contentEncoding && contentEncoding !== 'identity' ? 0 : received;
-                const actualBytes = this.getActualBytes(receivedForCalc, contentLength, endpoint, expectedSize);
-                
-                // Validate we got data
-                if (actualBytes <= 0) {
-                    console.error(`Download test failed (${endpoint.provider}): no data received`);
-                    continue;
-                }
-                
-                // Calculate speed with detailed logging for diagnosis
-                const mbps = this.calculateMbps(actualBytes, totalTime);
-                
-                // Detailed diagnostic logging
-                console.log(
-                    `Download test (${endpoint.provider}): ${mbps.toFixed(2)} Mbps` +
-                    `\n  Size: ${(actualBytes / 1e6).toFixed(2)}MB in ${totalTime.toFixed(3)}s` +
-                    `\n  Received: ${received} bytes, ContentLength: ${contentLength}` +
-                    `\n  Connection setup: ${transferStartTime ? ((transferStartTime - startTime) / 1000).toFixed(3) : 'N/A'}s` +
-                    `\n  Actual transfer: ${transferStartTime && lastChunkTime ? ((lastChunkTime - transferStartTime) / 1000).toFixed(3) : 'N/A'}s` +
-                    `\n  Average throughput: ${totalTime > 0 ? ((actualBytes / 1e6) / totalTime).toFixed(2) : 'N/A'} MB/s` +
-                    `\n  Endpoint: ${url}`
-                );
-                
-                // Very relaxed sanity check for slow connections: 0.01 Mbps to 10000 Mbps
-                // This allows detection of very slow connections (dial-up, etc.)
-                if (mbps >= 0.01 && mbps < 10000 && actualBytes > 0) {
-                    console.log(`✓ Download test successful using ${endpoint.provider}`);
-                    return mbps;
-                } else {
-                    console.warn(`Download test (${endpoint.provider}): speed ${mbps.toFixed(2)} Mbps out of range or invalid`);
-                }
-            } catch (e) {
-                console.error(`Download test failed (${endpoint.provider}):`, e.message);
-            }
+            
+            const seconds = (performance.now() - start) / 1000;
+            clearTimeout(timeout);
+            if (seconds === 0) return 0;
+            return (received * 8) / seconds / 1e6;
+        } catch (e) {
+            clearTimeout(timeout);
+            return 0;
         }
-        
-        console.error('❌ All download test endpoints failed - no measurements available');
-        return 0;
     }
+
     
     async measureDownloadMultiConnection(endpoint, targetBytes) {
         // Implement multiple concurrent connections like speedtest.net
