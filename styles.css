@@ -1798,31 +1798,42 @@ body {
     border-top: 2px solid #000000;
 }
 
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+    .footer-links-row {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        justify-items: flex-start;
+    }
 
-.footer-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    margin-bottom: 3rem;
-}
-
-.footer-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footer-brand .logo {
-    color: white;
-    margin-bottom: 1rem;
-    display: flex;
+    .footer-links-stack {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .footer-links {
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .footer-links h4 {
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .footer-links li {
+        margin-bottom: 0.6rem;
+    }
+    
+    .footer-links a {
+        font-size: 0.9rem;
+    }
+    
+    .footer {
+        padding: 3rem 1.5rem 1.5rem;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+    }
     align-items: center;
     gap: 0.75rem;
     font-size: 1.5rem;
@@ -1832,23 +1843,25 @@ body {
 .footer-description {
     color: rgba(255, 255, 255, 0.7);
     line-height: 1.7;
-    max-width: 600px;
+    max-width: 480px;
     font-size: 0.95rem;
 }
 
 .footer-links-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4rem;
-    max-width: 900px;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 2.5rem;
+    max-width: 1100px;
     margin: 0 auto;
+    align-items: flex-start;
+    justify-items: flex-start;
 }
 
 .footer-links {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
 }
 
 .footer-links h4 {
@@ -1866,6 +1879,22 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0;
+}
+
+.footer-links-stack {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(150px, 1fr));
+    gap: 1.5rem 2rem;
+    width: 100%;
+}
+
+.links-group ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .footer-links li {
