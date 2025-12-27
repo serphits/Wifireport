@@ -124,69 +124,76 @@ function applySharedLayout() {
     </div>`;
 
     const nav = document.querySelector('nav.navbar');
-    if (nav) nav.outerHTML = navTemplate;
+    if (nav) {
+        nav.outerHTML = navTemplate;
+    } else if (document.body) {
+        // Insert nav at top if missing
+        document.body.insertAdjacentHTML('afterbegin', navTemplate);
+    }
 
     const footer = document.querySelector('footer.footer');
     if (footer) {
-        footer.outerHTML = footerTemplate;
-    } else if (document.body) {
-        document.body.insertAdjacentHTML('beforeend', footerTemplate);
-    }
-
-    if (!document.getElementById('cookieBanner')) {
-        document.body.insertAdjacentHTML('beforeend', cookieTemplate);
-    }
-}
-
-function initHeroLoadingGrid() {
-    const grid = document.getElementById('heroLoadingGrid');
-    if (!grid) return;
-    
-    // Create 256 squares (16x16)
-    for (let i = 0; i < 256; i++) {
-        const square = document.createElement('div');
-        square.className = 'loading-square';
-        // Randomize animation delay for wave effect
-        const delay = Math.random() * 2;
-        square.style.animationDelay = `${delay}s`;
-        grid.appendChild(square);
-    }
-}
-
-function initRadarGrid() {
-    const radar = document.querySelector('.radar');
-    if (!radar) return;
-    
-    // Clear existing content
-    radar.innerHTML = '';
-    
-    // Create 144 squares (12x12) for radar
-    for (let i = 0; i < 144; i++) {
-        const square = document.createElement('div');
-        square.className = 'radar-square';
-        const delay = Math.random() * 2;
-        square.style.animationDelay = `${delay}s`;
-        radar.appendChild(square);
-    }
-}
-
-class WiFiAnalyzer {
-    constructor() {
-        this.results = {
-            security: { score: 0, status: '', details: '', issues: [] },
-            privacy: { score: 0, status: '', details: '', issues: [] },
-            speed: { score: 0, status: '', details: '', metrics: { latency: 0, downloadSpeed: 0, uploadSpeed: 0, jitter: 0 } },
-            stability: { score: 0, status: '', details: '', metrics: {} },
-            connection: { type: '', effectiveType: '', downlink: 0, rtt: 0, saveData: false }
-        };
-        this.overallScore = 0;
-        this.latencyMeasurements = [];
-        
-        // Thresholds for metrics evaluation
-        this.thresholds = {
-            latency: { good: 50, fair: 100 },
-            jitter: { good: 10, fair: 30 }
-        };
+        const footerTemplate = `
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <div class="logo">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                                <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            </svg>
+                            <span>WiFi.Report</span>
+                        </div>
+                        <p class="footer-description">
+                            Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+                        </p>
+                    </div>
+                    <div class="footer-links-row">
+                        <div class="footer-links">
+                            <h4>Product</h4>
+                            <ul>
+                                <li><a href="/index.html#home">Home</a></li>
+                                <li><a href="/about.html">About</a></li>
+                                <li><a href="/index.html#features">Features</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-links">
+                            <h4>Legal</h4>
+                            <ul>
+                                <li><a href="/privacy.html">Privacy Policy</a></li>
+                                <li><a href="/cookies.html">Cookie Policy</a></li>
+                                <li><a href="/terms.html">Terms of Service</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-links">
+                            <h4>Support</h4>
+                            <ul>
+                                <li><a href="/faq.html">FAQ</a></li>
+                                <li><a href="/contact.html">Contact</a></li>
+                                <li><a href="/help.html">Help Center</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                    <p class="footer-note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
+                        </svg>
+                        All analysis is performed locally in your browser for maximum privacy.
+                    </p>
+                </div>
+            </div>
+        </footer>`;
         
         // Speed test constants - optimized for accuracy across all connection speeds
         this.speedTestConstants = {
