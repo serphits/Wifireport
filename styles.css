@@ -1519,9 +1519,6 @@ body {
     box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
     animation: fadeInUp 0.6s ease-out 0.5s both;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
 }
 
 .speed-metrics-list {
@@ -1565,11 +1562,12 @@ body {
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
+    gap: 1.5rem;
+    width: 100%;
 }
 
 .metric-card {
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
     background: #F5F5F5;
     border-radius: 0;
     border: 2px solid #E0E0E0;
@@ -1578,7 +1576,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
+    min-height: 140px;
 }
 
 .metric-card:hover {
@@ -1620,6 +1620,7 @@ body {
 @media (max-width: 1024px) {
     .metrics-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
     }
     
     .connection-grid {
@@ -1629,7 +1630,8 @@ body {
 
 @media (max-width: 768px) {
     .metrics-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
     
     .connection-grid {
@@ -1642,8 +1644,11 @@ body {
 
     .speed-metrics {
         padding: 1.5rem;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+    }
+    
+    .metric-card {
+        padding: 1.5rem 1rem;
+        min-height: 120px;
     }
 
     .speed-metrics h3,
