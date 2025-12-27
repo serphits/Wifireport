@@ -357,7 +357,8 @@ class WiFiAnalyzer {
 
     async startAnalysis() {
         // Hide hero, show scanning section
-        document.querySelector('.hero').style.display = 'none';
+        const heroSection = document.getElementById('home');
+        if (heroSection) heroSection.style.display = 'none';
         const scanningSection = document.getElementById('scanningSection');
         scanningSection.classList.remove('hidden');
         
@@ -1692,21 +1693,26 @@ class WiFiAnalyzer {
     updateScoreInfo(score) {
         const scoreTitle = document.getElementById('scoreTitle');
         const scoreDescription = document.getElementById('scoreDescription');
+        const scoreCircle = document.getElementById('overallScoreCircle');
         
         if (!scoreTitle || !scoreDescription) return;
 
         if (score >= 80) {
             scoreTitle.textContent = 'Excellent Network!';
             scoreDescription.textContent = 'Your WiFi network is performing excellently with strong security, good privacy, fast speeds, and stable connection.';
+            if (scoreCircle) scoreCircle.style.stroke = '#00C853';
         } else if (score >= 60) {
             scoreTitle.textContent = 'Good Network';
             scoreDescription.textContent = 'Your WiFi network is performing well, but there are some areas where improvements could be made.';
+            if (scoreCircle) scoreCircle.style.stroke = '#66BB6A';
         } else if (score >= 40) {
             scoreTitle.textContent = 'Fair Network';
             scoreDescription.textContent = 'Your WiFi network has several issues that should be addressed to improve performance and security.';
+            if (scoreCircle) scoreCircle.style.stroke = '#FFA000';
         } else {
             scoreTitle.textContent = 'Poor Network';
             scoreDescription.textContent = 'Your WiFi network has significant problems that need immediate attention.';
+            if (scoreCircle) scoreCircle.style.stroke = '#E53935';
         }
     }
 
@@ -2056,7 +2062,8 @@ class WiFiAnalyzer {
 
         // Hide results, show hero
         document.getElementById('resultsSection').classList.add('hidden');
-        document.querySelector('.hero').style.display = 'block';
+        const heroSection = document.getElementById('home');
+        if (heroSection) heroSection.style.display = 'block';
         
         // Reset progress
         const progressFill = document.getElementById('progressFill');
