@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     applySharedLayout();
     // Don't initialize hero loading grid on page load - only show when scan starts
     initRadarGrid();
-    initLivePreviewCanvas();
+    initPreviewRadar();
 });
 
 function applySharedLayout() {
@@ -2145,65 +2145,29 @@ window.addEventListener('offline', () => {
     console.log('Connection lost');
 });
 
-// Canvas-based oscilloscope preview consistent with site design
-function initLivePreviewCanvas() {
-    const canvas = document.getElementById('livePreviewCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    function resize() {
-        const rect = canvas.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = Math.max(320, Math.floor(rect.width * dpr));
-        canvas.height = Math.max(160, Math.floor(rect.height * dpr));
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+// Populate scanner radar squares (analysis section)
+function initRadarGrid() {
+    const radar = document.getElementById('scanRadar');
+    if (!radar) return;
+    radar.innerHTML = '';
+    for (let i = 0; i < 144; i++) { // 12x12
+        const square = document.createElement('div');
+        square.className = 'radar-square';
+        square.style.animationDelay = `${Math.random() * 2}s`;
+        radar.appendChild(square);
     }
-    resize();
-    window.addEventListener('resize', resize);
+}
 
-    let t = 0;
-    function drawGrid() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-        ctx.lineWidth = 1;
-        const step = 20;
-        for (let x = 0; x < canvas.width; x += step) {
-            ctx.beginPath();
-            ctx.moveTo(x + 0.5, 0);
-            ctx.lineTo(x + 0.5, canvas.height);
-            ctx.stroke();
-        }
-        for (let y = 0; y < canvas.height; y += step) {
-            ctx.beginPath();
-            ctx.moveTo(0, y + 0.5);
-            ctx.lineTo(canvas.width, y + 0.5);
-            ctx.stroke();
-        }
+// Populate preview radar squares (hero card)
+function initPreviewRadar() {
+    const preview = document.getElementById('previewRadar');
+    if (!preview) return;
+    preview.innerHTML = '';
+    const cols = 12, rows = 6;
+    for (let i = 0; i < cols * rows; i++) {
+        const square = document.createElement('div');
+        square.className = 'radar-square';
+        square.style.animationDelay = `${Math.random() * 2}s`;
+        preview.appendChild(square);
     }
-
-    function drawWave() {
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        const mid = canvas.height / 2;
-        const amp = canvas.height / 6;
-        const freq = 0.02;
-        for (let x = 0; x < canvas.width; x += 2) {
-            const spike = Math.sin((x + t * 60) * 0.002) > 0.95 ? amp * 1.8 : 0;
-            const y = mid + Math.sin(x * freq + t) * amp + spike;
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-    }
-
-    function tick() {
-        drawGrid();
-        drawWave();
-        t += 0.03;
-        requestAnimationFrame(tick);
-    }
-    tick();
 }

@@ -527,6 +527,15 @@ body {
     padding: 8px;
 }
 
+/* Preview radar size for hero card */
+.preview-radar {
+    width: 320px;
+    height: 160px;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    background: #FFFFFF;
+}
+
 .radar-square {
     width: 100%;
     height: 100%;
