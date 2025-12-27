@@ -173,7 +173,7 @@ function initializeApp() {
     this.uploadTestData = this.generateTestData();
     this.init();
 }
-    generateTestData() {
+    function generateTestData() {
         // Pre-generate 100MB of test data once to support large upload tests
         const maxSize = 100_000_000; // Increased from 10MB to 100MB for larger uploads
         const data = new Uint8Array(maxSize);
@@ -191,7 +191,7 @@ function initializeApp() {
         return data;
     }
 
-    calculateMbps(bytes, seconds) {
+    function calculateMbps(bytes, seconds) {
         // Helper method to calculate Mbps from bytes and time
         // Formula: (bytes * 8 bits/byte) / seconds / 1,000,000 bits/Mbps
         // Prevent division by zero or extremely small values (< 0.001s)
@@ -217,7 +217,7 @@ function initializeApp() {
      * 4. expectedSize
      * 5. 0 (if all fail)
      */
-    getActualBytes(received, contentLength, endpoint, expectedSize) {
+    function getActualBytes(received, contentLength, endpoint, expectedSize) {
         // Validate inputs - ensure numeric values
         const validReceived = typeof received === 'number' && received > 0 ? received : 0;
         const validContentLength = typeof contentLength === 'number' && contentLength > 0 ? contentLength : 0;
@@ -240,7 +240,7 @@ function initializeApp() {
      * @param {string} random - Random string for cache busting
      * @returns {{url: string, expectedSize: number}} URL and expected size
      */
-    buildEndpointUrl(endpoint, bytes, timestamp, random) {
+    function buildEndpointUrl(endpoint, bytes, timestamp, random) {
         let url;
         let expectedSize = bytes;
         
@@ -266,7 +266,7 @@ function initializeApp() {
         return { url, expectedSize };
     }
 
-    init() {
+    function init() {
         // Initialize event listeners
         const startBtn = document.getElementById('startScan');
         const newScanBtn = document.getElementById('newScanBtn');
@@ -291,7 +291,7 @@ function initializeApp() {
         this.addScoreGradient();
     }
 
-    addScoreGradient() {
+    function addScoreGradient() {
         const svg = document.querySelector('.score-svg');
         if (!svg) return;
         
@@ -317,12 +317,12 @@ function initializeApp() {
         svg.insertBefore(defs, svg.firstChild);
     }
 
-    toggleMobileMenu() {
+    function toggleMobileMenu() {
         const navLinks = document.querySelector('.nav-links');
         navLinks.classList.toggle('active');
     }
 
-    async startAnalysis() {
+    async function startAnalysis() {
         // Hide hero, show scanning section
         const heroSection = document.getElementById('home');
         if (heroSection) heroSection.style.display = 'none';
@@ -346,7 +346,7 @@ function initializeApp() {
         this.displayResults();
     }
 
-    updateProgress(percentage, status) {
+    function updateProgress(percentage, status) {
         const progressFill = document.getElementById('progressFill');
         const progressText = document.getElementById('progressText');
         const scanningStatus = document.getElementById('scanningStatus');
@@ -356,7 +356,7 @@ function initializeApp() {
         if (scanningStatus) scanningStatus.textContent = status;
     }
 
-    updateStep(stepName, state) {
+    function updateStep(stepName, state) {
         const step = document.querySelector(`.step[data-step="${stepName}"]`);
         if (step) {
             step.classList.remove('active', 'completed');
@@ -365,7 +365,7 @@ function initializeApp() {
         }
     }
 
-    async runConnectionTest() {
+    async function runConnectionTest() {
         this.updateProgress(10, 'Checking connection type...');
         this.updateStep('connection', 'active');
         
@@ -389,7 +389,7 @@ function initializeApp() {
         this.updateProgress(20, 'Connection type identified: ' + this.results.connection.effectiveType);
     }
 
-    async runSecurityTest() {
+    async function runSecurityTest() {
         this.updateProgress(25, 'Analyzing security protocols...');
         this.updateStep('security', 'active');
         
@@ -478,7 +478,7 @@ function initializeApp() {
         this.updateProgress(45, 'Security analysis complete');
     }
 
-    async runSpeedTest() {
+    async function runSpeedTest() {
         this.updateProgress(50, 'Testing network speed...');
         this.updateStep('speed', 'active');
         
@@ -750,7 +750,7 @@ function initializeApp() {
         this.updateProgress(88, 'Speed test complete');
     }
 
-    async measureUploadMbps(bytes) {
+    async function measureUploadMbps(bytes) {
         // Simple direct upload test using Cloudflare (same as extension)
         const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&r=${Math.random()}`;
         const controller = new AbortController();
@@ -783,7 +783,7 @@ function initializeApp() {
         }
     }
     
-    async measureUploadMultiConnection(endpoint, targetBytes) {
+    async function measureUploadMultiConnection(endpoint, targetBytes) {
         // Implement multiple concurrent upload connections like speedtest.net
         const numConnections = 3; // Use 3 concurrent connections for uploads
         const bytesPerConnection = Math.ceil(targetBytes / numConnections);
@@ -832,7 +832,7 @@ function initializeApp() {
         }
     }
     
-    async uploadChunk(endpoint, bytes, connectionId) {
+    async function uploadChunk(endpoint, bytes, connectionId) {
         // Upload a chunk of data in one connection
         try {
             // Generate test data for this connection
@@ -884,7 +884,7 @@ function initializeApp() {
         }
     }
 
-    async measureDownloadMbps(bytes) {
+    async function measureDownloadMbps(bytes) {
         // Simple direct download test using Cloudflare (same as extension)
         const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&r=${Math.random()}`;
         const controller = new AbortController();
@@ -915,7 +915,7 @@ function initializeApp() {
     }
 
     
-    async measureDownloadMultiConnection(endpoint, targetBytes) {
+    async function measureDownloadMultiConnection(endpoint, targetBytes) {
         // Implement multiple concurrent connections like speedtest.net
         // This saturates the bandwidth for more accurate measurements
         const numConnections = 4; // Use 4 concurrent connections
@@ -969,7 +969,7 @@ function initializeApp() {
         }
     }
     
-    async measureDownloadWindow(estimateMbps) {
+    async function measureDownloadWindow(estimateMbps) {
         // Time-windowed download test: runs multiple flows concurrently for ~4s
         const durationSeconds = 4.0;
         const startTime = performance.now();
@@ -1033,7 +1033,7 @@ function initializeApp() {
         return this.calculateMbps(totalBytes, elapsed);
     }
     
-    async measureUploadWindow(estimateMbps) {
+    async function measureUploadWindow(estimateMbps) {
         // Time-windowed upload test: runs multiple flows concurrently for ~3s
         const durationSeconds = 3.0;
         const startTime = performance.now();
@@ -1092,7 +1092,7 @@ function initializeApp() {
         return this.calculateMbps(totalBytes, elapsed);
     }
     
-    async downloadChunk(endpoint, bytes, connectionId) {
+    async function downloadChunk(endpoint, bytes, connectionId) {
         // Download a chunk of data in one connection
         try {
             const timestamp = Date.now();
@@ -1178,7 +1178,7 @@ function initializeApp() {
         }
     }
 
-    async measureLatency(url) {
+    async function measureLatency(url) {
         // Use fetch with HEAD request for more accurate latency measurement
         // HEAD is better than GET as it only retrieves headers, not the full resource
         const timestamp = Date.now();
@@ -1237,7 +1237,7 @@ function initializeApp() {
         }
     }
 
-    async runStabilityTest() {
+    async function runStabilityTest() {
         this.updateProgress(89, 'Measuring connection stability...');
         this.updateStep('stability', 'active');
         
@@ -1360,7 +1360,7 @@ function initializeApp() {
         this.updateProgress(93, 'Stability test complete');
     }
 
-    async runPrivacyTest() {
+    async function runPrivacyTest() {
         // Progressive disclosure: show staged messages
         this.updateProgress(94, 'Scanning IP...');
         this.updateStep('privacy', 'active');
@@ -1442,7 +1442,7 @@ function initializeApp() {
         await this.delay(1000);
     }
 
-    checkBrowserFingerprint() {
+    function checkBrowserFingerprint() {
         const issues = [];
         let deduction = 0;
         
@@ -1503,7 +1503,7 @@ function initializeApp() {
         return { issues, deduction };
     }
 
-    async getIPInfo() {
+    async function getIPInfo() {
         try {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
@@ -1534,7 +1534,7 @@ function initializeApp() {
         }
     }
 
-    calculateOverallScore() {
+    function calculateOverallScore() {
         const scores = [
             this.results.security.score,
             this.results.privacy.score,
@@ -1545,7 +1545,7 @@ function initializeApp() {
         this.overallScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
     }
 
-    displayResults() {
+    function displayResults() {
         // Hide scanning, show results
         document.getElementById('scanningSection').classList.add('hidden');
         const resultsSection = document.getElementById('resultsSection');
@@ -1586,7 +1586,7 @@ function initializeApp() {
         this.addConnectionComparison();
     }
     
-    addConnectionComparison() {
+    function addConnectionComparison() {
         const effectiveType = this.results.connection.effectiveType?.toLowerCase() || 'unknown';
         const downloadSpeed = this.results.speed.metrics.downloadSpeed || 0;
         const latency = this.results.speed.metrics.latency || 0;
@@ -1641,7 +1641,7 @@ function initializeApp() {
         }
     }
 
-    animateScore(targetScore) {
+    function animateScore(targetScore) {
         const scoreElement = document.getElementById('overallScore');
         const scoreCircle = document.getElementById('overallScoreCircle');
         
@@ -1667,7 +1667,7 @@ function initializeApp() {
         }, stepTime);
     }
 
-    updateScoreInfo(score) {
+    function updateScoreInfo(score) {
         const scoreTitle = document.getElementById('scoreTitle');
         const scoreDescription = document.getElementById('scoreDescription');
         const scoreCircle = document.getElementById('overallScoreCircle');
@@ -1693,7 +1693,7 @@ function initializeApp() {
         }
     }
 
-    displayCategoryResult(category, result) {
+    function displayCategoryResult(category, result) {
         const scoreEl = document.getElementById(`${category}Score`);
         const badgeEl = document.getElementById(`${category}Badge`);
         const detailsEl = document.getElementById(`${category}Details`);
@@ -1832,7 +1832,7 @@ function initializeApp() {
         detailsEl.innerHTML = detailsHTML;
     }
 
-    updateSpeedMetrics() {
+    function updateSpeedMetrics() {
         const { downloadSpeed = 0, uploadSpeed = 0, latency = 0, jitter = 0 } = this.results.speed.metrics || {};
         const downloadEl = document.getElementById('downloadMetric');
         const uploadEl = document.getElementById('uploadMetric');
@@ -1884,7 +1884,7 @@ function initializeApp() {
         if (rttEl) rttEl.textContent = rtt ? `${rtt} ms` : 'N/A';
     }
 
-    generateRecommendations() {
+    function generateRecommendations() {
         const recommendationsList = document.getElementById('recommendationsList');
         if (!recommendationsList) return;
 
@@ -2025,7 +2025,7 @@ function initializeApp() {
         recommendationsList.innerHTML = html;
     }
 
-    resetAnalysis() {
+    function resetAnalysis() {
         // Reset results
         this.results = {
             security: { score: 0, status: '', details: '', issues: [] },
@@ -2055,7 +2055,7 @@ function initializeApp() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    initCookieConsent() {
+    function initCookieConsent() {
         const cookieBanner = document.getElementById('cookieBanner');
         const acceptBtn = document.getElementById('acceptCookies');
         const declineBtn = document.getElementById('declineCookies');
@@ -2085,7 +2085,7 @@ function initializeApp() {
         }
     }
 
-    delay(ms) {
+    function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
