@@ -524,7 +524,7 @@ body {
     border: 3px solid #000000;
     border-radius: 0;
     position: relative;
-    background: #FFFFFF;
+    background: transparent;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(12, 1fr);
@@ -538,7 +538,7 @@ body {
     height: 160px;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    background: #FFFFFF;
+    background: transparent;
 }
 
 .radar-square {
