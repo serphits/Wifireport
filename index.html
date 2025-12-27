@@ -124,7 +124,30 @@
                 </p>
             </div>
             <div class="hero-visual">
-                <div class="loading-grid" id="heroLoadingGrid"></div>
+                <div class="oscilloscope">
+                    <svg class="oscilloscope-svg" width="300" height="120" viewBox="0 0 300 120" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#000000;stop-opacity:0.3" />
+                                <stop offset="50%" style="stop-color:#000000;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Grid background -->
+                        <g class="grid" opacity="0.1">
+                            <line x1="0" y1="30" x2="300" y2="30" stroke="#000000" stroke-width="0.5"/>
+                            <line x1="0" y1="60" x2="300" y2="60" stroke="#000000" stroke-width="0.5"/>
+                            <line x1="0" y1="90" x2="300" y2="90" stroke="#000000" stroke-width="0.5"/>
+                            <line x1="75" y1="0" x2="75" y2="120" stroke="#000000" stroke-width="0.5"/>
+                            <line x1="150" y1="0" x2="150" y2="120" stroke="#000000" stroke-width="0.5"/>
+                            <line x1="225" y1="0" x2="225" y2="120" stroke="#000000" stroke-width="0.5"/>
+                        </g>
+                        <!-- Animated wave -->
+                        <polyline class="wave-line" points="0,60 10,55 20,45 30,40 40,45 50,55 60,65 70,75 80,80 90,75 100,65 110,55 120,45 130,40 140,45 150,55 160,65 170,75 180,80 190,75 200,65 210,55 220,45 230,40 240,45 250,55 260,65 270,75 280,80 290,75 300,65" fill="none" stroke="url(#waveGradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Center axis line -->
+                        <line x1="0" y1="60" x2="300" y2="60" stroke="#000000" stroke-width="1" opacity="0.3"/>
+                    </svg>
+                </div>
             </div>
         </div>
     </section>

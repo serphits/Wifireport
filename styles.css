@@ -227,7 +227,19 @@ body {
             padding: 0.75rem 0.5rem;
         }
     }
+}
+
+.hero {
+    padding: 6rem 2rem 5rem;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
     background: repeating-linear-gradient(
         0deg,
         transparent,
@@ -243,10 +255,11 @@ body {
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 4rem;
+    gap: 2rem;
     align-items: center;
     position: relative;
     z-index: 1;
+    padding: 0 2rem;
 }
 
 .hero-content {
@@ -285,7 +298,7 @@ body {
 .hero-subtitle {
     font-size: 1.25rem;
     color: var(--text-secondary);
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
     line-height: 1.7;
     max-width: 600px;
 }
@@ -348,7 +361,8 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 2rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
     color: var(--text-tertiary);
     font-size: 0.875rem;
 }
@@ -380,7 +394,42 @@ body {
 
 /* Hero Visual */
 .hero-visual {
-    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.oscilloscope {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(250,250,250,0.8));
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.oscilloscope-svg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.wave-line {
+    animation: waveFlow 3s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes waveFlow {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(300px);
+    }
 }
 
 .loading-grid {
@@ -1913,7 +1962,7 @@ body {
     }
     
     .hero {
-        padding: 3rem 1.5rem;
+        padding: 3.5rem 1.5rem 3rem;
     }
     
     .hero-container {
@@ -1926,15 +1975,28 @@ body {
         line-height: 1.2;
         letter-spacing: -1px;
         word-wrap: break-word;
+        margin-bottom: 1.25rem;
     }
     
     .hero-subtitle {
         font-size: 1rem;
         line-height: 1.6;
+        margin-bottom: 2rem;
     }
     
     .hero-visual {
-        display: none;
+        display: flex;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .oscilloscope {
+        padding: 1.5rem;
+        border-radius: 6px;
+    }
+    
+    .oscilloscope-svg {
+        max-width: 250px;
     }
     
     .wifi-rings, .loading-grid {
