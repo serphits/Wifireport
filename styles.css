@@ -539,21 +539,21 @@ body {
     padding: 8px;
 }
 
-/* Preview radar size for hero card */
+/* Preview radar size for hero card - black background with white squares */
 .preview-radar {
     width: 320px;
     height: 160px;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    background: #FFFFFF;
+    background: #000000;
 }
 
 .preview-radar-container {
-    background: #FFFFFF;
+    background: #000000;
 }
 
 .preview-radar-wrapper {
-    background: #FFFFFF;
+    background: #000000;
 }
 
 .radar-square {
@@ -562,6 +562,11 @@ body {
     background: #000000;
     opacity: 0;
     animation: radarSquarePulse 2s ease-in-out infinite;
+}
+
+/* Preview radar squares are white */
+.preview-radar .radar-square {
+    background: #FFFFFF;
 }
 
 @keyframes radarSquarePulse {
