@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     applySharedLayout();
     // Don't initialize hero loading grid on page load - only show when scan starts
     initRadarGrid();
+    initLivePreviewCanvas();
 });
 
 function applySharedLayout() {
