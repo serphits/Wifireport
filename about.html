@@ -12,39 +12,148 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
-    <title>About WiFi.Report</title>
+    <title>About WiFi.Report - Your Trusted Network Analysis Tool</title>
+    <meta name="description" content="Learn about WiFi.Report - a free, privacy-focused WiFi analysis tool. Discover our mission to help users secure and optimize their wireless networks.">
+    <link rel="canonical" href="https://wifi.report/about.html">
     <style>
-        .about-section { margin-bottom: 4rem; }
-        .about-section h2 { font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--text-primary); }
-        .about-section p { color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem; font-size: 1.0625rem; }
-        .about-section ul { list-style: none; margin: 1.5rem 0; }
-        .about-section li { padding: 1rem; margin-bottom: 0.75rem; background: var(--bg-secondary); border-radius: 12px; border-left: 4px solid var(--primary-color); color: var(--text-secondary); }
-        .about-section li strong { color: var(--text-primary); display: block; margin-bottom: 0.25rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin: 3rem 0; }
-        .stat-card { text-align: center; padding: 2rem; background: white; border-radius: 0; border: 2px solid #000000; }
-        .stat-value { font-size: 3rem; font-weight: 900; font-family: 'Space Mono', monospace; color: #000000; display: block; margin-bottom: 0.5rem; }
-        .stat-label { color: var(--text-secondary); font-weight: 600; font-size: 0.9375rem; }
-        .cta-section { background: #000000; color: white; padding: 4rem 2rem; text-align: center; border-radius: 0; margin: 4rem 0; }
-        .cta-section h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 1rem; }
-        .cta-section p { font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.95; }
-        .cta-button { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1.25rem 2.5rem; font-size: 1.125rem; font-weight: 700; font-family: 'Space Mono', monospace; color: #000000; background: white; border: 2px solid white; border-radius: 0; cursor: pointer; transition: all 0.3s ease; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; }
-        .cta-button:hover { transform: translateY(-2px); background: transparent; color: white; }
+        .legal-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            background: white;
+        }
+        .legal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .legal-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .legal-header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+        .legal-content h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin: 2.5rem 0 1rem;
+            color: var(--text-primary);
+        }
+        .legal-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 2rem 0 0.75rem;
+            color: var(--text-primary);
+        }
+        .legal-content p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .legal-content ul {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+        .legal-content li {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 0;
+            border-left: 4px solid var(--primary-color);
+            color: var(--text-secondary);
+        }
+        .legal-content li strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 0;
+            border: 2px solid #000000;
+        }
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 900;
+            font-family: 'Space Mono', monospace;
+            color: #000000;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+        .cta-section {
+            background: #000000;
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 0;
+            margin: 4rem 0;
+        }
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+        .cta-section p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: #000000;
+            background: white;
+            border: 2px solid white;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            background: transparent;
+            color: white;
+        }
     </style>
 </head>
 <body>
     
 
-    <!-- Hero Section -->
-    <section class="about-hero">
-        <h1>About WiFi.Report</h1>
-        <p>We're on a mission to help everyone understand and optimize their WiFi networks with powerful, privacy-focused analysis tools.</p>
-    </section>
+    <div class="legal-page">
+        <!-- Hero Section -->
+        <div class="legal-header">
+            <h1>About WiFi.Report</h1>
+            <p>We're on a mission to help everyone understand and optimize their WiFi networks with powerful, privacy-focused analysis tools.</p>
+        </div>
 
-    <!-- About Content -->
-    <div class="about-content">
-        <!-- Our Story -->
-        <div class="about-section">
+        <!-- About Content -->
+        <div class="legal-content">
             <h2>Our Story</h2>
             <p>WiFi.Report was born from a simple observation: most people have no idea how their WiFi network is performing or whether it's secure. We created this tool to give everyday users access to powerful network analysis.</p>
         </div>
