@@ -928,6 +928,14 @@ function displayResults() {
     if (scanningSection) scanningSection.classList.add('hidden');
     if (resultsSection) resultsSection.classList.remove('hidden');
     
+    // Set report date
+    const reportDateElement = document.getElementById('reportDate');
+    if (reportDateElement) {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        reportDateElement.textContent = now.toLocaleDateString('en-US', options);
+    }
+    
     // Display overall score
     displayOverallScore();
     
