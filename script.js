@@ -937,6 +937,9 @@ function displayResults() {
     displayCategoryResult('speed', results.speed);
     displayCategoryResult('stability', results.stability);
     
+    // Display standalone network metrics
+    displayNetworkMetrics();
+    
     // Generate recommendations
     generateRecommendations();
     
@@ -949,11 +952,24 @@ function displayResults() {
     }
 }
 
+function displayNetworkMetrics() {
+    // Populate standalone network performance metrics
+    const downloadMetric = document.getElementById('downloadMetric');
+    const uploadMetric = document.getElementById('uploadMetric');
+    const latencyMetric = document.getElementById('latencyMetric');
+    const jitterMetric = document.getElementById('jitterMetric');
+    
+    if (downloadMetric) downloadMetric.textContent = `${results.speed.metrics.downloadSpeed} Mbps`;
+    if (uploadMetric) uploadMetric.textContent = `${results.speed.metrics.uploadSpeed} Mbps`;
+    if (latencyMetric) latencyMetric.textContent = `${results.speed.metrics.latency} ms`;
+    if (jitterMetric) jitterMetric.textContent = `${results.speed.metrics.jitter} ms`;
+}
+
 function displayOverallScore() {
-    const scoreValue = document.getElementById('overallScoreValue');
-    const scoreCircle = document.querySelector('.score-circle');
-    const scoreTitle = document.querySelector('.score-title');
-    const scoreDescription = document.querySelector('.score-description');
+    const scoreValue = document.getElementById('overallScore');
+    const scoreCircle = document.getElementById('overallScoreCircle');
+    const scoreTitle = document.getElementById('scoreTitle');
+    const scoreDescription = document.getElementById('scoreDescription');
     
     if (!scoreValue) return;
     
@@ -973,7 +989,7 @@ function displayOverallScore() {
     
     // Update circle stroke
     if (scoreCircle) {
-        const circumference = 2 * Math.PI * 90;
+        const circumference = 2 * Math.PI * 85;
         const offset = circumference - (overallScore / 100) * circumference;
         scoreCircle.style.strokeDasharray = circumference;
         scoreCircle.style.strokeDashoffset = offset;
