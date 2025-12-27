@@ -548,6 +548,14 @@ body {
     background: #000000;
 }
 
+.preview-radar-container {
+    background: #000000;
+}
+
+.preview-radar-wrapper {
+    background: #000000;
+}
+
 .radar-square {
     width: 100%;
     height: 100%;
@@ -1516,7 +1524,14 @@ body {
     gap: 1.5rem;
 }
 
-.metric {
+.speed-metrics-inline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.speed-metrics-inline .metric {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1620,6 +1635,11 @@ body {
         padding: 1.5rem;
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
+    }
+    
+    .speed-metrics-inline {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
     
     .connection-info {

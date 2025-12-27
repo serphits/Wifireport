@@ -1091,7 +1091,7 @@ function displayCategoryResult(category, result) {
         detailsHTML += '</ul></div>';
     } else if (category === 'speed') {
         detailsHTML += `<p>${result.details}</p>`;
-        detailsHTML += `<div class="speed-metrics">`;
+        detailsHTML += `<div class="speed-metrics-inline">`;
         detailsHTML += `<div class="metric"><div class="metric-label">Download</div><div class="metric-value">${result.metrics.downloadSpeed} Mbps</div></div>`;
         detailsHTML += `<div class="metric"><div class="metric-label">Upload</div><div class="metric-value">${result.metrics.uploadSpeed} Mbps</div></div>`;
         detailsHTML += `<div class="metric"><div class="metric-label">Latency</div><div class="metric-value">${result.metrics.latency} ms</div></div>`;
