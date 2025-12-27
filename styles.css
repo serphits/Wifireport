@@ -164,9 +164,37 @@ body {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-3px); }
 }
-    
-    /* Mobile Navigation Enhancements */
-    @media (max-width: 768px) {
+
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+.mobile-menu-toggle span {
+    width: 30px;
+    height: 3px;
+    background: #FFFFFF;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    position: relative;
+    transform-origin: center;
+}
+
+.mobile-menu-toggle:hover span {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Mobile Navigation Enhancements */
+@media (max-width: 768px) {
         .nav-links.active a.nav-extension {
             background: linear-gradient(135deg, #4285F4, #34A853);
             width: 100%;
