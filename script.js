@@ -71,29 +71,31 @@ function applySharedLayout() {
                         Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
                     </p>
                 </div>
-                <div class="footer-links">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="/index.html#home">Home</a></li>
-                        <li><a href="/about.html">About</a></li>
-                        <li><a href="/index.html#features">Features</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="/privacy.html">Privacy Policy</a></li>
-                        <li><a href="/cookies.html">Cookie Policy</a></li>
-                        <li><a href="/terms.html">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="/faq.html">FAQ</a></li>
-                        <li><a href="/contact.html">Contact</a></li>
-                        <li><a href="/help.html">Help Center</a></li>
-                    </ul>
+                <div class="footer-links-row">
+                    <div class="footer-links">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="/index.html#home">Home</a></li>
+                            <li><a href="/about.html">About</a></li>
+                            <li><a href="/index.html#features">Features</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="/privacy.html">Privacy Policy</a></li>
+                            <li><a href="/cookies.html">Cookie Policy</a></li>
+                            <li><a href="/terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="/faq.html">FAQ</a></li>
+                            <li><a href="/contact.html">Contact</a></li>
+                            <li><a href="/help.html">Help Center</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -1074,10 +1076,10 @@ function displayCategoryResult(category, result) {
     } else if (category === 'speed') {
         detailsHTML += `<p>${result.details}</p>`;
         detailsHTML += `<div class="speed-metrics">`;
-        detailsHTML += `<div class="metric"><span class="metric-label">Download</span><span class="metric-value">${result.metrics.downloadSpeed} Mbps</span></div>`;
-        detailsHTML += `<div class="metric"><span class="metric-label">Upload</span><span class="metric-value">${result.metrics.uploadSpeed} Mbps</span></div>`;
-        detailsHTML += `<div class="metric"><span class="metric-label">Latency</span><span class="metric-value">${result.metrics.latency} ms</span></div>`;
-        detailsHTML += `<div class="metric"><span class="metric-label">Jitter</span><span class="metric-value">${result.metrics.jitter} ms</span></div>`;
+        detailsHTML += `<div class="metric"><div class="metric-label">Download</div><div class="metric-value">${result.metrics.downloadSpeed} Mbps</div></div>`;
+        detailsHTML += `<div class="metric"><div class="metric-label">Upload</div><div class="metric-value">${result.metrics.uploadSpeed} Mbps</div></div>`;
+        detailsHTML += `<div class="metric"><div class="metric-label">Latency</div><div class="metric-value">${result.metrics.latency} ms</div></div>`;
+        detailsHTML += `<div class="metric"><div class="metric-label">Jitter</div><div class="metric-value">${result.metrics.jitter} ms</div></div>`;
         detailsHTML += `</div>`;
     } else {
         detailsHTML += `<p>${result.details}</p>`;

@@ -531,7 +531,7 @@ body {
     border: 3px solid #000000;
     border-radius: 0;
     position: relative;
-    background: transparent;
+    background: #000000;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(12, 1fr);
@@ -545,7 +545,7 @@ body {
     height: 160px;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    background: transparent;
+    background: #000000;
 }
 
 .radar-square {
@@ -1082,8 +1082,8 @@ body {
 .vpn-cta {
     margin-top: 1.5rem;
     padding: 2rem;
-    background: #000000;
-    border: 3px solid #000000;
+    background: #DC2626;
+    border: 3px solid #DC2626;
     border-radius: 0;
     display: flex;
     flex-direction: column;
@@ -1506,6 +1506,20 @@ body {
     box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
     animation: fadeInUp 0.6s ease-out 0.5s both;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #F5F5F5;
+    border: 2px solid #E0E0E0;
+    border-radius: 0;
 }
 
 .speed-metrics h3 {
@@ -1559,11 +1573,11 @@ body {
 }
 
 .metric-value {
-    font-size: 1.875rem;
-    font-weight: 900;
+    font-size: 1.125rem;
+    font-weight: 700;
     color: var(--text-primary);
     font-family: 'Space Mono', monospace;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
 }
 
 .metric-unit {
@@ -1599,6 +1613,8 @@ body {
 
     .speed-metrics {
         padding: 1.5rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
     
     .connection-info {
@@ -1611,7 +1627,7 @@ body {
     }
 
     .metric-value {
-        font-size: 1.5rem;
+        font-size: 1rem;
     }
     
     .connection-value {
