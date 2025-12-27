@@ -352,10 +352,7 @@ body {
 
 /* Hero Visual */
 .hero-visual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: fadeInUp 0.8s ease-out 0.2s both;
+    display: none;
 }
 
 .loading-grid {
@@ -1909,7 +1906,7 @@ body {
     }
     
     .hero-visual {
-        order: -1;
+        display: none;
     }
     
     .wifi-rings, .loading-grid {
