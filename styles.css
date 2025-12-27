@@ -131,38 +131,74 @@ body {
     width: 100%;
 }
 
-.mobile-menu-toggle {
-    display: none;
-    flex-direction: column;
-    gap: 0.35rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-}
-
-.mobile-menu-toggle span {
-    width: 24px;
-    height: 2px;
-    background: #FFFFFF;
+.nav-links a.nav-extension {
+    background: linear-gradient(135deg, #4285F4, #34A853);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     transition: all 0.3s ease;
 }
 
-/* Hero Section */
-.hero {
-    padding: 6rem 2rem;
-    background: #FFFFFF;
-    position: relative;
-    overflow: hidden;
-    border-bottom: 2px solid #000000;
+.nav-links a.nav-extension:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
 }
 
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+.nav-links a.nav-extension::after {
+    display: none;
+}
+
+.nav-links a.nav-extension .ext-icon {
+    font-size: 1rem;
+    display: inline-block;
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+    
+    /* Mobile Navigation Enhancements */
+    @media (max-width: 768px) {
+        .nav-links.active a.nav-extension {
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+        }
+        
+        /* Improve mobile CTA visibility */
+        .scan-button {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .hero-cta-secondary {
+            text-align: center;
+        }
+        
+        /* Add safe spacing for mobile inputs and buttons */
+        .form-button,
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            min-height: 44px;
+            font-size: 16px;
+        }
+        
+        /* Improve touch targets */
+        .nav-links a,
+        .footer-links a {
+            padding: 0.75rem 0.5rem;
+        }
+    }
     bottom: 0;
     background: repeating-linear-gradient(
         0deg,
@@ -291,6 +327,27 @@ body {
 
 .hero-note svg {
     flex-shrink: 0;
+}
+
+.hero-cta-secondary {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.hero-cta-secondary a,
+.secondary-link {
+    color: #000000;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid #000000;
+    transition: all 0.3s ease;
+}
+
+.hero-cta-secondary a:hover,
+.secondary-link:hover {
+    color: #333333;
+    border-bottom-color: #333333;
 }
 
 /* Hero Visual */

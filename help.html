@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZEMBMNRVX1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-ZEMBMNRVX1');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <title>Help Center - WiFi.Report Support Documentation</title>
+    <meta name="description" content="WiFi.Report Help Center. Comprehensive guides and documentation to help you get the most out of our WiFi analysis tool. Learn troubleshooting, tips, and best practices.">
+    <meta name="keywords" content="help center, wifi report guides, troubleshooting, how to, documentation, tutorials, best practices">
+    <meta name="author" content="WiFi.Report">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://wifi.report/help.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wifi.report/help.html">
+    <meta property="og:title" content="Help Center - WiFi.Report Support Documentation">
+    <meta property="og:description" content="Comprehensive guides and documentation for WiFi.Report. Learn how to use our tool, troubleshoot issues, and optimize your network.">
+    <meta property="og:image" content="https://wifi.report/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://wifi.report/help.html">
+    <meta property="twitter:title" content="Help Center - WiFi.Report Support Documentation">
+    <meta property="twitter:description" content="Comprehensive guides and documentation for WiFi.Report. Learn how to use our tool, troubleshoot issues, and optimize your network.">
+    <meta property="twitter:image" content="https://wifi.report/og-image.jpg">
+    
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .help-hero {
+            padding: 6rem 2rem 4rem;
+            background: #FFFFFF;
+            border-bottom: 2px solid #000000;
+            text-align: center;
+        }
+        .help-hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        .help-hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        .help-search {
+            max-width: 600px;
+            margin: 2rem auto 0;
+        }
+        .help-search input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #000000;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .help-search input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+        .help-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .help-card {
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #FFFFFF;
+        }
+        .help-card:hover {
+            border-color: #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .help-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .help-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+        .help-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        .help-card-link {
+            color: #000000;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #000000;
+            transition: all 0.3s ease;
+        }
+        .help-card-link:hover {
+            gap: 0.75rem;
+            color: #333333;
+            border-bottom-color: #333333;
+        }
+        .help-guides {
+            margin-bottom: 4rem;
+        }
+        .help-guides h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            border-bottom: 3px solid #000000;
+            padding-bottom: 1rem;
+        }
+        .guide-item {
+            border-left: 4px solid #000000;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: #F5F5F5;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .guide-item:hover {
+            background: #EEEEEE;
+            padding-left: 2rem;
+        }
+        .guide-item h3 {
+            font-size: 1.125rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .guide-item p {
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+        .guide-item a {
+            color: #000000;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px solid #000000;
+            transition: all 0.3s ease;
+        }
+        .guide-item a:hover {
+            color: #333333;
+            border-bottom-color: #333333;
+        }
+        .help-contact {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .help-contact h2 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            border: none;
+            padding: 0;
+        }
+        .help-contact p {
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+        }
+        .help-contact a {
+            display: inline-block;
+            background: white;
+            color: #000000;
+            padding: 0.75rem 2rem;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .help-contact a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+        @media (max-width: 768px) {
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="logo" href="index.html">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect x="4" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="4" y="20" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="20" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                </svg>
+                <span>WiFi.Report</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" class="nav-extension" target="_blank" rel="noopener noreferrer"><span class="ext-icon">⬇</span> Chrome Extension</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="help-hero">
+        <h1>Help Center</h1>
+        <p>Everything you need to know about WiFi.Report. Guides, tutorials, and troubleshooting resources.</p>
+        <div class="help-search">
+            <input type="text" id="helpSearch" placeholder="Search help articles...">
+        </div>
+    </section>
+
+    <!-- Help Categories -->
+    <div class="help-container">
+        <div class="help-grid">
+            <div class="help-card">
+                <span class="help-card-icon">🚀</span>
+                <h3>Getting Started</h3>
+                <p>New to WiFi.Report? Learn the basics and start your first network analysis in minutes.</p>
+                <a href="#getting-started" class="help-card-link">View Guide →</a>
+            </div>
+
+            <div class="help-card">
+                <span class="help-card-icon">📊</span>
+                <h3>Understanding Results</h3>
+                <p>Dive deeper into what your test results mean and how to interpret network metrics.</p>
+                <a href="#understanding" class="help-card-link">Learn More →</a>
+            </div>
+
+            <div class="help-card">
+                <span class="help-card-icon">🔧</span>
+                <h3>Troubleshooting</h3>
+                <p>Encountering issues? Find solutions to common problems and technical errors.</p>
+                <a href="#troubleshooting" class="help-card-link">Troubleshoot →</a>
+            </div>
+
+            <div class="help-card">
+                <span class="help-card-icon">⚙️</span>
+                <h3>Best Practices</h3>
+                <p>Optimize your WiFi network with expert tips and recommendations for better performance.</p>
+                <a href="#best-practices" class="help-card-link">Read Tips →</a>
+            </div>
+
+            <div class="help-card">
+                <span class="help-card-icon">🔐</span>
+                <h3>Privacy & Security</h3>
+                <p>Understand how WiFi.Report protects your privacy and keeps your data secure.</p>
+                <a href="#privacy" class="help-card-link">Learn More →</a>
+            </div>
+
+            <div class="help-card">
+                <span class="help-card-icon">📱</span>
+                <h3>Chrome Extension</h3>
+                <p>Install and use the WiFi.Report Chrome extension for quick access from your browser.</p>
+                <a href="#extension" class="help-card-link">View Guide →</a>
+            </div>
+        </div>
+
+        <!-- Getting Started Guide -->
+        <div class="help-guides" id="getting-started">
+            <h2>Getting Started</h2>
+            
+            <div class="guide-item">
+                <h3>1. How to Run a Network Analysis</h3>
+                <p>Running a WiFi analysis is simple and takes about 30 seconds. Click the "Check My Network Now" button on the homepage to start the scan. During the scan, we'll test your connection type, security, privacy, speed, and stability. No data is collected or stored - everything happens in your browser.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>2. Choosing Between Web and Chrome Extension</h3>
+                <p>You can use WiFi.Report as a web app at wifi.report or install our Chrome extension for quicker access. The web version requires no installation. The Chrome extension offers convenient browser integration and one-click access. Both versions provide identical analysis functionality.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>3. Browser Requirements</h3>
+                <p>WiFi.Report works on all modern browsers including Chrome, Firefox, Safari, and Edge. You'll need JavaScript enabled and a stable internet connection. For the best experience, we recommend using the latest version of your browser.</p>
+            </div>
+        </div>
+
+        <!-- Understanding Results -->
+        <div class="help-guides" id="understanding">
+            <h2>Understanding Your Results</h2>
+            
+            <div class="guide-item">
+                <h3>Overall Network Score</h3>
+                <p>This 0-100 score is the average of your Security, Privacy, Speed, and Stability test results. Scores of 80+ are excellent, 60-79 are good, 40-59 are fair, and below 40 indicate poor network health. Use this as a quick indicator of your overall network quality.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Security Score Details</h3>
+                <p>The Security score evaluates your connection's encryption, HTTPS usage, and TLS protocols. A high security score means your connection is well-protected. Low scores indicate potential security vulnerabilities that should be addressed.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Privacy Score & IP Address</h3>
+                <p>The Privacy score indicates whether your real IP address is visible to websites. If you're not using a VPN, your IP address may reveal your approximate location and ISP. Using a VPN protects this information by hiding your real IP.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Speed Test Metrics</h3>
+                <p>Download Speed measures how fast data comes to you. Upload Speed measures how fast you send data. Latency is the delay in communication. Jitter measures how consistent your latency is. Higher speeds and lower latency are better for most activities.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Stability Score</h3>
+                <p>The Stability score reflects how consistent your network connection is. High stability means few fluctuations in performance. This is important for video calls, gaming, and streaming. Unstable connections cause dropouts and performance issues.</p>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="help-guides" id="troubleshooting">
+            <h2>Troubleshooting</h2>
+            
+            <div class="guide-item">
+                <h3>Test is Taking Too Long</h3>
+                <p>WiFi.Report should complete within 30-60 seconds. If it's taking longer, you may have network connectivity issues. Try refreshing the page and running the test again. If problems persist, try from a different network to isolate the issue.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Speed Test Results Show 0 Mbps</h3>
+                <p>This usually indicates network connectivity problems or firewall blocking. Try: (1) Refreshing the page, (2) Checking your internet connection, (3) Disabling VPN temporarily, (4) Testing from a different network. Check browser console (F12) for error messages.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Chrome Extension Not Working</h3>
+                <p>Try: (1) Reloading the extension from chrome://extensions/, (2) Fully restarting Chrome, (3) Clearing browser cache, (4) Uninstalling and reinstalling the extension. If issues persist, use the web version at wifi.report or contact support.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Incorrect Speed Results</h3>
+                <p>Speed varies based on time of day, network load, and server location. Different speed test sites may show different results due to varying methodologies. For best results, run multiple tests and compare averages. Ensure no other devices are heavily using your connection.</p>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="help-guides" id="best-practices">
+            <h2>Optimization Tips</h2>
+            
+            <div class="guide-item">
+                <h3>Improving WiFi Speed</h3>
+                <p>Position your router in a central location away from obstacles. Use a clear WiFi channel to avoid interference. Ensure your router firmware is up to date. Use 5GHz band for faster speeds if available. Keep your router away from microwaves and other wireless devices.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Securing Your Network</h3>
+                <p>Use WPA3 encryption (or WPA2 if WPA3 unavailable). Create a strong, unique password. Disable WPS (WiFi Protected Setup). Hide your SSID if appropriate. Enable router firewall. Regularly update router firmware. Disable guest network if not needed.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Reducing Network Latency</h3>
+                <p>Close bandwidth-heavy applications. Use wired connection for gaming/video calls if possible. Reduce number of connected devices. Check for interference from other networks. Reboot your router regularly. Test speed during off-peak hours.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Regular Network Maintenance</h3>
+                <p>Run WiFi.Report monthly to monitor changes. Update router firmware when available. Restart router weekly for optimal performance. Check for unusual devices on your network. Review router settings periodically. Keep security software current on connected devices.</p>
+            </div>
+        </div>
+
+        <!-- Privacy & Security -->
+        <div class="help-guides" id="privacy">
+            <h2>Privacy & Security</h2>
+            
+            <div class="guide-item">
+                <h3>How We Protect Your Privacy</h3>
+                <p>All WiFi.Report analysis happens 100% in your browser. We never send your test results to our servers. We don't collect, store, or track any network data. Your results remain entirely on your device. This is true for both the web version and Chrome extension.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Understanding IP Address Detection</h3>
+                <p>Your IP address is what makes you visible on the internet. Without a VPN, websites can detect your IP and approximate location. WiFi.Report displays this to show privacy risks. Using a VPN hides your real IP by routing traffic through their servers.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>WebRTC Leak Protection</h3>
+                <p>WebRTC is a browser technology that can leak your real IP even when using a VPN. WiFi.Report detects this vulnerability. Most modern VPNs protect against WebRTC leaks. Check your VPN settings for WebRTC protection options.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Browser Fingerprinting Risks</h3>
+                <p>Websites can identify you by analyzing your browser characteristics (screen resolution, fonts, plugins, etc.). This creates a unique "fingerprint" even without cookies. WiFi.Report detects fingerprinting capabilities. Using privacy-focused browsers helps reduce fingerprinting.</p>
+            </div>
+        </div>
+
+        <!-- Chrome Extension -->
+        <div class="help-guides" id="extension">
+            <h2>Chrome Extension Guide</h2>
+            
+            <div class="guide-item">
+                <h3>Installing the Chrome Extension</h3>
+                <p>Visit the <a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl" target="_blank">Chrome Web Store</a>, search for "WiFi.Report", and click "Add to Chrome". Confirm the installation when prompted. The extension icon will appear in your browser toolbar for quick access.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Using the Extension</h3>
+                <p>Click the WiFi.Report extension icon in your toolbar to open the analysis popup. Click "Analyze Network" to start the test. Results appear in the popup window after analysis completes. Use the popup for quick checks, or open the full interface for detailed results.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Extension Permissions</h3>
+                <p>WiFi.Report extension requests minimal permissions. It needs network access to run speed tests and retrieve IP information. It does NOT access your browsing history, passwords, or personal data. Review permissions in Extension Settings (chrome://extensions) if concerned.</p>
+            </div>
+
+            <div class="guide-item">
+                <h3>Updating the Extension</h3>
+                <p>Chrome automatically updates extensions when new versions are available. You can manually check for updates in chrome://extensions. Updates include bug fixes, new features, and performance improvements. You'll be notified when major updates are available.</p>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="help-contact">
+            <h2>Need More Help?</h2>
+            <p>Can't find what you're looking for? Contact our support team or check our FAQ for more information.</p>
+            <a href="contact.html">Contact Support →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        </svg>
+                        <span>WiFi.Report</span>
+                    </div>
+                    <p class="footer-description">
+                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank">Chrome Extension</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="cookies.html">Cookie Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                <p class="footer-note">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
+                    </svg>
+                    All analysis is performed locally in your browser for maximum privacy.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

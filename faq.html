@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZEMBMNRVX1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-ZEMBMNRVX1');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <title>FAQ - WiFi.Report Network Analysis Tool</title>
+    <meta name="description" content="Frequently Asked Questions about WiFi.Report. Learn how to use our WiFi analysis tool, understand test results, privacy, security, and troubleshooting.">
+    <meta name="keywords" content="faq, frequently asked questions, wifi analysis help, network test guide, privacy faq, security testing, speed test help">
+    <meta name="author" content="WiFi.Report">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://wifi.report/faq.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wifi.report/faq.html">
+    <meta property="og:title" content="FAQ - WiFi.Report Network Analysis Tool">
+    <meta property="og:description" content="Get answers to common questions about WiFi.Report's network analysis, privacy, security testing, and usage.">
+    <meta property="og:image" content="https://wifi.report/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://wifi.report/faq.html">
+    <meta property="twitter:title" content="FAQ - WiFi.Report Network Analysis Tool">
+    <meta property="twitter:description" content="Get answers to common questions about WiFi.Report's network analysis, privacy, security testing, and usage.">
+    <meta property="twitter:image" content="https://wifi.report/og-image.jpg">
+    
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .faq-hero {
+            padding: 6rem 2rem 4rem;
+            background: #FFFFFF;
+            border-bottom: 2px solid #000000;
+            text-align: center;
+        }
+        .faq-hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        .faq-hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .faq-group {
+            margin-bottom: 3rem;
+        }
+        .faq-group h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #000000;
+        }
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            border-color: #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .faq-question {
+            padding: 1.5rem;
+            background: #F5F5F5;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+        .faq-item.active .faq-question {
+            background: #000000;
+            color: #FFFFFF;
+        }
+        .faq-question:hover {
+            background: #E5E5E5;
+        }
+        .faq-item.active .faq-question:hover {
+            background: #000000;
+        }
+        .faq-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-item.active .faq-answer {
+            padding: 1.5rem;
+            max-height: 1000px;
+        }
+        .faq-answer p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .faq-answer ul {
+            list-style: none;
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+        .faq-answer li {
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+        .faq-answer li::before {
+            content: "▸";
+            position: absolute;
+            left: -1.5rem;
+            color: #000000;
+            font-weight: bold;
+        }
+        .faq-answer a {
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid #000000;
+            transition: all 0.3s ease;
+        }
+        .faq-answer a:hover {
+            color: #333333;
+            border-bottom-color: #333333;
+        }
+        .contact-cta {
+            background: #000000;
+            color: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .contact-cta h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .contact-cta p {
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+        }
+        .contact-cta a {
+            display: inline-block;
+            background: white;
+            color: #000000;
+            padding: 0.75rem 2rem;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .contact-cta a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="logo" href="index.html">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect x="4" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="4" y="20" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                    <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                    <rect x="20" y="20" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
+                </svg>
+                <span>WiFi.Report</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" class="nav-extension" target="_blank" rel="noopener noreferrer"><span class="ext-icon">⬇</span> Chrome Extension</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="faq-hero">
+        <h1>Frequently Asked Questions</h1>
+        <p>Find answers to common questions about WiFi.Report and how to use our network analysis tool.</p>
+    </section>
+
+    <!-- FAQ Content -->
+    <div class="faq-container">
+        <!-- Getting Started -->
+        <div class="faq-group">
+            <h2>Getting Started</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How do I use WiFi.Report?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Using WiFi.Report is simple: Click the "Check My Network Now" button on the homepage or in the Chrome extension. The analysis will run automatically and typically takes about 30 seconds. You'll receive detailed results about your WiFi security, privacy, speed, and stability.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Do I need to install any software?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>No installation is required for the web version. WiFi.Report runs entirely in your web browser. We also offer a Chrome extension for quicker access, which can be installed from the Chrome Web Store.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What browsers are supported?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>WiFi.Report works on all modern browsers including Chrome, Firefox, Safari, and Edge. For the best experience and access to the Chrome extension, we recommend using Chrome. The tool requires JavaScript to be enabled.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Is WiFi.Report free?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! WiFi.Report is completely free. There are no hidden fees, no premium features, and no paywalls. We provide full access to all network analysis tools at no cost.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Understanding Results -->
+        <div class="faq-group">
+            <h2>Understanding Your Results</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What is the Overall Network Score?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The Overall Network Score is an average of your four main test categories: Security, Privacy, Speed, and Stability. It gives you a quick 0-100 rating of your overall WiFi health. Scores of 80+ are excellent, 60-79 are good, 40-59 are fair, and below 40 indicate poor performance.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What does the Security score measure?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The Security score evaluates:
+                    <ul>
+                        <li>Whether your connection uses HTTPS encryption</li>
+                        <li>If you're in a secure context</li>
+                        <li>Presence of mixed content</li>
+                        <li>TLS protocol information</li>
+                        <li>HSTS support</li>
+                    </ul>
+                    A higher score indicates stronger security protocols protecting your data.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What does the Privacy score measure?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The Privacy score checks if your real IP address is visible to websites and whether you're using a VPN or proxy. It also evaluates potential WebRTC leaks and browser fingerprinting capabilities. A higher score means better privacy protection.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What speed metrics are tested?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>We measure:
+                    <ul>
+                        <li><strong>Download Speed:</strong> How fast data comes to you (measured in Mbps)</li>
+                        <li><strong>Upload Speed:</strong> How fast you can send data (measured in Mbps)</li>
+                        <li><strong>Latency:</strong> The delay in network communication (measured in milliseconds)</li>
+                        <li><strong>Jitter:</strong> Variation in latency consistency</li>
+                    </ul></p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Why is my speed test result different from other sites?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Speed test results can vary based on the server location, time of day, network load, and testing methodology. WiFi.Report uses real network measurements through your browser's APIs. Different speed test sites may use different endpoints and testing methods, leading to different results.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy & Security -->
+        <div class="faq-group">
+            <h2>Privacy & Security</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Is my data collected or stored?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>No. All analysis is performed 100% locally in your browser. Your test results are never sent to our servers. We don't collect, store, or track any of your WiFi data or network information. Your privacy is completely protected.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Why can't you see my detailed network information?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>WiFi.Report uses browser APIs which have privacy and security limitations. Modern browsers restrict JavaScript from accessing detailed WiFi network information (like SSID, signal strength, and MAC addresses) for security reasons. This is intentional and protects your privacy.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What is the IP address shown in results?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>The IP address displayed is your external IP address - the one visible to websites you visit. If you're NOT using a VPN, this reveals your approximate location and ISP. If you're using a VPN, the displayed IP will be your VPN server's IP, not your real one.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Is WiFi.Report safe to use?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes. WiFi.Report is completely safe. It doesn't install any malware, doesn't track you, and doesn't collect your data. The entire analysis happens in your browser using standard web APIs. We recommend checking our privacy policy for more details.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="faq-group">
+            <h2>Troubleshooting</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>The test is taking too long. Should I wait?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>WiFi.Report should typically complete within 30-60 seconds. If it's taking much longer, there might be a network issue. You can refresh the page and try again. Sometimes on very slow connections, certain tests may timeout.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Why are my speed test results showing 0 Mbps?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>This can happen due to:
+                    <ul>
+                        <li>Network connectivity issues</li>
+                        <li>Browser restrictions on certain networks</li>
+                        <li>Corporate/school network firewall blocking speed tests</li>
+                        <li>Failed connection to test endpoints</li>
+                    </ul>
+                    Try refreshing the page or switching networks. Check your browser console (F12) for error messages.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Can I export or share my results?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Results are displayed on the page and you can take a screenshot to save them. We currently don't have built-in export functionality, but you can easily share the results by taking a screenshot of your analysis report.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>The Chrome extension isn't working. What should I do?</span>
+                    <span class="faq-toggle">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Try:
+                    <ul>
+                        <li>Reloading the extension (go to chrome://extensions/)</li>
+                        <li>Restarting Chrome completely</li>
+                        <li>Uninstalling and reinstalling the extension</li>
+                        <li>Clearing your browser cache</li>
+                        <li>Using the web version at wifi.report</li>
+                    </ul>
+                    If issues persist, contact our support team.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-cta">
+            <h3>Still have questions?</h3>
+            <p>Can't find the answer you're looking for? Contact our support team.</p>
+            <a href="contact.html">Get Support →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        </svg>
+                        <span>WiFi.Report</span>
+                    </div>
+                    <p class="footer-description">
+                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank">Chrome Extension</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="cookies.html">Cookie Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="help.html">Help Center</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                <p class="footer-note">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
+                    </svg>
+                    All analysis is performed locally in your browser for maximum privacy.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // FAQ Accordion functionality
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                item.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
