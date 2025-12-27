@@ -2518,6 +2518,137 @@ body::before {
     animation: squareLoad 2s ease-in-out infinite;
 }
 
+/* Blog Styles */
+.blog-hero {
+    background: #000000;
+    color: white;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+}
+
+.blog-hero h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+}
+
+.blog-hero p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.blog-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.blog-card {
+    background: white;
+    border: 2px solid #000000;
+    border-radius: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Responsive Footer */
+@media (max-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    
+    .footer-links-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .blog-hero p {
+        font-size: 1rem;
+    }
+    
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .footer-links-row {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .footer-bottom {
+        text-align: center;
+    }
+}
+
+/* Results Section Responsive */
+@media (max-width: 768px) {
+    .overall-score {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2rem;
+    }
+    
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .score-info h3 {
+        font-size: 1.5rem;
+    }
+    
+    .score-info p {
+        font-size: 0.95rem;
+    }
+    
+    .category-card {
+        padding: 1.5rem;
+    }
+    
+    .category-header {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .recommendation-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .vpn-cta {
+        padding: 1.5rem;
+    }
+    
+    .vpn-warning {
+        font-size: 1rem;
+    }
+    
+    .vpn-button {
+        padding: 1rem 2rem;
+        font-size: 0.9rem;
+    }
+}
+
 @keyframes digitalGlitch {
     0%, 100% {
         transform: translate(0);
