@@ -1091,12 +1091,12 @@ function displayCategoryResult(category, result) {
         detailsHTML += '</ul></div>';
     } else if (category === 'speed') {
         detailsHTML += `<p>${result.details}</p>`;
-        detailsHTML += `<div class="speed-metrics-inline">`;
-        detailsHTML += `<div class="metric"><div class="metric-label">Download</div><div class="metric-value">${result.metrics.downloadSpeed} Mbps</div></div>`;
-        detailsHTML += `<div class="metric"><div class="metric-label">Upload</div><div class="metric-value">${result.metrics.uploadSpeed} Mbps</div></div>`;
-        detailsHTML += `<div class="metric"><div class="metric-label">Latency</div><div class="metric-value">${result.metrics.latency} ms</div></div>`;
-        detailsHTML += `<div class="metric"><div class="metric-label">Jitter</div><div class="metric-value">${result.metrics.jitter} ms</div></div>`;
-        detailsHTML += `</div>`;
+        detailsHTML += `<ul class="speed-metrics-list">`;
+        detailsHTML += `<li><strong>Download:</strong> ${result.metrics.downloadSpeed} Mbps</li>`;
+        detailsHTML += `<li><strong>Upload:</strong> ${result.metrics.uploadSpeed} Mbps</li>`;
+        detailsHTML += `<li><strong>Latency:</strong> ${result.metrics.latency} ms</li>`;
+        detailsHTML += `<li><strong>Jitter:</strong> ${result.metrics.jitter} ms</li>`;
+        detailsHTML += `</ul>`;
     } else {
         detailsHTML += `<p>${result.details}</p>`;
     }

@@ -1524,22 +1524,31 @@ body {
     gap: 1.5rem;
 }
 
-.speed-metrics-inline {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+.speed-metrics-list {
+    list-style: none;
     margin-top: 1rem;
+    padding: 0;
 }
 
-.speed-metrics-inline .metric {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    background: #F5F5F5;
-    border: 2px solid #E0E0E0;
-    border-radius: 0;
+.speed-metrics-list li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.speed-metrics-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #000000;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.speed-metrics-list li strong {
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .speed-metrics h3 {
@@ -1635,15 +1644,6 @@ body {
         padding: 1.5rem;
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
-    }
-    
-    .speed-metrics-inline {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-    
-    .connection-info {
-        padding: 1.5rem;
     }
 
     .speed-metrics h3,
