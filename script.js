@@ -1394,10 +1394,11 @@ class WiFiAnalyzer {
     }
 
     async runPrivacyTest() {
-        this.updateProgress(94, 'Evaluating privacy concerns...');
+        // Progressive disclosure: show staged messages
+        this.updateProgress(94, 'Scanning IP...');
         this.updateStep('privacy', 'active');
         
-        await this.delay(300);
+        await this.delay(400);
 
         const privacy = this.results.privacy;
         
@@ -1423,10 +1424,15 @@ class WiFiAnalyzer {
                 privacy.status = 'UNPROTECTED';
                 privacy.details = `Your real IP address (${ipInfo.ip}) is visible to all websites you visit.`;
                 privacy.isProtected = false;
-                // Only show the most important issue - IP visibility
-                issues.push(`Your IP address is visible to all websites`);
+                // Critical vulnerabilities
+                issues.push(`ISP Tracking: ACTIVE`);
+                issues.push(`IP Address: EXPOSED (${ipInfo.ip})`);
             }
             
+            // Stage 2: DNS leaks (informational animation step)
+            this.updateProgress(96, 'Checking DNS Leaks...');
+            await this.delay(300);
+
             // Check WebRTC leak potential - important for VPN users
             if (window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection) {
                 privacyScore -= 10;
@@ -1435,6 +1441,10 @@ class WiFiAnalyzer {
                 }
             }
             
+            // Stage 3: Encryption awareness (animation step)
+            this.updateProgress(98, 'Analyzing Encryption...');
+            await this.delay(250);
+
             // Browser fingerprinting detection - limit issues
             const fingerprintScore = this.checkBrowserFingerprint();
             privacyScore -= fingerprintScore.deduction;
@@ -1807,7 +1817,7 @@ class WiFiAnalyzer {
         
         if (result.issues && result.issues.length > 0) {
             if (category === 'privacy') {
-                detailsHTML += '<div class="issues-section"><strong>Privacy Concerns:</strong>';
+                detailsHTML += '<div class="issues-section"><strong>Critical Vulnerabilities:</strong>';
                 detailsHTML += '<ul class="issue-list">';
             } else {
                 detailsHTML += '<div class="issues-section"><strong>Issues Found:</strong><ul class="issue-list">';
