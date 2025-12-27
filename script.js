@@ -15,7 +15,7 @@
 // Initialize loading animations on page load
 document.addEventListener('DOMContentLoaded', function() {
     applySharedLayout();
-    initHeroLoadingGrid();
+    // Don't initialize hero loading grid on page load - only show when scan starts
     initRadarGrid();
 });
 
