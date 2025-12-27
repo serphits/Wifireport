@@ -15,7 +15,8 @@
 // Initialize loading animations on page load
 document.addEventListener('DOMContentLoaded', function() {
     applySharedLayout();
-    // Don't initialize hero loading grid on page load - only show when scan starts
+    initializeApp();
+    // Initialize grids
     initRadarGrid();
     initPreviewRadar();
 });
@@ -93,9 +94,9 @@ function applySharedLayout() {
                 <div class="footer-links">
                     <h4>Support</h4>
                     <ul>
-                        <li><a href="/index.html#faq">FAQ</a></li>
-                        <li><a href="/index.html#contact">Contact</a></li>
-                        <li><a href="/index.html#help">Help Center</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/help.html">Help Center</a></li>
                     </ul>
                 </div>
             </div>
@@ -125,96 +126,53 @@ function applySharedLayout() {
         </div>
     </div>`;
 
-    const nav = document.querySelector('nav.navbar');
-    if (nav) {
-        nav.outerHTML = navTemplate;
+    const navExisting = document.querySelector('nav.navbar');
+    if (navExisting) {
+        navExisting.outerHTML = navTemplate;
     } else if (document.body) {
-        // Insert nav at top if missing
         document.body.insertAdjacentHTML('afterbegin', navTemplate);
     }
 
-    const footer = document.querySelector('footer.footer');
-    if (footer) {
-        const footerTemplate = `
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-grid">
-                    <div class="footer-brand">
-                        <div class="logo">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                                <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
-                                <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
-                            </svg>
-                            <span>WiFi.Report</span>
-                        </div>
-                        <p class="footer-description">
-                            Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
-                        </p>
-                    </div>
-                    <div class="footer-links-row">
-                        <div class="footer-links">
-                            <h4>Product</h4>
-                            <ul>
-                                <li><a href="/index.html#home">Home</a></li>
-                                <li><a href="/about.html">About</a></li>
-                                <li><a href="/index.html#features">Features</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-links">
-                            <h4>Legal</h4>
-                            <ul>
-                                <li><a href="/privacy.html">Privacy Policy</a></li>
-                                <li><a href="/cookies.html">Cookie Policy</a></li>
-                                <li><a href="/terms.html">Terms of Service</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-links">
-                            <h4>Support</h4>
-                            <ul>
-                                <li><a href="/faq.html">FAQ</a></li>
-                                <li><a href="/contact.html">Contact</a></li>
-                                <li><a href="/help.html">Help Center</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
-                    <p class="footer-note">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
-                        </svg>
-                        All analysis is performed locally in your browser for maximum privacy.
-                    </p>
+    const footerExisting = document.querySelector('footer.footer');
+    if (footerExisting) {
+        footerExisting.outerHTML = footerTemplate;
+    } else if (document.body) {
+        document.body.insertAdjacentHTML('beforeend', footerTemplate);
+    }
+
+    // Inject cookie banner if missing
+    if (!document.getElementById('cookieBanner') && document.body) {
+        const cookieTemplate = `
+        <div class="cookie-banner hidden" id="cookieBanner">
+            <div class="cookie-content">
+                <p>
+                    <strong>We use cookies</strong> to enhance your experience. By continuing to visit this site, you agree to our use of cookies.
+                    <a href="/cookies.html">Learn more</a>
+                </p>
+                <div class="cookie-actions">
+                    <button class="cookie-btn accept" id="acceptCookies">Accept</button>
+                    <button class="cookie-btn decline" id="declineCookies">Decline</button>
                 </div>
             </div>
-        </footer>`;
-        
-        // Speed test constants - optimized for accuracy across all connection speeds
-        this.speedTestConstants = {
-            MIN_MEASUREMENT_TIME: 2.0, // Minimum time in seconds for valid measurement (increased for accuracy)
-            MIN_MEASUREMENT_BUFFER: 0.5, // Buffer added to minimum time for warnings
-            TARGET_TEST_DURATION: 8.0, // Target duration for each speed test (increased for better measurements)
-            MAX_TEST_TIMEOUT: 20000, // Keep each individual test under 20s to fit 30s budget
-            MAX_REALISTIC_SPEED_MBps: 250 // Maximum realistic speed in MB/s (2000 Mbps / 8 for 2.5 Gbps fiber)
-        };
-        
-        // Common screen resolutions for fingerprinting detection
-        this.commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24', '1536x864x24', '1280x720x24'];
-        
-        // Pre-generate test data for upload tests to avoid timing overhead
-        this.uploadTestData = this.generateTestData();
-        
-        this.init();
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', cookieTemplate);
     }
     
+
+// Initialize global constants and event wiring
+function initializeApp() {
+    // Speed test constants - optimized for accuracy across all connection speeds
+    this.speedTestConstants = {
+        MIN_MEASUREMENT_TIME: 2.0,
+        MIN_MEASUREMENT_BUFFER: 0.5,
+        TARGET_TEST_DURATION: 8.0,
+        MAX_TEST_TIMEOUT: 20000,
+        MAX_REALISTIC_SPEED_MBps: 250
+    };
+    this.commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24', '1536x864x24', '1280x720x24'];
+    this.uploadTestData = this.generateTestData();
+    this.init();
+}
     generateTestData() {
         // Pre-generate 100MB of test data once to support large upload tests
         const maxSize = 100_000_000; // Increased from 10MB to 100MB for larger uploads
