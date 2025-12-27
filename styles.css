@@ -38,6 +38,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
 }
 
 /* Navigation */
@@ -561,6 +562,16 @@ body {
 
 .radar-sweep {
     display: none;
+}
+
+/* Mobile-safe radar sizing */
+@media (max-width: 480px) {
+    .radar { width: 200px; height: 200px; }
+    .preview-radar { width: 260px; height: 130px; }
+}
+@media (max-width: 360px) {
+    .radar { width: 180px; height: 180px; }
+    .preview-radar { width: 220px; height: 110px; }
 }
 
 @keyframes pulse {
