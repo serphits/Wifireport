@@ -131,28 +131,14 @@
                     </div>
                 </div>
 
-                <!-- Right: Live Scanning Preview Card -->
-                <div class="bg-white text-black p-6 md:p-8 shadow-[10px_10px_0_rgba(0,0,0,1)]">
+                <!-- Right: Live Scanning Preview Card (Canvas Oscilloscope) -->
+                <div class="bg-white text-black p-6 md:p-8 shadow-[10px_10px_0_rgba(0,0,0,1)] border-4 border-black">
                     <div class="flex items-center justify-between">
                         <h3 class="font-bold">Live Scan Preview</h3>
                         <span class="text-xs px-2 py-1 bg-black text-white">Ready</span>
                     </div>
-                    <div class="mt-6 h-32 md:h-40 bg-black">
-                        <!-- Simple oscilloscope bars -->
-                        <div class="h-full grid grid-cols-12 gap-1 p-2">
-                            <div class="bg-electric animate-pulse"></div>
-                            <div class="bg-electric/80 animate-pulse"></div>
-                            <div class="bg-electric animate-pulse"></div>
-                            <div class="bg-electric/60 animate-pulse"></div>
-                            <div class="bg-electric animate-pulse"></div>
-                            <div class="bg-electric/80 animate-pulse"></div>
-                            <div class="bg-electric animate-pulse"></div>
-                            <div class="bg-electric/60 animate-pulse"></div>
-                            <div class="bg-electric animate-pulse"></div>
-                            <div class="bg-electric/80 animate-pulse"></div>
-                            <div class="bg-electric animate-pulse"></div>
-                            <div class="bg-electric/60 animate-pulse"></div>
-                        </div>
+                    <div class="mt-6 bg-black border-2 border-white">
+                        <canvas id="livePreviewCanvas" class="w-full h-40"></canvas>
                     </div>
                     <div class="mt-4 text-sm grid grid-cols-2 gap-4">
                         <div>
