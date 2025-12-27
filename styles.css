@@ -412,7 +412,10 @@ body {
     gap: 0.5rem;
     color: var(--text-tertiary);
     font-size: 0.875rem;
+    
+    /* Clean margins */
     margin: 0;
+    padding: 0;
 }
 
 .hero-note svg {
@@ -420,7 +423,10 @@ body {
 }
 
 .hero-cta-secondary {
+    /* Clean margins */
     margin: 0;
+    padding: 0;
+    
     font-size: 0.95rem;
     color: var(--text-secondary);
 }
