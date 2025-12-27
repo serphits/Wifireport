@@ -329,7 +329,13 @@ body {
 }
 
 .hero-actions {
-    margin-bottom: 2.5rem;
+    margin: 0 0 2.5rem 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    flex-wrap: wrap;
 }
 
 .scan-button {
