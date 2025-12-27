@@ -346,17 +346,17 @@ function initializeApp() {
         scanningSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         // Run all tests
-        await this.runConnectionTest();
-        await this.runSecurityTest();
-        await this.runSpeedTest();
-        await this.runStabilityTest();
-        await this.runPrivacyTest();
+        await runConnectionTest();
+        await runSecurityTest();
+        await runSpeedTest();
+        await runStabilityTest();
+        await runPrivacyTest();
 
         // Calculate overall score
-        this.calculateOverallScore();
+        calculateOverallScore();
 
         // Show results
-        this.displayResults();
+        displayResults();
     }
 
     function updateProgress(percentage, status) {
