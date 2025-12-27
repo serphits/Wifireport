@@ -157,21 +157,34 @@ function applySharedLayout() {
         </div>`;
         document.body.insertAdjacentHTML('beforeend', cookieTemplate);
     }
-    
+}
+
+// Global constants for speed tests
+const speedTestConstants = {
+    MIN_MEASUREMENT_TIME: 2.0,
+    MIN_MEASUREMENT_BUFFER: 0.5,
+    TARGET_TEST_DURATION: 8.0,
+    MAX_TEST_TIMEOUT: 20000,
+    MAX_REALISTIC_SPEED_MBps: 250
+};
+const commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24', '1536x864x24', '1280x720x24'];
+let uploadTestData = null;
+
+// Global state for results
+let results = {
+    security: { score: 0, status: '', details: '', issues: [] },
+    privacy: { score: 0, status: '', details: '', issues: [] },
+    speed: { score: 0, status: '', details: '', metrics: { latency: 0, downloadSpeed: 0, uploadSpeed: 0, jitter: 0 } },
+    stability: { score: 0, status: '', details: '', metrics: {} },
+    connection: { type: '', effectiveType: '', downlink: 0, rtt: 0, saveData: false }
+};
+let overallScore = 0;
+let latencyMeasurements = [];
 
 // Initialize global constants and event wiring
 function initializeApp() {
-    // Speed test constants - optimized for accuracy across all connection speeds
-    this.speedTestConstants = {
-        MIN_MEASUREMENT_TIME: 2.0,
-        MIN_MEASUREMENT_BUFFER: 0.5,
-        TARGET_TEST_DURATION: 8.0,
-        MAX_TEST_TIMEOUT: 20000,
-        MAX_REALISTIC_SPEED_MBps: 250
-    };
-    this.commonResolutions = ['1920x1080x24', '1366x768x24', '1440x900x24', '1536x864x24', '1280x720x24'];
-    this.uploadTestData = this.generateTestData();
-    this.init();
+    uploadTestData = generateTestData();
+    init();
 }
     function generateTestData() {
         // Pre-generate 100MB of test data once to support large upload tests
@@ -273,22 +286,22 @@ function initializeApp() {
         const mobileToggle = document.querySelector('.mobile-menu-toggle');
         
         if (startBtn) {
-            startBtn.addEventListener('click', () => this.startAnalysis());
+            startBtn.addEventListener('click', () => startAnalysis());
         }
         
         if (newScanBtn) {
-            newScanBtn.addEventListener('click', () => this.resetAnalysis());
+            newScanBtn.addEventListener('click', () => resetAnalysis());
         }
         
         if (mobileToggle) {
-            mobileToggle.addEventListener('click', this.toggleMobileMenu);
+            mobileToggle.addEventListener('click', toggleMobileMenu);
         }
 
         // Cookie consent handling
-        this.initCookieConsent();
+        initCookieConsent();
         
         // Add SVG gradient for score circle
-        this.addScoreGradient();
+        addScoreGradient();
     }
 
     function addScoreGradient() {
