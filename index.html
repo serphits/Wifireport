@@ -101,52 +101,29 @@
         <div class="hero-container">
             <div class="hero-content">
                 <h1 class="hero-title">
-                    Complete WiFi Report
-                    <span class="gradient-text">In Seconds</span>
+                    Complete WiFi Report <span class="gradient-text">In Seconds</span>
                 </h1>
                 <p class="hero-subtitle">
                     Get a comprehensive analysis of your WiFi network: security, privacy, speed, and stability. Instantly detect if your connection is protected or EXPOSED, check your IP visibility, test network performance - all processed 100% client-side in your browser.
                 </p>
-                <button class="scan-button" id="startScan">
-                    <span class="button-text">Check My Network Now</span>
-                    <svg class="button-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <p class="hero-note">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.75 5H7.25V9.25L10.75 11.3L11.5 10.15L8.75 8.5V5Z"/>
-                    </svg>
-                    100% Client-Side • Privacy First • No Data Stored
-                </p>
-                <p class="hero-cta-secondary">
-                    Also available as a <a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank" rel="noopener noreferrer" class="secondary-link">Chrome extension</a> for quick access
-                </p>
-            </div>
-            <div class="hero-visual">
-                <div class="oscilloscope">
-                    <svg class="oscilloscope-svg" width="300" height="120" viewBox="0 0 300 120" preserveAspectRatio="xMidYMid meet">
-                        <defs>
-                            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#000000;stop-opacity:0.3" />
-                                <stop offset="50%" style="stop-color:#000000;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Grid background -->
-                        <g class="grid" opacity="0.1">
-                            <line x1="0" y1="30" x2="300" y2="30" stroke="#000000" stroke-width="0.5"/>
-                            <line x1="0" y1="60" x2="300" y2="60" stroke="#000000" stroke-width="0.5"/>
-                            <line x1="0" y1="90" x2="300" y2="90" stroke="#000000" stroke-width="0.5"/>
-                            <line x1="75" y1="0" x2="75" y2="120" stroke="#000000" stroke-width="0.5"/>
-                            <line x1="150" y1="0" x2="150" y2="120" stroke="#000000" stroke-width="0.5"/>
-                            <line x1="225" y1="0" x2="225" y2="120" stroke="#000000" stroke-width="0.5"/>
-                        </g>
-                        <!-- Animated wave -->
-                        <polyline class="wave-line" points="0,60 10,55 20,45 30,40 40,45 50,55 60,65 70,75 80,80 90,75 100,65 110,55 120,45 130,40 140,45 150,55 160,65 170,75 180,80 190,75 200,65 210,55 220,45 230,40 240,45 250,55 260,65 270,75 280,80 290,75 300,65" fill="none" stroke="url(#waveGradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- Center axis line -->
-                        <line x1="0" y1="60" x2="300" y2="60" stroke="#000000" stroke-width="1" opacity="0.3"/>
-                    </svg>
+                <div class="hero-actions">
+                    <button class="scan-button" id="startScan">
+                        <span class="button-text">Check My Network Now</span>
+                        <svg class="button-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="hero-footer">
+                    <p class="hero-note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.75 5H7.25V9.25L10.75 11.3L11.5 10.15L8.75 8.5V5Z"/>
+                        </svg>
+                        100% Client-Side • Privacy First • No Data Stored
+                    </p>
+                    <p class="hero-cta-secondary">
+                        Also available as a <a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank" rel="noopener noreferrer" class="secondary-link">Chrome extension</a> for quick access
+                    </p>
                 </div>
             </div>
         </div>

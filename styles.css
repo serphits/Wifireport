@@ -230,7 +230,9 @@ body {
 }
 
 .hero {
-    padding: 4.5rem 2rem 3.5rem;
+    padding: 6rem 2rem 5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .hero::after {
@@ -248,14 +250,14 @@ body {
         rgba(0, 0, 0, 0.02) 51px
     );
     pointer-events: none;
+    z-index: -1;
 }
 
 .hero-container {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
     align-items: center;
     position: relative;
     z-index: 1;
@@ -299,7 +301,11 @@ body {
     color: var(--text-secondary);
     margin-bottom: 2.5rem;
     line-height: 1.7;
-    max-width: 600px;
+    max-width: 700px;
+}
+
+.hero-actions {
+    margin-bottom: 2.5rem;
 }
 
 .scan-button {
@@ -356,14 +362,19 @@ body {
     z-index: 1;
 }
 
+.hero-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .hero-note {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 2rem;
-    margin-bottom: 1.25rem;
     color: var(--text-tertiary);
     font-size: 0.875rem;
+    margin: 0;
 }
 
 .hero-note svg {
@@ -371,7 +382,7 @@ body {
 }
 
 .hero-cta-secondary {
-    margin-top: 1.5rem;
+    margin: 0;
     font-size: 0.95rem;
     color: var(--text-secondary);
 }
@@ -391,35 +402,17 @@ body {
     border-bottom-color: #333333;
 }
 
-/* Hero Visual */
+/* Hero Visual - Hidden */
 .hero-visual {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 1rem;
-    animation: fadeInUp 0.8s ease-out 0.2s both;
-    width: 100%;
+    display: none;
 }
 
 .oscilloscope {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1.25rem 2rem;
-    background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(250,250,250,0.8));
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    max-width: 500px;
-    margin: 0 auto;
-    width: 100%;
+    display: none;
 }
 
 .oscilloscope-svg {
-    width: 100%;
-    max-width: 280px;
-    height: auto;
-    min-height: 100px;
+    display: none;
 }
 
 .wave-line {
@@ -1966,12 +1959,11 @@ body {
     }
     
     .hero {
-        padding: 3rem 1.5rem 2.5rem;
+        padding: 3.5rem 1.5rem 3rem;
     }
     
     .hero-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        max-width: 100%;
     }
     
     .hero-title {
@@ -1979,28 +1971,46 @@ body {
         line-height: 1.2;
         letter-spacing: -1px;
         word-wrap: break-word;
-        margin-bottom: 1rem;
+        margin-bottom: 1.25rem;
     }
     
     .hero-subtitle {
         font-size: 1rem;
         line-height: 1.6;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        max-width: 100%;
     }
     
-    .hero-visual {
-        display: flex;
-        margin-top: 1.25rem;
-        margin-bottom: 0;
+    .hero-actions {
+        margin-bottom: 2rem;
     }
     
-    .oscilloscope {
-        padding: 1rem 1.5rem;
-        border-radius: 6px;
+    .scan-button {
+        width: 100%;
+        justify-content: center;
+        padding: 1.25rem 2rem;
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.1);
     }
     
-    .oscilloscope-svg {
-        max-width: 220px;
+    .scan-button:hover {
+        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.12);
+    }
+    
+    .hero-note {
+        font-size: 0.75rem;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    
+    .hero-cta-secondary {
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    
+    .hero-footer {
+        gap: 0.75rem;
     }
     
     .wifi-rings, .loading-grid {
