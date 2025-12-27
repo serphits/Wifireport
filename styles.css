@@ -190,7 +190,7 @@ body {
 }
 
 .mobile-menu-toggle:hover span {
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.8);
 }
 
 /* Mobile Navigation Enhancements */
