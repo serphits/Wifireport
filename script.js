@@ -1776,9 +1776,10 @@ class WiFiAnalyzer {
             if (!result.isProtected) {
                 detailsHTML += `<div class="vpn-cta">`;
                 detailsHTML += `<p class="vpn-warning">⚠️ Your IP is visible to all websites you visit</p>`;
-                detailsHTML += `<a href="https://www.expressvpn.com/order" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
+                // Aggressive CRO: place CTA immediately after alert text
+                detailsHTML += `<a href="https://surfshark.com/" target="_blank" rel="noopener" class="vpn-button expressvpn">`;
                 detailsHTML += `<span class="vpn-icon">🛡️</span>`;
-                detailsHTML += `<span class="vpn-text">Protect with ExpressVPN</span>`;
+                detailsHTML += `<span class="vpn-text">Secure My Connection</span>`;
                 detailsHTML += `</a>`;
                 detailsHTML += `</div>`;
             } else {

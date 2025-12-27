@@ -63,73 +63,110 @@
     </script>
     
     <link rel="stylesheet" href="styles.css">
+        <!-- Tailwind CSS (CDN for rapid UI iteration) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            electric: '#00E5FF',
+                            alert: '#FF6B00',
+                        }
+                    }
+                }
+            }
+        </script>
 </head>
 <body>
-    <!-- Navigation -->
-        <div class="footer-container">
-            <div class="footer-links-row">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                            <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
-                            <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
-                        </svg>
-                        <span>WiFi.Report</span>
-                    </div>
-                    <p class="footer-description">
-                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+        <!-- Navigation -->
+        <nav class="bg-black text-white">
+            <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+                <a href="/index.html" class="flex items-center gap-3 font-extrabold text-xl">
+                    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" class="shrink-0">
+                        <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                    </svg>
+                    <span>WiFi.Report</span>
+                </a>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="/blog.html" class="hover:opacity-80">Blog</a>
+                    <a href="/about.html" class="hover:opacity-80">About</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero (F-Pattern) -->
+        <section id="home" class="bg-black text-white">
+            <div class="max-w-6xl mx-auto px-6 py-12 md:py-16 grid md:grid-cols-2 gap-10 items-center">
+                <!-- Left: Value Prop -->
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                        Your ISP is watching. Is your connection shielded?
+                    </h1>
+                    <p class="mt-4 text-gray-300 md:text-lg">
+                        Run a fast, client-side audit of your network: IP exposure, DNS leaks, encryption, speed, and stability. No data leaves your browser.
                     </p>
-                </div>
-                <div class="footer-links">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="index.html#features">Features</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links footer-links-stack">
-                    <div class="links-group">
-                        <h4>Legal</h4>
-                        <ul>
-                            <li><a href="privacy.html">Privacy Policy</a></li>
-                            <li><a href="cookies.html">Cookie Policy</a></li>
-                            <li><a href="terms.html">Terms of Service</a></li>
-                        </ul>
+                    <div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-gray-400">
+                        <span>100% Client-Side</span>
+                        <span>•</span>
+                        <span>Privacy First</span>
+                        <span>•</span>
+                        <span>No Data Stored</span>
                     </div>
-                    <div class="links-group">
-                        <h4>Support</h4>
-                        <ul>
-                            <li><a href="faq.html">FAQ</a></li>
-                            <li><a href="contact.html">Contact</a></li>
-                            <li><a href="help.html">Help Center</a></li>
-                        </ul>
+                    <div class="mt-8 flex gap-4">
+                        <button id="startScan" class="px-6 py-3 font-bold uppercase tracking-wider bg-electric text-black hover:bg-alert transition shadow-[6px_6px_0_rgba(255,255,255,0.15)]">
+                            Check My Network
+                        </button>
+                        <a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank" rel="noopener" class="px-6 py-3 border border-white/20 hover:border-white/40 transition">
+                            Install Chrome Extension
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right: Live Scanning Preview Card -->
+                <div class="bg-white text-black p-6 md:p-8 shadow-[10px_10px_0_rgba(0,0,0,1)]">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold">Live Scan Preview</h3>
+                        <span class="text-xs px-2 py-1 bg-black text-white">Ready</span>
+                    </div>
+                    <div class="mt-6 h-32 md:h-40 bg-black">
+                        <!-- Simple oscilloscope bars -->
+                        <div class="h-full grid grid-cols-12 gap-1 p-2">
+                            <div class="bg-electric animate-pulse"></div>
+                            <div class="bg-electric/80 animate-pulse"></div>
+                            <div class="bg-electric animate-pulse"></div>
+                            <div class="bg-electric/60 animate-pulse"></div>
+                            <div class="bg-electric animate-pulse"></div>
+                            <div class="bg-electric/80 animate-pulse"></div>
+                            <div class="bg-electric animate-pulse"></div>
+                            <div class="bg-electric/60 animate-pulse"></div>
+                            <div class="bg-electric animate-pulse"></div>
+                            <div class="bg-electric/80 animate-pulse"></div>
+                            <div class="bg-electric animate-pulse"></div>
+                            <div class="bg-electric/60 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-gray-500">Next</div>
+                            <div class="font-semibold">Scanning IP…</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500">Queue</div>
+                            <div class="font-semibold">DNS Leaks → Encryption</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                </div>
-                <div class="hero-footer">
-                    <p class="hero-note">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.75 5H7.25V9.25L10.75 11.3L11.5 10.15L8.75 8.5V5Z"/>
-                        </svg>
-                        100% Client-Side • Privacy First • No Data Stored
-                    </p>
-                    <p class="hero-cta-secondary">
-                        Also available as a <a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank" rel="noopener noreferrer" class="secondary-link">Chrome extension</a> for quick access
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
     <!-- Scanning Section -->
     <section class="scanning-section hidden" id="scanningSection">
@@ -203,6 +240,19 @@
                 <h2 class="results-title">Your WiFi Report</h2>
                 <p class="results-subtitle">Analysis completed on <span id="reportDate"></span></p>
             </div>
+
+                        <!-- Persistent Protection Bar (Chrome Extension) -->
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between bg-black text-white px-4 py-3">
+                                <div class="text-sm">
+                                    <strong>Persistent Protection:</strong> Get 24/7 monitoring. Install the WiFi.report Chrome Extension.
+                                    <div class="text-gray-300">Alerts you the moment you join an unencrypted public network.</div>
+                                </div>
+                                <a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" target="_blank" rel="noopener" class="px-4 py-2 bg-electric text-black font-bold">
+                                    Install
+                                </a>
+                            </div>
+                        </div>
 
             <!-- Overall Score -->
             <div class="overall-score">
@@ -310,6 +360,26 @@
                     </div>
                 </div>
             </div>
+
+                        <!-- Privacy Manifest & Trust Badges -->
+                        <div class="mt-8 grid md:grid-cols-2 gap-6">
+                            <div class="p-6 border border-black/10 bg-white shadow-[6px_6px_0_rgba(0,0,0,1)]">
+                                <h3 class="font-bold mb-2">Privacy Manifest</h3>
+                                <ul class="list-disc pl-5 text-sm text-gray-700">
+                                    <li>100% Client-Side. No data is sent to our servers.</li>
+                                    <li>We never see your IP. All checks run locally.</li>
+                                    <li>Transparent browser APIs. You control your data.</li>
+                                </ul>
+                            </div>
+                            <div class="p-6 border border-black/10 bg-white shadow-[6px_6px_0_rgba(0,0,0,1)]">
+                                <h3 class="font-bold mb-2">Badges of Honor</h3>
+                                <div class="flex flex-wrap gap-3 text-sm">
+                                    <span class="px-3 py-1 bg-black text-white">WebRTC Leak Awareness</span>
+                                    <span class="px-3 py-1 bg-black text-white">DNSSEC Ready</span>
+                                    <span class="px-3 py-1 bg-black text-white">HTTPS Everywhere</span>
+                                </div>
+                            </div>
+                        </div>
 
             <!-- Connection Info -->
             <div class="connection-info" id="connectionInfo">
