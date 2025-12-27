@@ -1120,6 +1120,8 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-family: 'Space Mono', monospace;
+    background: #FFFFFF;
+    color: #000000;
 }
 
 .vpn-button.expressvpn {
@@ -1449,9 +1451,12 @@ body {
 }
 
 .metrics-help {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid #E0E0E0;
+    background: white;
+    border-radius: 0;
+    border: 3px solid #000000;
+    padding: 2rem;
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
 }
 
 .metrics-help h4 {
