@@ -856,10 +856,18 @@ async function runPrivacyTest() {
         
     } catch (error) {
         console.error('Privacy test error:', error);
-        privacy.score = 50;
-        privacy.status = 'Unknown';
-        privacy.details = 'Unable to fully assess privacy status.';
-        privacy.isProtected = false;
+        // Even in error, check if VPN was detected
+        if (privacy.ipInfo && privacy.ipInfo.vpn) {
+            privacy.score = 70;
+            privacy.status = 'PROTECTED';
+            privacy.details = 'Your IP appears to be protected by a VPN or proxy service.';
+            privacy.isProtected = true;
+        } else {
+            privacy.score = 50;
+            privacy.status = 'Unknown';
+            privacy.details = 'Unable to fully assess privacy status.';
+            privacy.isProtected = null; // Use null to indicate unknown state
+        }
     }
 
     updateStep('privacy', 'completed');
@@ -1053,9 +1061,13 @@ function displayCategoryResult(category, result) {
     if (category === 'privacy') {
         if (result.isProtected) {
             badgeEl.classList.add('protected');
-        } else {
+        } else if (result.isProtected === false) {
             badgeEl.classList.add('exposed');
             badgeEl.textContent = 'EXPOSED';
+        } else {
+            // Unknown status (null)
+            badgeEl.classList.add('warning');
+            badgeEl.textContent = 'UNKNOWN';
         }
     } else {
         if (result.score >= 80) badgeEl.classList.add('excellent');
@@ -1079,7 +1091,9 @@ function displayCategoryResult(category, result) {
         detailsHTML += `</div>`;
         detailsHTML += `</div>`;
         
-        if (!result.isProtected) {
+        if (result.isProtected === true) {
+            detailsHTML += `<p class="protected-message">✅ Great! Your connection is protected!</p>`;
+        } else if (result.isProtected === false) {
             detailsHTML += `<div class="vpn-cta">`;
             detailsHTML += `<p class="vpn-warning">⚠️ Your IP is visible to all websites you visit</p>`;
             detailsHTML += `<a href="https://surfshark.com/" target="_blank" rel="noopener" class="vpn-button">`;
@@ -1088,7 +1102,7 @@ function displayCategoryResult(category, result) {
             detailsHTML += `</a>`;
             detailsHTML += `</div>`;
         } else {
-            detailsHTML += `<p class="protected-message">✅ Great! Your connection is protected!</p>`;
+            detailsHTML += `<p class="unknown-message">ℹ️ ${result.details}</p>`;
         }
     } else if (category === 'security' && result.strengths && result.strengths.length > 0) {
         detailsHTML += `<p>${result.details}</p>`;

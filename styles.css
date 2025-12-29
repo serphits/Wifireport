@@ -1184,6 +1184,19 @@ body {
     width: 100%;
 }
 
+.unknown-message {
+    color: #D97706;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 1.25rem;
+    background: #FFFBEB;
+    border: 2px solid #FCD34D;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: left;
+    width: 100%;
+}
+
 .issue-list {
     list-style: none;
     margin-top: 1rem;
