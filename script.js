@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initRadarGrid();
     initPreviewRadar();
     initEventListeners();
-    initCookieConsent();
 });
 
 // ============================================================================
@@ -201,34 +200,6 @@ function toggleMobileMenu() {
     const navLinks = document.querySelector('.nav-links');
     if (navLinks) {
         navLinks.classList.toggle('active');
-    }
-}
-
-function initCookieConsent() {
-    const cookieBanner = document.getElementById('cookieBanner');
-    const acceptBtn = document.getElementById('acceptCookies');
-    const declineBtn = document.getElementById('declineCookies');
-    
-    const consent = localStorage.getItem('cookieConsent');
-    
-    if (!consent && cookieBanner) {
-        setTimeout(() => {
-            cookieBanner.classList.remove('hidden');
-        }, 2000);
-    }
-    
-    if (acceptBtn) {
-        acceptBtn.addEventListener('click', () => {
-            localStorage.setItem('cookieConsent', 'accepted');
-            if (cookieBanner) cookieBanner.classList.add('hidden');
-        });
-    }
-    
-    if (declineBtn) {
-        declineBtn.addEventListener('click', () => {
-            localStorage.setItem('cookieConsent', 'declined');
-            if (cookieBanner) cookieBanner.classList.add('hidden');
-        });
     }
 }
 
