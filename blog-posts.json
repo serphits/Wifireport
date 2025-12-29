@@ -1,5 +1,31 @@
 [
   {
+    "filename": "identity-theft-vs-vpn-cost-comparison.html",
+    "url": "blog/identity-theft-vs-vpn-cost-comparison.html",
+    "title": "The Cost of Identity Theft vs. the Cost of a VPN: A Brutal Comparison",
+    "description": "Is a VPN worth the monthly fee? Compare the average financial and emotional costs of identity theft against a $3/month VPN subscription. See the 2026 data.",
+    "tags": [
+      "Identity Theft Cost",
+      "VPN Worth It"
+    ],
+    "readingTime": "18 min read",
+    "date": "Dec 29, 2025",
+    "icon": "💰"
+  },
+  {
+    "filename": "vpn-travel-hacks-cheap-flights-hotels-2026.html",
+    "url": "blog/vpn-travel-hacks-cheap-flights-hotels-2026.html",
+    "title": "How to Use a VPN to Get Cheaper Flights and Hotel Bookings in 2026",
+    "description": "Unlock regional pricing and save hundreds on travel. Learn the exact VPN workflow to find hidden flight deals and cheaper hotel bookings in 2026.",
+    "tags": [
+      "VPN Travel Hacks",
+      "Cheaper Flights"
+    ],
+    "readingTime": "14 min read",
+    "date": "Dec 29, 2025",
+    "icon": "🌍"
+  },
+  {
     "filename": "incognito-mode-is-a-lie-isp-tracking-guide.html",
     "url": "blog/incognito-mode-is-a-lie-isp-tracking-guide.html",
     "title": "Incognito Mode is a Lie: Here is Exactly What Your ISP Can Still See",

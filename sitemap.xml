@@ -57,6 +57,20 @@
     
     <!-- Blog Posts -->
     <url>
+        <loc>https://wifi.report/blog/identity-theft-vs-vpn-cost-comparison.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/vpn-travel-hacks-cheap-flights-hotels-2026.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
         <loc>https://wifi.report/blog/incognito-mode-is-a-lie-isp-tracking-guide.html</loc>
         <lastmod>2025-12-29</lastmod>
         <changefreq>monthly</changefreq>
