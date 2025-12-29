@@ -57,6 +57,55 @@
     
     <!-- Blog Posts -->
     <url>
+        <loc>https://wifi.report/blog/incognito-mode-is-a-lie-isp-tracking-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/digital-nomad-secure-connection-global-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/encrypted-dns-vs-vpn-privacy-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/force-isp-full-speed-optimization-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/hidden-dns-leak-browser-privacy-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/webrtc-vs-dns-leaks-identity-risk-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://wifi.report/blog/why-free-public-vpns-are-dangerous-guide.html</loc>
+        <lastmod>2025-12-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
         <loc>https://wifi.report/blog/best-router-placement-signal-strength-guide.html</loc>
         <lastmod>2025-12-23</lastmod>
         <changefreq>monthly</changefreq>

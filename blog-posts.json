@@ -13,6 +13,84 @@
     "icon": "🕵️"
   },
   {
+    "filename": "digital-nomad-secure-connection-global-guide.html",
+    "url": "blog/digital-nomad-secure-connection-global-guide.html",
+    "title": "Digital Nomad Guide: How to Secure Your Connection in 5 Different Countries",
+    "description": "Traveling the world while working? Learn how to secure your internet connection across different countries, avoid local tracking, and maintain high speeds for remote work.",
+    "tags": [
+      "Digital Nomad Wifi",
+      "Travel VPN"
+    ],
+    "readingTime": "15 min read",
+    "date": "Dec 29, 2025",
+    "icon": "✈️"
+  },
+  {
+    "filename": "encrypted-dns-vs-vpn-privacy-guide.html",
+    "url": "blog/encrypted-dns-vs-vpn-privacy-guide.html",
+    "title": "Understanding Encrypted DNS (DoH): Does It Replace the Need for a VPN?",
+    "description": "Is DNS over HTTPS (DoH) enough for privacy? Compare Encrypted DNS vs. VPNs to understand what each secures and why you might need both for total network protection.",
+    "tags": [
+      "DNS over HTTPS",
+      "DoH vs VPN"
+    ],
+    "readingTime": "12 min read",
+    "date": "Dec 29, 2025",
+    "icon": "🔐"
+  },
+  {
+    "filename": "force-isp-full-speed-optimization-guide.html",
+    "url": "blog/force-isp-full-speed-optimization-guide.html",
+    "title": "How to Force Your ISP to Give You the Full Speed You Pay For",
+    "description": "Is your internet slower than advertised? Learn how to identify ISP throttling, optimize your hardware, and hold your provider accountable for the speeds you pay for.",
+    "tags": [
+      "ISP Throttling",
+      "Internet Speed Fix"
+    ],
+    "readingTime": "10 min read",
+    "date": "Dec 29, 2025",
+    "icon": "⚡"
+  },
+  {
+    "filename": "hidden-dns-leak-browser-privacy-guide.html",
+    "url": "blog/hidden-dns-leak-browser-privacy-guide.html",
+    "title": "The Hidden DNS Leak: How Your Browser is Quietly Giving Away Your Location",
+    "description": "A DNS leak can expose your real location and browsing habits even if you use a VPN. Learn how to identify, test, and fix DNS leaks to protect your privacy.",
+    "tags": [
+      "DNS Leak",
+      "Browser Privacy"
+    ],
+    "readingTime": "8 min read",
+    "date": "Dec 29, 2025",
+    "icon": "🔓"
+  },
+  {
+    "filename": "webrtc-vs-dns-leaks-identity-risk-guide.html",
+    "url": "blog/webrtc-vs-dns-leaks-identity-risk-guide.html",
+    "title": "WebRTC vs. DNS Leaks: Which One is Putting Your Identity at Risk?",
+    "description": "Understand the difference between WebRTC and DNS leaks. Learn how these browser vulnerabilities expose your real IP address and how to fix them for total privacy.",
+    "tags": [
+      "WebRTC Leak",
+      "DNS Leak"
+    ],
+    "readingTime": "11 min read",
+    "date": "Dec 29, 2025",
+    "icon": "🛡️"
+  },
+  {
+    "filename": "why-free-public-vpns-are-dangerous-guide.html",
+    "url": "blog/why-free-public-vpns-are-dangerous-guide.html",
+    "title": "Why You Should Never Use a 'Free' Public VPN (And What to Use Instead)",
+    "description": "Free VPNs often come with a hidden price: your data. Learn the risks of using free public VPNs and find the best secure alternatives for your home and mobile devices.",
+    "tags": [
+      "Free VPN Risks",
+      "VPN Security"
+    ],
+    "readingTime": "8 min read",
+    "date": "Dec 29, 2025",
+    "icon": "⚠️"
+  },
+  {
     "filename": "best-router-placement-signal-strength-guide.html",
     "url": "blog/best-router-placement-signal-strength-guide.html",
     "title": "Best Router Placement: Step-by-Step Signal Strength Guide",
