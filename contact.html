@@ -10,6 +10,8 @@
 
       gtag('config', 'G-ZEMBMNRVX1');
     </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6185133540784018"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/">
@@ -256,57 +258,22 @@
                 <div class="contact-method-icon">🐛</div>
                 <h3>Report a Bug</h3>
                 <p>Found an issue? Help us improve by reporting bugs and issues you encounter.</p>
-                <a href="mailto:bugs@wifi.report">bugs@wifi.report</a>
+                <a href="mailto:support@wifi.report">support@wifi.report</a>
             </div>
 
             <div class="contact-method">
                 <div class="contact-method-icon">💡</div>
                 <h3>Feature Requests</h3>
                 <p>Have an idea to improve WiFi.Report? We'd love to hear your suggestions.</p>
-                <a href="mailto:feedback@wifi.report">feedback@wifi.report</a>
+                <a href="mailto:support@wifi.report">support@wifi.report</a>
             </div>
 
             <div class="contact-method">
                 <div class="contact-method-icon">🔐</div>
                 <h3>Security Issues</h3>
                 <p>Discovered a security vulnerability? Please report it responsibly to us.</p>
-                <a href="mailto:security@wifi.report">security@wifi.report</a>
+                <a href="mailto:support@wifi.report">support@wifi.report</a>
             </div>
-        </div>
-
-        <!-- Contact Form -->
-        <div class="contact-form-section">
-            <h2>Send us a Message</h2>
-            <form onsubmit="handleContactSubmit(event)">
-                <div class="form-group">
-                    <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" required placeholder="John Doe">
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required placeholder="john@example.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="subject">Subject</label>
-                    <select id="subject" name="subject" required>
-                        <option value="">Select a subject...</option>
-                        <option value="support">General Support</option>
-                        <option value="bug">Report a Bug</option>
-                        <option value="feature">Feature Request</option>
-                        <option value="feedback">Feedback</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" required placeholder="Tell us what's on your mind..."></textarea>
-                </div>
-
-                <button type="submit" class="form-button">Send Message</button>
-            </form>
         </div>
 
         <!-- FAQ Suggestion -->
@@ -380,19 +347,5 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        function handleContactSubmit(event) {
-            event.preventDefault();
-            const form = event.target;
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-
-            // Create mailto link
-            const mailtoLink = `mailto:support@wifi.report?subject=${encodeURIComponent(`[${subject}] Message from ${name}`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
-            window.location.href = mailtoLink;
-        }
-    </script>
 </body>
 </html>
