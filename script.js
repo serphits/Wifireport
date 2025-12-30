@@ -1118,8 +1118,9 @@ function displayCategoryResult(category, result) {
             detailsHTML += `<p class="vpn-warning">⚠️ Your IP is visible to all websites you visit</p>`;
             detailsHTML += `<a href="https://nordvpn.sjv.io/qzQg7L" target="_blank" rel="noopener" class="vpn-button">`;
             detailsHTML += `<span class="vpn-icon">🛡️</span>`;
-            detailsHTML += `<span class="vpn-text">Secure My Connection</span>`;
+            detailsHTML += `<span class="vpn-text">Get NordVPN</span>`;
             detailsHTML += `</a>`;
+            detailsHTML += `<p class="affiliate-disclosure" style="margin-top: 8px; font-size: 0.85em; opacity: 0.7;">Affiliate link - we may earn a commission</p>`;
             detailsHTML += `</div>`;
         } else {
             detailsHTML += `<p class="unknown-message">ℹ️ ${result.details}</p>`;
