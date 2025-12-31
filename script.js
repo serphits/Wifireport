@@ -238,6 +238,29 @@ function calculateMbps(bytes, seconds) {
     return (bytes * 8) / effectiveSeconds / 1e6;
 }
 
+function incrementScanCounter() {
+    try {
+        // Get existing stats or initialize
+        const stats = JSON.parse(localStorage.getItem('wifiReportStats') || '{"totalScans":0,"firstScan":null,"lastScan":null}');
+        
+        // Increment count
+        stats.totalScans = (stats.totalScans || 0) + 1;
+        
+        // Set first scan timestamp if not set
+        if (!stats.firstScan) {
+            stats.firstScan = new Date().toISOString();
+        }
+        
+        // Update last scan timestamp
+        stats.lastScan = new Date().toISOString();
+        
+        // Save back to localStorage
+        localStorage.setItem('wifiReportStats', JSON.stringify(stats));
+    } catch (e) {
+        console.error('Failed to update scan counter:', e);
+    }
+}
+
 // ============================================================================
 // MAIN ANALYSIS FLOW
 // ============================================================================
@@ -262,6 +285,9 @@ async function startAnalysis() {
 
     // Calculate overall score
     calculateOverallScore();
+
+    // Increment scan counter
+    incrementScanCounter();
 
     // Show results
     displayResults();
