@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Statistics - WiFi.Report</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .stats-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        .password-form {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        }
+        .password-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #000;
+            border: 2px solid #00E5FF;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .password-input:focus {
+            outline: none;
+            border-color: #FF6B00;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #00E5FF;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            background: #FF6B00;
+        }
+        .error-message {
+            color: #E53935;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .stats-content {
+            display: none;
+        }
+        .stats-content.visible {
+            display: block;
+        }
+        .stat-card {
+            background: #1a1a1a;
+            border: 2px solid #00E5FF;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 6px 6px 0 rgba(0, 229, 255, 0.3);
+        }
+        .stat-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #00E5FF;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 1.25rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+        .logout-btn {
+            margin-top: 2rem;
+            padding: 0.5rem 1rem;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .logout-btn:hover {
+            background: #444;
+        }
+        .info-text {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-container">
+        <!-- Password Form -->
+        <div id="passwordForm" class="password-form">
+            <h1 style="font-size: 2rem; margin-bottom: 1rem;">Statistics Access</h1>
+            <p style="color: #888; margin-bottom: 1.5rem;">Enter password to view scan statistics</p>
+            <input 
+                type="password" 
+                id="passwordInput" 
+                class="password-input" 
+                placeholder="Enter password"
+                autofocus
+            />
+            <button onclick="checkPassword()" class="submit-btn">Access Stats</button>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+
+        <!-- Stats Content (hidden by default) -->
+        <div id="statsContent" class="stats-content">
+            <h1 style="font-size: 2.5rem; margin-bottom: 2rem;">📊 Scan Statistics</h1>
+            
+            <div class="stat-card">
+                <div class="stat-number" id="totalScans">0</div>
+                <div class="stat-label">Total Scans Completed</div>
+            </div>
+
+            <div class="stat-card">
+                <div style="font-size: 1.5rem; color: #fff;">
+                    <strong>First Scan:</strong> <span id="firstScan">N/A</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div style="font-size: 1.5rem; color: #fff;">
+                    <strong>Last Scan:</strong> <span id="lastScan">N/A</span>
+                </div>
+            </div>
+
+            <p class="info-text">
+                * Statistics are stored locally in browser localStorage. Clearing browser data will reset these counts.
+            </p>
+
+            <button onclick="logout()" class="logout-btn">Logout</button>
+            <button onclick="window.location.href='/index.html'" class="logout-btn" style="margin-left: 1rem;">Back to Home</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const CORRECT_PASSWORD = 'Reddit12';
+        const SESSION_KEY = 'stats_authenticated';
+
+        // Check if already authenticated in this session
+        if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+            showStats();
+        }
+
+        // Allow Enter key to submit password
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (input.value === CORRECT_PASSWORD) {
+                sessionStorage.setItem(SESSION_KEY, 'true');
+                showStats();
+            } else {
+                errorMsg.textContent = '❌ Incorrect password';
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function showStats() {
+            document.getElementById('passwordForm').style.display = 'none';
+            document.getElementById('statsContent').classList.add('visible');
+            loadStats();
+        }
+
+        function loadStats() {
+            const stats = JSON.parse(localStorage.getItem('wifiReportStats') || '{"totalScans":0,"firstScan":null,"lastScan":null}');
+            
+            document.getElementById('totalScans').textContent = stats.totalScans || 0;
+            
+            if (stats.firstScan) {
+                const firstDate = new Date(stats.firstScan);
+                document.getElementById('firstScan').textContent = firstDate.toLocaleString();
+            }
+            
+            if (stats.lastScan) {
+                const lastDate = new Date(stats.lastScan);
+                document.getElementById('lastScan').textContent = lastDate.toLocaleString();
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem(SESSION_KEY);
+            location.reload();
+        }
+    </script>
+</body>
+</html>
