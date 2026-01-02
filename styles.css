@@ -1018,6 +1018,15 @@ body {
     }
 }
 
+@keyframes urgentPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.95;
+    }
+}
+
 /* Privacy IP Display Styles */
 .privacy-ip-display {
     background: #F9FAFB;
