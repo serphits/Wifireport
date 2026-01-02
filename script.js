@@ -1058,12 +1058,26 @@ function updatePersistentProtectionBar() {
         protectionBarText.appendChild(spanEl);
         
         // Update button to be more urgent
-        protectionBarButton.textContent = 'Protect Your Privacy NOW';
+        protectionBarButton.textContent = 'Protect with Nord VPN';
         protectionBarButton.style.background = '#FFFFFF';
         protectionBarButton.style.color = '#DC2626';
         protectionBarButton.style.fontWeight = '900';
-        protectionBarButton.style.textTransform = 'uppercase';
+        protectionBarButton.style.textTransform = 'none';
         protectionBarButton.style.letterSpacing = '0.5px';
+        
+        // Add affiliate text below button
+        const existingAffiliateText = protectionBar.querySelector('.affiliate-text');
+        if (!existingAffiliateText) {
+            const affiliateText = document.createElement('div');
+            affiliateText.className = 'affiliate-text';
+            affiliateText.style.fontSize = '0.7em';
+            affiliateText.style.opacity = '0.7';
+            affiliateText.style.marginTop = '0.25rem';
+            affiliateText.style.textAlign = 'center';
+            affiliateText.style.width = '100%';
+            affiliateText.textContent = 'Affiliate link';
+            protectionBar.appendChild(affiliateText);
+        }
     }
 }
 
