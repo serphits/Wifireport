@@ -1001,6 +1001,9 @@ function displayResults() {
     // Display standalone network metrics
     displayNetworkMetrics();
     
+    // Update persistent protection bar based on privacy results
+    updatePersistentProtectionBar();
+    
     // Generate recommendations
     generateRecommendations();
     
@@ -1024,6 +1027,44 @@ function displayNetworkMetrics() {
     if (uploadMetric) uploadMetric.textContent = `${results.speed.metrics.uploadSpeed} Mbps`;
     if (latencyMetric) latencyMetric.textContent = `${results.speed.metrics.latency} ms`;
     if (jitterMetric) jitterMetric.textContent = `${results.speed.metrics.jitter} ms`;
+}
+
+function updatePersistentProtectionBar() {
+    const protectionBar = document.getElementById('persistentProtectionBar');
+    const protectionBarText = document.getElementById('protectionBarText');
+    const protectionBarButton = document.getElementById('protectionBarButton');
+    
+    if (!protectionBar || !protectionBarText || !protectionBarButton) return;
+    
+    // Check if privacy is exposed (not protected)
+    if (results.privacy && results.privacy.isProtected === false) {
+        // Make it urgent with red background and white text
+        protectionBar.style.background = '#DC2626';
+        protectionBar.style.borderColor = '#DC2626';
+        protectionBar.classList.remove('bg-black');
+        protectionBar.style.animation = 'urgentPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
+        
+        // Update text to be more urgent (using safer textContent approach)
+        protectionBarText.textContent = '';
+        const strongEl = document.createElement('strong');
+        strongEl.textContent = '⚠️ URGENT: Your Privacy is Exposed!';
+        const descText = document.createTextNode(' Your real IP address is visible to all websites. ');
+        const spanEl = document.createElement('span');
+        spanEl.style.opacity = '0.9';
+        spanEl.style.fontSize = '0.9em';
+        spanEl.textContent = 'Protect yourself now';
+        protectionBarText.appendChild(strongEl);
+        protectionBarText.appendChild(descText);
+        protectionBarText.appendChild(spanEl);
+        
+        // Update button to be more urgent
+        protectionBarButton.textContent = 'Protect Your Privacy NOW';
+        protectionBarButton.style.background = '#FFFFFF';
+        protectionBarButton.style.color = '#DC2626';
+        protectionBarButton.style.fontWeight = '900';
+        protectionBarButton.style.textTransform = 'uppercase';
+        protectionBarButton.style.letterSpacing = '0.5px';
+    }
 }
 
 function displayOverallScore() {
