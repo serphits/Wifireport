@@ -1037,15 +1037,25 @@ function updatePersistentProtectionBar() {
     if (!protectionBar || !protectionBarText || !protectionBarButton) return;
     
     // Check if privacy is exposed (not protected)
-    if (results.privacy.isProtected === false) {
+    if (results.privacy && results.privacy.isProtected === false) {
         // Make it urgent with red background and white text
         protectionBar.style.background = '#DC2626';
         protectionBar.style.borderColor = '#DC2626';
         protectionBar.classList.remove('bg-black');
         protectionBar.style.animation = 'urgentPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
         
-        // Update text to be more urgent
-        protectionBarText.innerHTML = '<strong>⚠️ URGENT: Your Privacy is Exposed!</strong> Your real IP address is visible to all websites. <span style="opacity: 0.9; font-size: 0.9em;">Protect yourself now</span>';
+        // Update text to be more urgent (using safer textContent approach)
+        protectionBarText.textContent = '';
+        const strongEl = document.createElement('strong');
+        strongEl.textContent = '⚠️ URGENT: Your Privacy is Exposed!';
+        const descText = document.createTextNode(' Your real IP address is visible to all websites. ');
+        const spanEl = document.createElement('span');
+        spanEl.style.opacity = '0.9';
+        spanEl.style.fontSize = '0.9em';
+        spanEl.textContent = 'Protect yourself now';
+        protectionBarText.appendChild(strongEl);
+        protectionBarText.appendChild(descText);
+        protectionBarText.appendChild(spanEl);
         
         // Update button to be more urgent
         protectionBarButton.textContent = 'Protect Your Privacy NOW';
