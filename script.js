@@ -1038,7 +1038,7 @@ function updatePersistentProtectionBar() {
     
     // Check if privacy is exposed (not protected)
     if (results.privacy && results.privacy.isProtected === false) {
-        // Make it urgent with red background and white text
+        // Show privacy notice with red background and white text
         protectionBar.style.background = '#C14A2E';
         protectionBar.style.borderColor = '#C14A2E';
         protectionBar.classList.remove('bg-black');
@@ -1069,21 +1069,23 @@ function updatePersistentProtectionBar() {
         protectionBarButton.style.transition = 'all 0.2s ease';
         
         // Add affiliate text below the protection bar (outside the red box)
-        const existingAffiliateWrapper = protectionBar.parentElement.querySelector('.affiliate-wrapper');
-        if (!existingAffiliateWrapper) {
-            const affiliateWrapper = document.createElement('div');
-            affiliateWrapper.className = 'affiliate-wrapper';
-            affiliateWrapper.style.marginTop = '0.5rem';
-            affiliateWrapper.style.textAlign = 'center';
-            affiliateWrapper.style.fontSize = '0.75rem';
-            affiliateWrapper.style.color = '#6B7280';
-            
-            const affiliateText = document.createElement('span');
-            affiliateText.textContent = 'Affiliate partner • We may earn a commission if you sign up through our link';
-            affiliateWrapper.appendChild(affiliateText);
-            
-            // Insert after the protection bar
-            protectionBar.parentElement.insertBefore(affiliateWrapper, protectionBar.nextSibling);
+        if (protectionBar.parentElement) {
+            const existingAffiliateWrapper = protectionBar.parentElement.querySelector('.affiliate-wrapper');
+            if (!existingAffiliateWrapper) {
+                const affiliateWrapper = document.createElement('div');
+                affiliateWrapper.className = 'affiliate-wrapper';
+                affiliateWrapper.style.marginTop = '0.5rem';
+                affiliateWrapper.style.textAlign = 'center';
+                affiliateWrapper.style.fontSize = '0.75rem';
+                affiliateWrapper.style.color = '#6B7280';
+                
+                const affiliateText = document.createElement('span');
+                affiliateText.textContent = 'Affiliate partner • We may earn a commission if you sign up through our link';
+                affiliateWrapper.appendChild(affiliateText);
+                
+                // Insert after the protection bar
+                protectionBar.parentElement.insertBefore(affiliateWrapper, protectionBar.nextSibling);
+            }
         }
     }
 }
