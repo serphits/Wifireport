@@ -989,11 +989,7 @@ body {
     color: #000000;
 }
 
-.badge.poor {
-    background: #E0E0E0;
-    color: #000000;
-}
-
+.badge.poor,
 .badge.exposed {
     background: #DC2626;
     color: #FFFFFF;
