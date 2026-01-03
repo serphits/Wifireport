@@ -1044,39 +1044,46 @@ function updatePersistentProtectionBar() {
         protectionBar.classList.remove('bg-black');
         protectionBar.style.animation = 'urgentPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
         
-        // Update text to be more urgent (using safer textContent approach)
+        // Update text to be informative but not alarmist
         protectionBarText.textContent = '';
         const strongEl = document.createElement('strong');
-        strongEl.textContent = '⚠️ URGENT: Your Privacy is Exposed!';
-        const descText = document.createTextNode(' Your real IP address is visible to all websites. ');
+        strongEl.textContent = '🔒 Privacy Notice:';
+        const descText = document.createTextNode(' Your IP address is currently visible. ');
         const spanEl = document.createElement('span');
         spanEl.style.opacity = '0.9';
         spanEl.style.fontSize = '0.9em';
-        spanEl.textContent = 'Protect yourself now';
+        spanEl.textContent = 'Consider using a VPN for enhanced privacy';
         protectionBarText.appendChild(strongEl);
         protectionBarText.appendChild(descText);
         protectionBarText.appendChild(spanEl);
         
-        // Update button to be more urgent
-        protectionBarButton.textContent = 'Protect with Nord VPN';
+        // Update button with clear call-to-action
+        protectionBarButton.textContent = 'Get NordVPN Protection';
         protectionBarButton.style.background = '#FFFFFF';
         protectionBarButton.style.color = '#C14A2E';
-        protectionBarButton.style.fontWeight = '900';
+        protectionBarButton.style.fontWeight = '700';
         protectionBarButton.style.textTransform = 'none';
         protectionBarButton.style.letterSpacing = '0.5px';
+        protectionBarButton.style.padding = '0.6rem 1.2rem';
+        protectionBarButton.style.borderRadius = '4px';
+        protectionBarButton.style.transition = 'all 0.2s ease';
         
-        // Add affiliate text below button
-        const existingAffiliateText = protectionBar.querySelector('.affiliate-text');
-        if (!existingAffiliateText) {
-            const affiliateText = document.createElement('div');
-            affiliateText.className = 'affiliate-text';
-            affiliateText.style.fontSize = '0.7em';
-            affiliateText.style.opacity = '0.7';
-            affiliateText.style.marginTop = '0.25rem';
-            affiliateText.style.textAlign = 'center';
-            affiliateText.style.width = '100%';
-            affiliateText.textContent = 'Affiliate link';
-            protectionBar.appendChild(affiliateText);
+        // Add affiliate text below the protection bar (outside the red box)
+        const existingAffiliateWrapper = protectionBar.parentElement.querySelector('.affiliate-wrapper');
+        if (!existingAffiliateWrapper) {
+            const affiliateWrapper = document.createElement('div');
+            affiliateWrapper.className = 'affiliate-wrapper';
+            affiliateWrapper.style.marginTop = '0.5rem';
+            affiliateWrapper.style.textAlign = 'center';
+            affiliateWrapper.style.fontSize = '0.75rem';
+            affiliateWrapper.style.color = '#6B7280';
+            
+            const affiliateText = document.createElement('span');
+            affiliateText.textContent = 'Affiliate partner • We may earn a commission if you sign up through our link';
+            affiliateWrapper.appendChild(affiliateText);
+            
+            // Insert after the protection bar
+            protectionBar.parentElement.insertBefore(affiliateWrapper, protectionBar.nextSibling);
         }
     }
 }

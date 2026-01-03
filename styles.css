@@ -2655,3 +2655,29 @@ body::before {
 
 .scan-button:active {
     animation: digitalGlitch 0.3s;
+}
+
+/* Protection Bar Mobile Responsiveness */
+@media (max-width: 768px) {
+    #persistentProtectionBar {
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+    }
+    
+    #protectionBarText {
+        text-align: center !important;
+        margin-bottom: 1rem;
+    }
+    
+    #protectionBarButton {
+        margin: 0 auto !important;
+        width: fit-content !important;
+    }
+}
+
+/* Hover effect for protection button */
+#protectionBarButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
