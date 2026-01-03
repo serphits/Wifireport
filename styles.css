@@ -990,8 +990,12 @@ body {
 }
 
 .badge.poor {
-    background: #E0E0E0;
-    color: #000000;
+    background: #DC2626;
+    color: #FFFFFF;
+    animation: pulse-exposed 2s ease-in-out infinite;
+    font-weight: 900;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
 }
 
 .badge.exposed {
