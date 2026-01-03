@@ -1039,8 +1039,8 @@ function updatePersistentProtectionBar() {
     // Check if privacy is exposed (not protected)
     if (results.privacy && results.privacy.isProtected === false) {
         // Make it urgent with red background and white text
-        protectionBar.style.background = '#DC2626';
-        protectionBar.style.borderColor = '#DC2626';
+        protectionBar.style.background = '#C14A2E';
+        protectionBar.style.borderColor = '#C14A2E';
         protectionBar.classList.remove('bg-black');
         protectionBar.style.animation = 'urgentPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
         
@@ -1060,7 +1060,7 @@ function updatePersistentProtectionBar() {
         // Update button to be more urgent
         protectionBarButton.textContent = 'Protect with Nord VPN';
         protectionBarButton.style.background = '#FFFFFF';
-        protectionBarButton.style.color = '#DC2626';
+        protectionBarButton.style.color = '#C14A2E';
         protectionBarButton.style.fontWeight = '900';
         protectionBarButton.style.textTransform = 'none';
         protectionBarButton.style.letterSpacing = '0.5px';

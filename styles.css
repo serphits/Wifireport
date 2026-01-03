@@ -995,9 +995,9 @@ body {
 }
 
 .badge.exposed {
-    background: #DC2626;
+    background: #C14A2E;
     color: #FFFFFF;
-    animation: pulse-exposed 2s ease-in-out infinite;
+    animation: soft-glow 3s ease-in-out infinite;
     font-weight: 900;
     padding: 0.35rem 1rem;
     font-size: 0.8rem;
@@ -1009,23 +1009,23 @@ body {
     font-weight: 900;
 }
 
-@keyframes pulse-exposed {
+@keyframes soft-glow {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+        box-shadow: 0 0 8px rgba(193, 74, 46, 0.3);
     }
     50% {
-        box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+        box-shadow: 0 0 16px rgba(193, 74, 46, 0.5);
     }
 }
 
 @keyframes urgentPulse {
     0%, 100% {
         opacity: 1;
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+        box-shadow: 0 0 8px rgba(193, 74, 46, 0.3);
     }
     50% {
-        opacity: 0.92;
-        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0);
+        opacity: 0.95;
+        box-shadow: 0 0 16px rgba(193, 74, 46, 0.5);
     }
 }
 
@@ -1071,7 +1071,7 @@ body {
 }
 
 .exposed-badge {
-    background: #DC2626;
+    background: #C14A2E;
     color: #FFFFFF;
     padding: 0.35rem 0.85rem;
     border-radius: 6px;
@@ -1079,7 +1079,7 @@ body {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    animation: pulse-exposed 2s ease-in-out infinite;
+    animation: soft-glow 3s ease-in-out infinite;
     display: inline-block;
     margin-top: 0.5rem;
     text-align: left;
@@ -1106,8 +1106,8 @@ body {
 .vpn-cta {
     margin-top: 1.5rem;
     padding: 2rem;
-    background: #DC2626;
-    border: 3px solid #DC2626;
+    background: #C14A2E;
+    border: 3px solid #C14A2E;
     border-radius: 0;
     display: flex;
     flex-direction: column;
@@ -1221,7 +1221,7 @@ body {
     font-weight: 500;
     font-size: 0.9rem;
     background: #FEF2F2;
-    border-left: 3px solid #DC2626;
+    border-left: 3px solid #C14A2E;
     border-radius: 4px;
 }
 
