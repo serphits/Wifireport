@@ -10,7 +10,21 @@ document.addEventListener('DOMContentLoaded', function() {
     initRadarGrid();
     initPreviewRadar();
     initEventListeners();
+    hideChromeExtensionOnMobile();
 });
+
+// ============================================================================
+// MOBILE DEVICE DETECTION
+// ============================================================================
+
+function hideChromeExtensionOnMobile() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const chromeExtensionCTA = document.getElementById('chromeExtensionCTA');
+    
+    if (isMobile && chromeExtensionCTA) {
+        chromeExtensionCTA.style.display = 'none';
+    }
+}
 
 // ============================================================================
 // SHARED LAYOUT INJECTION (Navbar + Footer)
