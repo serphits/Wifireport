@@ -1270,7 +1270,6 @@ function generateRecommendations() {
         if (results.security.issues.includes('Not using HTTPS connection')) {
             recommendations.push({
                 type: 'critical',
-                icon: '🔒',
                 title: 'Enable HTTPS',
                 description: 'Always use HTTPS connections to encrypt your data.'
             });
@@ -1281,7 +1280,6 @@ function generateRecommendations() {
     if (!results.privacy.isProtected) {
         recommendations.push({
             type: 'warning',
-            icon: '🛡️',
             title: 'Protect Your Privacy with a VPN',
             description: 'Your IP address is visible. A VPN encrypts your traffic and hides your identity.'
         });
@@ -1292,7 +1290,6 @@ function generateRecommendations() {
         if (results.speed.metrics.downloadSpeed < 25) {
             recommendations.push({
                 type: 'warning',
-                icon: '⬇️',
                 title: 'Improve Download Speed',
                 description: 'Move closer to your router, reduce interference, or contact your ISP.'
             });
@@ -1300,7 +1297,6 @@ function generateRecommendations() {
         if (results.speed.metrics.latency > 100) {
             recommendations.push({
                 type: 'warning',
-                icon: '📶',
                 title: 'Reduce Latency',
                 description: 'Use a wired connection for gaming or video calls.'
             });
@@ -1311,7 +1307,6 @@ function generateRecommendations() {
     if (results.stability.score < 70) {
         recommendations.push({
             type: 'warning',
-            icon: '📡',
             title: 'Improve Connection Stability',
             description: 'Update router firmware or consider a mesh WiFi system.'
         });
@@ -1321,7 +1316,6 @@ function generateRecommendations() {
     if (recommendations.length === 0) {
         recommendations.push({
             type: 'info',
-            icon: '✅',
             title: 'Excellent Configuration',
             description: 'Your network is well-configured! Keep monitoring regularly.'
         });
@@ -1332,7 +1326,6 @@ function generateRecommendations() {
     recommendations.forEach(rec => {
         html += `
             <div class="recommendation-card ${rec.type}">
-                <div class="recommendation-icon">${rec.icon}</div>
                 <div class="recommendation-content">
                     <h4>${rec.title}</h4>
                     <p>${rec.description}</p>
