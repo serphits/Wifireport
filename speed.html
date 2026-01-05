@@ -337,7 +337,8 @@
                     downloadSpeed = Math.round(Math.max(...downloadResults) * 10) / 10;
                     speedDisplay.textContent = downloadSpeed;
                 } else {
-                    downloadSpeed = 25; // Fallback estimate
+                    // Fallback: typical 4G connection speed when measurements fail
+                    downloadSpeed = 25;
                     speedDisplay.textContent = downloadSpeed + '*';
                 }
                 
@@ -362,7 +363,9 @@
                 if (uploadResults.length > 0) {
                     uploadSpeed = Math.round(Math.max(...uploadResults) * 10) / 10;
                 } else {
-                    uploadSpeed = Math.round(downloadSpeed * 0.2 * 10) / 10; // Fallback estimate
+                    // Fallback: typical upload is ~20% of download for asymmetric connections
+                    const UPLOAD_TO_DOWNLOAD_RATIO = 0.2;
+                    uploadSpeed = Math.round(downloadSpeed * UPLOAD_TO_DOWNLOAD_RATIO * 10) / 10;
                 }
                 
                 document.getElementById('uploadSpeed').textContent = uploadSpeed + ' Mbps';
@@ -414,13 +417,14 @@
             
             if (measurements.length > 0) {
                 measurements.sort((a, b) => a - b);
-                const trimmed = measurements.slice(1, -1);
-                const avg = trimmed.length > 0 
-                    ? trimmed.reduce((a, b) => a + b, 0) / trimmed.length 
-                    : measurements.reduce((a, b) => a + b, 0) / measurements.length;
+                // Remove outliers only if we have enough measurements
+                const trimmed = measurements.length >= 3 ? measurements.slice(1, -1) : measurements;
+                const avg = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
                 return Math.round(avg);
             }
-            return 50; // Fallback
+            // Fallback: typical latency for good connection
+            return 50;
+
         }
         
         async function measureDownloadSpeed(bytes) {
