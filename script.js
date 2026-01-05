@@ -371,19 +371,19 @@ async function runSecurityTest() {
     // Check HTTPS (30 points)
     if (location.protocol === 'https:') {
         securityScore += 30;
-        strengths.push('HTTPS connection active');
+        strengths.push('Secure encrypted connection (HTTPS)');
     } else {
         securityScore -= 20;
-        issues.push('Not using HTTPS connection');
+        issues.push('Site not using secure HTTPS connection');
     }
     
     // Check for secure context (15 points)
     if (window.isSecureContext) {
         securityScore += 15;
-        strengths.push('Running in secure browser context');
+        strengths.push('Running in secure browser environment');
     } else {
         securityScore -= 15;
-        issues.push('Not in a secure context');
+        issues.push('Browser not in a secure environment');
     }
     
     // Check Content Security Policy (10 points)
@@ -612,16 +612,16 @@ async function runSpeedTest() {
         if (speed.status !== 'Estimated') {
             if (speed.score >= 80) {
                 speed.status = 'Excellent';
-                speed.details = `Excellent speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Perfect for gaming, 4K streaming, and video calls.`;
+                speed.details = `Excellent speed: ${speed.metrics.downloadSpeed} Mbps download, ${speed.metrics.uploadSpeed} Mbps upload, ${speed.metrics.latency}ms response time. Perfect for gaming, 4K streaming, and video calls.`;
             } else if (speed.score >= 60) {
                 speed.status = 'Good';
-                speed.details = `Good speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Suitable for most online activities.`;
+                speed.details = `Good speed: ${speed.metrics.downloadSpeed} Mbps download, ${speed.metrics.uploadSpeed} Mbps upload, ${speed.metrics.latency}ms response time. Suitable for most online activities.`;
             } else if (speed.score >= 40) {
                 speed.status = 'Fair';
-                speed.details = `Fair speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Adequate but could be improved.`;
+                speed.details = `Fair speed: ${speed.metrics.downloadSpeed} Mbps download, ${speed.metrics.uploadSpeed} Mbps upload, ${speed.metrics.latency}ms response time. Adequate but could be improved.`;
             } else {
                 speed.status = 'Poor';
-                speed.details = `Poor speed: ${speed.metrics.downloadSpeed} Mbps down, ${speed.metrics.uploadSpeed} Mbps up, ${speed.metrics.latency}ms latency. Consider upgrading your connection.`;
+                speed.details = `Poor speed: ${speed.metrics.downloadSpeed} Mbps download, ${speed.metrics.uploadSpeed} Mbps upload, ${speed.metrics.latency}ms response time. Consider upgrading your connection.`;
             }
         }
         
@@ -756,23 +756,32 @@ async function runStabilityTest() {
     const jitter = results.speed.metrics.jitter || 10;
     const latency = results.speed.metrics.latency || 50;
     
+    // Store metrics for display
+    stability.metrics = {
+        jitter: jitter,
+        latency: latency,
+        consistency: jitter < thresholds.jitter.good ? 'Excellent' : 
+                     jitter < thresholds.jitter.fair ? 'Good' : 
+                     jitter < thresholds.jitter.fair * 1.5 ? 'Fair' : 'Poor'
+    };
+    
     // Jitter scoring (max 30 points)
     if (jitter < thresholds.jitter.good) {
         stabilityScore += 30;
         stability.status = 'Excellent';
-        stability.details = 'Your connection is very stable with minimal variation.';
+        stability.details = `Your connection is very stable with consistent performance (${jitter}ms variation). Great for video calls and online gaming.`;
     } else if (jitter < thresholds.jitter.fair) {
         stabilityScore += 20;
         stability.status = 'Good';
-        stability.details = 'Your connection is reasonably stable.';
+        stability.details = `Your connection is reasonably stable (${jitter}ms variation). Should work well for most activities.`;
     } else if (jitter < thresholds.jitter.fair * 1.5) {
         stabilityScore += 10;
         stability.status = 'Fair';
-        stability.details = 'Your connection shows some instability.';
+        stability.details = `Your connection shows some instability (${jitter}ms variation). You may notice occasional hiccups during video calls.`;
     } else {
         stabilityScore -= 10;
         stability.status = 'Poor';
-        stability.details = 'Your connection is unstable with significant variation. This may affect video calls and gaming.';
+        stability.details = `Your connection is unstable with significant variation (${jitter}ms). This may cause stuttering in video calls and lag in games.`;
     }
     
     // Latency consistency bonus (max 10 points)
@@ -787,14 +796,12 @@ async function runStabilityTest() {
     if (connection) {
         if (connection.saveData) {
             stabilityScore -= 5;
-            stability.details += ' Data saver mode is enabled.';
+            stability.details += ' Data saver mode is enabled, which may affect performance.';
         }
         
-        stability.metrics = {
-            effectiveType: connection.effectiveType || 'unknown',
-            downlink: connection.downlink || 0,
-            rtt: connection.rtt || 0
-        };
+        stability.metrics.effectiveType = connection.effectiveType || 'unknown';
+        stability.metrics.downlink = connection.downlink || 0;
+        stability.metrics.rtt = connection.rtt || 0;
     }
     
     stability.score = Math.max(0, Math.min(100, stabilityScore));
@@ -1241,9 +1248,25 @@ function displayCategoryResult(category, result) {
         detailsHTML += `<ul class="speed-metrics-list">`;
         detailsHTML += `<li><strong>Download:</strong> ${result.metrics.downloadSpeed} Mbps</li>`;
         detailsHTML += `<li><strong>Upload:</strong> ${result.metrics.uploadSpeed} Mbps</li>`;
-        detailsHTML += `<li><strong>Latency:</strong> ${result.metrics.latency} ms</li>`;
-        detailsHTML += `<li><strong>Jitter:</strong> ${result.metrics.jitter} ms</li>`;
+        detailsHTML += `<li><strong>Response Time:</strong> ${result.metrics.latency} ms</li>`;
+        detailsHTML += `<li><strong>Variation:</strong> ${result.metrics.jitter} ms</li>`;
         detailsHTML += `</ul>`;
+    } else if (category === 'stability' && result.metrics) {
+        detailsHTML += `<p>${result.details}</p>`;
+        detailsHTML += `<div class="stability-metrics">`;
+        detailsHTML += `<h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-size: 0.95em;">Connection Stability Metrics:</h4>`;
+        detailsHTML += `<ul class="speed-metrics-list">`;
+        if (result.metrics.jitter !== undefined) {
+            detailsHTML += `<li><strong>Signal Variation (Jitter):</strong> ${result.metrics.jitter} ms - ${result.metrics.consistency || 'Good'}</li>`;
+        }
+        if (result.metrics.latency !== undefined) {
+            detailsHTML += `<li><strong>Response Time:</strong> ${result.metrics.latency} ms</li>`;
+        }
+        if (result.metrics.effectiveType) {
+            detailsHTML += `<li><strong>Connection Type:</strong> ${result.metrics.effectiveType.toUpperCase()}</li>`;
+        }
+        detailsHTML += `</ul>`;
+        detailsHTML += `</div>`;
     } else {
         detailsHTML += `<p>${result.details}</p>`;
     }
@@ -1267,11 +1290,11 @@ function generateRecommendations() {
 
     // Security recommendations
     if (results.security.score < 80) {
-        if (results.security.issues.includes('Not using HTTPS connection')) {
+        if (results.security.issues.includes('Site not using secure HTTPS connection')) {
             recommendations.push({
                 type: 'critical',
-                title: 'Enable HTTPS',
-                description: 'Always use HTTPS connections to encrypt your data.'
+                title: 'Use Secure Websites',
+                description: 'This site is not using HTTPS. Look for the padlock icon in your browser address bar when visiting websites.'
             });
         }
     }
@@ -1291,14 +1314,14 @@ function generateRecommendations() {
             recommendations.push({
                 type: 'warning',
                 title: 'Improve Download Speed',
-                description: 'Move closer to your router, reduce interference, or contact your ISP.'
+                description: 'Move closer to your WiFi router, reduce interference from other devices, or contact your internet provider about upgrading your plan.'
             });
         }
         if (results.speed.metrics.latency > 100) {
             recommendations.push({
                 type: 'warning',
-                title: 'Reduce Latency',
-                description: 'Use a wired connection for gaming or video calls.'
+                title: 'Reduce Response Time',
+                description: 'Use a wired ethernet connection instead of WiFi for gaming or video calls to get faster response times.'
             });
         }
     }
@@ -1308,7 +1331,7 @@ function generateRecommendations() {
         recommendations.push({
             type: 'warning',
             title: 'Improve Connection Stability',
-            description: 'Update router firmware or consider a mesh WiFi system.'
+            description: 'Update your router firmware, move closer to the router, or consider upgrading to a mesh WiFi system for better coverage.'
         });
     }
 
