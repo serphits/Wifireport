@@ -315,26 +315,6 @@
                 </div>
             </div>
 
-                        <!-- Privacy Manifest & Trust Badges -->
-                        <div class="mt-8 grid md:grid-cols-2 gap-6">
-                            <div class="p-6 border border-black/10 bg-white shadow-[6px_6px_0_rgba(0,0,0,1)]">
-                                <h3 class="font-bold mb-2">Privacy Manifest</h3>
-                                <ul class="list-disc pl-5 text-sm text-gray-700">
-                                    <li>100% Client-Side. No scan data is sent to our servers.</li>
-                                    <li>We never see your IP. All checks run locally.</li>
-                                    <li>Transparent browser APIs. You control your data.</li>
-                                </ul>
-                            </div>
-                            <div class="p-6 border border-black/10 bg-white shadow-[6px_6px_0_rgba(0,0,0,1)]">
-                                <h3 class="font-bold mb-2">Badges of Honor</h3>
-                                <div class="flex flex-wrap gap-3 text-sm">
-                                    <span class="px-3 py-1 bg-black text-white">WebRTC Leak Awareness</span>
-                                    <span class="px-3 py-1 bg-black text-white">DNSSEC Ready</span>
-                                    <span class="px-3 py-1 bg-black text-white">HTTPS Everywhere</span>
-                                </div>
-                            </div>
-                        </div>
-
             <!-- Speed Metrics -->
             <div class="speed-metrics">
                 <h3>Network Performance</h3>
@@ -364,28 +344,84 @@
                 
             <!-- Metrics Explanation -->
             <div class="metrics-help">
-                <h4>📖 Understanding Your Metrics</h4>
+                <h4>Understanding Your Metrics & Common Issues</h4>
                 <div class="help-grid">
                     <div class="help-item">
                         <strong>Download Speed:</strong> How fast data comes to your device. Higher is better for streaming, downloading files, and browsing.
+                        <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
+                            <strong>Common Causes of Slow Download:</strong>
+                            <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
+                                <li>Distance from router or weak signal strength</li>
+                                <li>Too many devices connected to the network</li>
+                                <li>ISP throttling or plan limitations</li>
+                                <li>Old router hardware or outdated firmware</li>
+                                <li>Interference from other WiFi networks or devices</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="help-item">
                         <strong>Upload Speed:</strong> How fast data leaves your device. Important for video calls, uploading files, and live streaming.
+                        <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
+                            <strong>Common Causes of Slow Upload:</strong>
+                            <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
+                                <li>Asymmetric internet plans (typically lower upload speeds)</li>
+                                <li>Network congestion during peak hours</li>
+                                <li>Background uploads or cloud sync services</li>
+                                <li>Router quality of service (QoS) settings</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="help-item">
                         <strong>Latency (Ping):</strong> The time it takes for data to travel to a server and back. Lower is better, especially for gaming and video calls. Good: &lt;50ms, Fair: 50-100ms, Poor: &gt;100ms.
+                        <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
+                            <strong>Common Causes of High Latency:</strong>
+                            <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
+                                <li>Using WiFi instead of wired connection</li>
+                                <li>Geographic distance from the server</li>
+                                <li>Network congestion or heavy traffic</li>
+                                <li>Poor quality router or modem</li>
+                                <li>ISP routing issues or network problems</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="help-item">
                         <strong>Jitter:</strong> Variation in latency over time. Lower is better for stable connections. Good: &lt;10ms, Fair: 10-30ms, Poor: &gt;30ms. High jitter causes stuttering in calls and games.
+                        <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
+                            <strong>Common Causes of High Jitter:</strong>
+                            <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
+                                <li>WiFi signal fluctuations or interference</li>
+                                <li>Network congestion from multiple devices</li>
+                                <li>Inconsistent ISP routing or buffering</li>
+                                <li>Old or failing network hardware</li>
+                                <li>Distance from access point or obstacles</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="help-item">
-                        <strong>RTT (Round Trip Time):</strong> Similar to latency, measured by your browser. Shows the time for a complete network round trip.
+                        <strong>Security Score:</strong> Measures your connection's encryption and security protocols.
+                        <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
+                            <strong>Common Causes of Low Security:</strong>
+                            <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
+                                <li>Not using HTTPS when accessing websites</li>
+                                <li>Outdated browser or security settings</li>
+                                <li>Public WiFi without VPN protection</li>
+                                <li>Weak or no encryption on router (WEP/open network)</li>
+                                <li>Missing security headers or policies</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="help-item">
-                        <strong>Effective Type:</strong> Your estimated connection speed class (2G, 3G, 4G, 5G) based on actual performance, not just what your carrier claims.
-                    </div>
-                    <div class="help-item">
-                        <strong>Test Method:</strong> Optimized multi-flow testing within ~30 seconds for accurate results across devices (similar to fast.com behavior).
+                        <strong>Privacy Score:</strong> Indicates whether your real IP address is exposed or protected.
+                        <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
+                            <strong>Common Causes of Privacy Issues:</strong>
+                            <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
+                                <li>Not using a VPN service</li>
+                                <li>WebRTC leaks revealing your real IP</li>
+                                <li>DNS requests not encrypted or routed through ISP</li>
+                                <li>Browser fingerprinting vulnerabilities</li>
+                                <li>Trackers and third-party cookies enabled</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
