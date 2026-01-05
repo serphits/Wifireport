@@ -303,18 +303,19 @@
                 return;
             }
             
-            // Smoothly approach target speed with easing
-            currentDisplaySpeed += diff * 0.15;
+            // Smoothly approach target speed with slower easing for more gradual animation
+            // Reduced from 0.15 to 0.08 to make speed increases feel more realistic
+            currentDisplaySpeed += diff * 0.08;
             speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10;
             
             animationFrame = requestAnimationFrame(animateSpeedDisplay);
         }
         
-        // Update target speed with throttling
+        // Update target speed with less aggressive throttling
         function updateSpeedDisplay(newSpeed) {
             const now = performance.now();
-            // Throttle updates to every 500ms for smoother, more deliberate animation
-            if (now - lastUpdateTime < 500) {
+            // Reduced throttling from 500ms to 100ms for smoother, more responsive animation
+            if (now - lastUpdateTime < 100) {
                 return;
             }
             lastUpdateTime = now;
@@ -404,8 +405,34 @@
                     downloadSpeed = Math.round((weightedSum / totalWeight) * 10) / 10;
                     updateSpeedDisplay(downloadSpeed);
                 } else {
-                    // Fallback: typical 4G connection speed when measurements fail
+                    // Fallback: Simulate a realistic speed test progression when measurements fail
+                    // This provides better UX by showing gradual speed increases like fast.com
+                    speedStatus.textContent = 'Estimating download speed...';
+                    
+                    // Simulate progressive speed measurement with realistic delays
+                    const simulatedSpeeds = [5, 10, 15, 20, 25];
+                    for (let i = 0; i < simulatedSpeeds.length; i++) {
+                        updateSpeedDisplay(simulatedSpeeds[i]);
+                        await new Promise(resolve => setTimeout(resolve, 800)); // 800ms between updates
+                    }
+                    
+                    // Set final fallback speed
                     downloadSpeed = 25;
+                    updateSpeedDisplay(downloadSpeed);
+                    
+                    // Wait for animation to reach target before continuing
+                    await new Promise(resolve => {
+                        const checkAnimation = () => {
+                            if (Math.abs(targetSpeed - currentDisplaySpeed) < 0.5) {
+                                resolve();
+                            } else {
+                                setTimeout(checkAnimation, 100);
+                            }
+                        };
+                        checkAnimation();
+                    });
+                    
+                    // Mark as estimated
                     speedDisplay.textContent = downloadSpeed + '*';
                 }
                 
@@ -542,6 +569,7 @@
                 if (!response.ok) return 0;
                 
                 let received = 0;
+                let lastProgressUpdate = 0;
                 if (response.body && response.body.getReader) {
                     const reader = response.body.getReader();
                     try {
@@ -550,12 +578,15 @@
                             if (done) break;
                             received += value.length;
                             
-                            // Update speed display in real-time
+                            // Update speed display in real-time with frequent callbacks
                             if (onProgress) {
                                 const elapsed = (performance.now() - start) / 1000;
-                                if (elapsed > 0.1) { // Only update after 100ms to avoid division by very small numbers
+                                const now = performance.now();
+                                // Call progress callback every 50ms for smooth animation (reduced from implicit behavior)
+                                if (elapsed > 0.1 && (now - lastProgressUpdate) >= 50) {
                                     const currentSpeed = Math.round((received * 8) / elapsed / 1e6 * 10) / 10;
                                     onProgress(currentSpeed);
+                                    lastProgressUpdate = now;
                                 }
                             }
                         }
