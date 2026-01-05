@@ -282,9 +282,47 @@
         let downloadSpeed = 0;
         let uploadSpeed = 0;
         let latency = 0;
+        let lastUpdateTime = 0;
+        let currentDisplaySpeed = 0;
+        let targetSpeed = 0;
+        let animationFrame = null;
         
         document.getElementById('startTest').addEventListener('click', startSpeedTest);
         document.getElementById('shareX').addEventListener('click', shareOnX);
+        
+        // Smooth animation function to gradually update speed display
+        function animateSpeedDisplay() {
+            const speedDisplay = document.getElementById('speedDisplay');
+            const diff = targetSpeed - currentDisplaySpeed;
+            
+            if (Math.abs(diff) < 0.1) {
+                currentDisplaySpeed = targetSpeed;
+                speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10;
+                animationFrame = null;
+                return;
+            }
+            
+            // Smoothly approach target speed with easing
+            currentDisplaySpeed += diff * 0.15;
+            speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10;
+            
+            animationFrame = requestAnimationFrame(animateSpeedDisplay);
+        }
+        
+        // Update target speed with throttling
+        function updateSpeedDisplay(newSpeed) {
+            const now = performance.now();
+            // Throttle updates to every 200ms for smoother, more deliberate animation
+            if (now - lastUpdateTime < 200) {
+                return;
+            }
+            lastUpdateTime = now;
+            targetSpeed = newSpeed;
+            
+            if (!animationFrame) {
+                animationFrame = requestAnimationFrame(animateSpeedDisplay);
+            }
+        }
         
         async function startSpeedTest() {
             if (testRunning) return;
@@ -297,6 +335,15 @@
             const loadingFill = document.getElementById('loadingFill');
             const shareBtn = document.getElementById('shareX');
             const additionalMetrics = document.getElementById('additionalMetrics');
+            
+            // Reset animation state
+            currentDisplaySpeed = 0;
+            targetSpeed = 0;
+            lastUpdateTime = 0;
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
             
             startBtn.textContent = 'Testing...';
             startBtn.disabled = true;
@@ -323,13 +370,13 @@
                 for (let i = 0; i < downloadTests.length; i++) {
                     try {
                         const result = await measureDownloadSpeed(downloadTests[i], (currentSpeed) => {
-                            // Update display in real-time as data is received
-                            speedDisplay.textContent = currentSpeed;
+                            // Update display with smooth animation
+                            updateSpeedDisplay(currentSpeed);
                         });
                         if (result > 0.01) {
                             downloadResults.push(result);
                             const currentSpeed = Math.round(Math.max(...downloadResults) * 10) / 10;
-                            speedDisplay.textContent = currentSpeed;
+                            updateSpeedDisplay(currentSpeed);
                         }
                     } catch (e) {
                         console.error('Download test failed:', e);
@@ -338,7 +385,7 @@
                 
                 if (downloadResults.length > 0) {
                     downloadSpeed = Math.round(Math.max(...downloadResults) * 10) / 10;
-                    speedDisplay.textContent = downloadSpeed;
+                    updateSpeedDisplay(downloadSpeed);
                 } else {
                     // Fallback: typical 4G connection speed when measurements fail
                     downloadSpeed = 25;
@@ -372,6 +419,18 @@
                 }
                 
                 document.getElementById('uploadSpeed').textContent = uploadSpeed + ' Mbps';
+                
+                // Wait for animation to complete before showing final state
+                await new Promise(resolve => {
+                    const checkAnimation = () => {
+                        if (Math.abs(targetSpeed - currentDisplaySpeed) < 0.1) {
+                            resolve();
+                        } else {
+                            setTimeout(checkAnimation, 50);
+                        }
+                    };
+                    checkAnimation();
+                });
                 
                 // Complete
                 loadingFill.style.width = '100%';
