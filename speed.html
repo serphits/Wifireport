@@ -15,7 +15,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internet Speed Test - WiFi.Report</title>
-    <meta name="description" content="Test your internet speed instantly. Fast and accurate download speed measurement similar to fast.com. Share your results on Twitter.">
+    <meta name="description" content="Test your internet speed instantly. Fast and accurate download speed measurement similar to fast.com. Share your results on X.">
     <meta name="keywords" content="speed test, internet speed, download speed, fast.com, bandwidth test, connection speed">
     <meta name="author" content="WiFi.Report">
     <meta name="robots" content="index, follow">
@@ -67,7 +67,7 @@
         .speed-display {
             font-family: 'Space Mono', monospace;
             font-size: 12rem;
-            font-weight: 900;
+            font-weight: 950;
             line-height: 1;
             color: #000000;
             margin: 0;
@@ -252,11 +252,11 @@
         
         <div class="action-buttons">
             <button id="startTest" class="btn">Start Test</button>
-            <button id="shareTwitter" class="btn btn-secondary" style="display: none;">
+            <button id="shareX" class="btn btn-secondary" style="display: none;">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
-                Share on Twitter
+                Share on X
             </button>
         </div>
         
@@ -284,7 +284,7 @@
         let latency = 0;
         
         document.getElementById('startTest').addEventListener('click', startSpeedTest);
-        document.getElementById('shareTwitter').addEventListener('click', shareOnTwitter);
+        document.getElementById('shareX').addEventListener('click', shareOnX);
         
         async function startSpeedTest() {
             if (testRunning) return;
@@ -295,7 +295,7 @@
             const speedStatus = document.getElementById('speedStatus');
             const loadingBar = document.getElementById('loadingBar');
             const loadingFill = document.getElementById('loadingFill');
-            const shareBtn = document.getElementById('shareTwitter');
+            const shareBtn = document.getElementById('shareX');
             const additionalMetrics = document.getElementById('additionalMetrics');
             
             startBtn.textContent = 'Testing...';
@@ -322,7 +322,10 @@
                 
                 for (let i = 0; i < downloadTests.length; i++) {
                     try {
-                        const result = await measureDownloadSpeed(downloadTests[i]);
+                        const result = await measureDownloadSpeed(downloadTests[i], (currentSpeed) => {
+                            // Update display in real-time as data is received
+                            speedDisplay.textContent = currentSpeed;
+                        });
                         if (result > 0.01) {
                             downloadResults.push(result);
                             const currentSpeed = Math.round(Math.max(...downloadResults) * 10) / 10;
@@ -380,7 +383,7 @@
                 
                 setTimeout(() => {
                     loadingBar.style.display = 'none';
-                    startBtn.textContent = 'Test Again';
+                    startBtn.textContent = 'Start Test';
                     startBtn.disabled = false;
                     testRunning = false;
                 }, 500);
@@ -427,7 +430,7 @@
 
         }
         
-        async function measureDownloadSpeed(bytes) {
+        async function measureDownloadSpeed(bytes, onProgress) {
             const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&r=${Math.random()}`;
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 20000);
@@ -449,6 +452,15 @@
                             const { done, value } = await reader.read();
                             if (done) break;
                             received += value.length;
+                            
+                            // Update speed display in real-time
+                            if (onProgress) {
+                                const elapsed = (performance.now() - start) / 1000;
+                                if (elapsed > 0.1) { // Only update after 100ms to avoid division by very small numbers
+                                    const currentSpeed = Math.round((received * 8) / elapsed / 1e6 * 10) / 10;
+                                    onProgress(currentSpeed);
+                                }
+                            }
                         }
                     } finally {
                         reader.releaseLock();
@@ -506,11 +518,11 @@
             }
         }
         
-        function shareOnTwitter() {
+        function shareOnX() {
             const text = `My internet speed: ${downloadSpeed} Mbps download, ${uploadSpeed} Mbps upload, ${latency}ms latency. Test yours at`;
             const url = 'https://wifi.report/speed.html';
-            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-            window.open(twitterUrl, '_blank', 'width=550,height=420');
+            const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            window.open(xUrl, '_blank', 'width=550,height=420');
         }
     </script>
 </body>
