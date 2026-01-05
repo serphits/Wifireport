@@ -279,6 +279,7 @@
     <script src="script.js"></script>
     <script>
         let testRunning = false;
+        let testCompleted = false; // Track if test has been completed
         let downloadSpeed = 0;
         let uploadSpeed = 0;
         let latency = 0;
@@ -312,8 +313,8 @@
         // Update target speed with throttling
         function updateSpeedDisplay(newSpeed) {
             const now = performance.now();
-            // Throttle updates to every 200ms for smoother, more deliberate animation
-            if (now - lastUpdateTime < 200) {
+            // Throttle updates to every 500ms for smoother, more deliberate animation
+            if (now - lastUpdateTime < 500) {
                 return;
             }
             lastUpdateTime = now;
@@ -326,6 +327,13 @@
         
         async function startSpeedTest() {
             if (testRunning) return;
+            
+            // Prevent retesting without page refresh
+            if (testCompleted) {
+                const speedStatus = document.getElementById('speedStatus');
+                speedStatus.textContent = 'Refresh page to test again';
+                return;
+            }
             
             testRunning = true;
             const startBtn = document.getElementById('startTest');
@@ -364,7 +372,8 @@
                 speedStatus.textContent = 'Testing download speed...';
                 loadingFill.style.width = '50%';
                 
-                const downloadTests = [1000000, 2000000, 5000000]; // 1MB, 2MB, 5MB
+                // Use progressively larger files for more accurate measurements
+                const downloadTests = [2000000, 5000000, 10000000]; // 2MB, 5MB, 10MB
                 const downloadResults = [];
                 
                 for (let i = 0; i < downloadTests.length; i++) {
@@ -375,7 +384,11 @@
                         });
                         if (result > 0.01) {
                             downloadResults.push(result);
-                            const currentSpeed = Math.round(Math.max(...downloadResults) * 10) / 10;
+                            // Use weighted average favoring larger tests for better accuracy
+                            const weights = downloadResults.map((_, idx) => idx + 1);
+                            const weightedSum = downloadResults.reduce((sum, speed, idx) => sum + speed * weights[idx], 0);
+                            const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+                            const currentSpeed = Math.round((weightedSum / totalWeight) * 10) / 10;
                             updateSpeedDisplay(currentSpeed);
                         }
                     } catch (e) {
@@ -384,7 +397,11 @@
                 }
                 
                 if (downloadResults.length > 0) {
-                    downloadSpeed = Math.round(Math.max(...downloadResults) * 10) / 10;
+                    // Use weighted average with larger tests weighted more heavily
+                    const weights = downloadResults.map((_, idx) => idx + 1);
+                    const weightedSum = downloadResults.reduce((sum, speed, idx) => sum + speed * weights[idx], 0);
+                    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+                    downloadSpeed = Math.round((weightedSum / totalWeight) * 10) / 10;
                     updateSpeedDisplay(downloadSpeed);
                 } else {
                     // Fallback: typical 4G connection speed when measurements fail
@@ -396,7 +413,8 @@
                 speedStatus.textContent = 'Testing upload speed...';
                 loadingFill.style.width = '80%';
                 
-                const uploadTests = [500000, 1000000]; // 500KB, 1MB
+                // Use larger files for upload testing too
+                const uploadTests = [1000000, 2000000]; // 1MB, 2MB
                 const uploadResults = [];
                 
                 for (let i = 0; i < uploadTests.length; i++) {
@@ -411,7 +429,11 @@
                 }
                 
                 if (uploadResults.length > 0) {
-                    uploadSpeed = Math.round(Math.max(...uploadResults) * 10) / 10;
+                    // Use weighted average favoring larger tests
+                    const weights = uploadResults.map((_, idx) => idx + 1);
+                    const weightedSum = uploadResults.reduce((sum, speed, idx) => sum + speed * weights[idx], 0);
+                    const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+                    uploadSpeed = Math.round((weightedSum / totalWeight) * 10) / 10;
                 } else {
                     // Fallback: typical upload is ~20% of download for asymmetric connections
                     const UPLOAD_TO_DOWNLOAD_RATIO = 0.2;
@@ -440,10 +462,16 @@
                 additionalMetrics.classList.add('visible');
                 shareBtn.style.display = 'inline-flex';
                 
+                // Mark test as completed and disable further tests
+                testCompleted = true;
+                
                 setTimeout(() => {
                     loadingBar.style.display = 'none';
-                    startBtn.textContent = 'Start Test';
-                    startBtn.disabled = false;
+                    startBtn.textContent = 'Test Complete';
+                    startBtn.disabled = true;
+                    startBtn.style.opacity = '0.5';
+                    startBtn.style.cursor = 'not-allowed';
+                    speedStatus.textContent = 'Refresh page to test again';
                     testRunning = false;
                 }, 500);
                 
@@ -466,7 +494,11 @@
                     const start = performance.now();
                     await fetch(url, {
                         method: 'HEAD',
-                        cache: 'no-store'
+                        cache: 'no-store',
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache'
+                        }
                     });
                     const latency = performance.now() - start;
                     if (latency > 0 && latency < 5000) {
@@ -490,7 +522,9 @@
         }
         
         async function measureDownloadSpeed(bytes, onProgress) {
-            const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&r=${Math.random()}`;
+            // Use timestamp instead of random to ensure consistent URLs per session while avoiding cache
+            const timestamp = Date.now();
+            const url = `https://speed.cloudflare.com/__down?bytes=${bytes}&t=${timestamp}`;
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 20000);
             
@@ -498,7 +532,11 @@
                 const start = performance.now();
                 const response = await fetch(url, {
                     cache: 'no-store',
-                    signal: controller.signal
+                    signal: controller.signal,
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    }
                 });
                 
                 if (!response.ok) return 0;
@@ -541,7 +579,9 @@
         }
         
         async function measureUploadSpeed(bytes) {
-            const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&r=${Math.random()}`;
+            // Use timestamp instead of random to ensure consistent URLs per session while avoiding cache
+            const timestamp = Date.now();
+            const url = `https://speed.cloudflare.com/__up?bytes=${bytes}&t=${timestamp}`;
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 20000);
             
@@ -560,7 +600,11 @@
                     method: 'POST',
                     body: data,
                     cache: 'no-store',
-                    signal: controller.signal
+                    signal: controller.signal,
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    }
                 });
                 
                 if (!response.ok) return 0;
