@@ -287,6 +287,7 @@
         let currentDisplaySpeed = 0;
         let targetSpeed = 0;
         let animationFrame = null;
+        let isEstimated = false; // Track if speed is estimated
         
         document.getElementById('startTest').addEventListener('click', startSpeedTest);
         document.getElementById('shareX').addEventListener('click', shareOnX);
@@ -298,7 +299,7 @@
             
             if (Math.abs(diff) < 0.1) {
                 currentDisplaySpeed = targetSpeed;
-                speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10;
+                speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10 + (isEstimated ? '*' : '');
                 animationFrame = null;
                 return;
             }
@@ -306,7 +307,7 @@
             // Smoothly approach target speed with slower easing for more gradual animation
             // Reduced from 0.15 to 0.08 to make speed increases feel more realistic
             currentDisplaySpeed += diff * 0.08;
-            speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10;
+            speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10 + (isEstimated ? '*' : '');
             
             animationFrame = requestAnimationFrame(animateSpeedDisplay);
         }
@@ -349,6 +350,7 @@
             currentDisplaySpeed = 0;
             targetSpeed = 0;
             lastUpdateTime = 0;
+            isEstimated = false; // Reset estimated flag
             if (animationFrame) {
                 cancelAnimationFrame(animationFrame);
                 animationFrame = null;
@@ -408,6 +410,7 @@
                     // Fallback: Simulate a realistic speed test progression when measurements fail
                     // This provides better UX by showing gradual speed increases like fast.com
                     speedStatus.textContent = 'Estimating download speed...';
+                    isEstimated = true; // Mark as estimated
                     
                     // Simulate progressive speed measurement with realistic delays
                     const simulatedSpeeds = [5, 10, 15, 20, 25];
@@ -431,9 +434,6 @@
                         };
                         checkAnimation();
                     });
-                    
-                    // Mark as estimated
-                    speedDisplay.textContent = downloadSpeed + '*';
                 }
                 
                 // Test upload speed
