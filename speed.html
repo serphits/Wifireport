@@ -278,6 +278,15 @@
     
     <script src="script.js"></script>
     <script>
+        // Configuration constants for speed test animation
+        const ANIMATION_EASING_FACTOR = 0.08; // Lower value = slower, more gradual animation
+        const ANIMATION_THROTTLE_MS = 100; // Minimum time between display updates
+        const ANIMATION_COMPLETION_TOLERANCE = 0.5; // Tolerance for considering animation complete
+        const ANIMATION_CHECK_INTERVAL_MS = 100; // How often to check if animation is complete
+        const PROGRESS_CALLBACK_INTERVAL_MS = 50; // Frequency of progress callbacks during measurement
+        const SIMULATED_SPEED_STEPS = [5, 10, 15, 20, 25]; // Progressive speed values when estimating
+        const SIMULATION_DELAY_MS = 800; // Delay between simulated speed steps
+        
         let testRunning = false;
         let testCompleted = false; // Track if test has been completed
         let downloadSpeed = 0;
@@ -304,19 +313,18 @@
                 return;
             }
             
-            // Smoothly approach target speed with slower easing for more gradual animation
-            // Reduced from 0.15 to 0.08 to make speed increases feel more realistic
-            currentDisplaySpeed += diff * 0.08;
+            // Smoothly approach target speed with easing
+            currentDisplaySpeed += diff * ANIMATION_EASING_FACTOR;
             speedDisplay.textContent = Math.round(currentDisplaySpeed * 10) / 10 + (isEstimated ? '*' : '');
             
             animationFrame = requestAnimationFrame(animateSpeedDisplay);
         }
         
-        // Update target speed with less aggressive throttling
+        // Update target speed with throttling
         function updateSpeedDisplay(newSpeed) {
             const now = performance.now();
-            // Reduced throttling from 500ms to 100ms for smoother, more responsive animation
-            if (now - lastUpdateTime < 100) {
+            // Throttle updates for smoother, more deliberate animation
+            if (now - lastUpdateTime < ANIMATION_THROTTLE_MS) {
                 return;
             }
             lastUpdateTime = now;
@@ -412,24 +420,23 @@
                     speedStatus.textContent = 'Estimating download speed...';
                     isEstimated = true; // Mark as estimated
                     
-                    // Simulate progressive speed measurement with realistic delays
-                    const simulatedSpeeds = [5, 10, 15, 20, 25];
-                    for (let i = 0; i < simulatedSpeeds.length; i++) {
-                        updateSpeedDisplay(simulatedSpeeds[i]);
-                        await new Promise(resolve => setTimeout(resolve, 800)); // 800ms between updates
+                    // Simulate progressive speed measurement with configurable steps and delays
+                    for (let i = 0; i < SIMULATED_SPEED_STEPS.length; i++) {
+                        updateSpeedDisplay(SIMULATED_SPEED_STEPS[i]);
+                        await new Promise(resolve => setTimeout(resolve, SIMULATION_DELAY_MS));
                     }
                     
-                    // Set final fallback speed
-                    downloadSpeed = 25;
+                    // Set final fallback speed (last step in simulation)
+                    downloadSpeed = SIMULATED_SPEED_STEPS[SIMULATED_SPEED_STEPS.length - 1];
                     updateSpeedDisplay(downloadSpeed);
                     
                     // Wait for animation to reach target before continuing
                     await new Promise(resolve => {
                         const checkAnimation = () => {
-                            if (Math.abs(targetSpeed - currentDisplaySpeed) < 0.5) {
+                            if (Math.abs(targetSpeed - currentDisplaySpeed) < ANIMATION_COMPLETION_TOLERANCE) {
                                 resolve();
                             } else {
-                                setTimeout(checkAnimation, 100);
+                                setTimeout(checkAnimation, ANIMATION_CHECK_INTERVAL_MS);
                             }
                         };
                         checkAnimation();
@@ -582,8 +589,8 @@
                             if (onProgress) {
                                 const elapsed = (performance.now() - start) / 1000;
                                 const now = performance.now();
-                                // Call progress callback every 50ms for smooth animation (reduced from implicit behavior)
-                                if (elapsed > 0.1 && (now - lastProgressUpdate) >= 50) {
+                                // Call progress callback at configured interval for smooth animation
+                                if (elapsed > 0.1 && (now - lastProgressUpdate) >= PROGRESS_CALLBACK_INTERVAL_MS) {
                                     const currentSpeed = Math.round((received * 8) / elapsed / 1e6 * 10) / 10;
                                     onProgress(currentSpeed);
                                     lastProgressUpdate = now;
