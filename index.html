@@ -171,7 +171,7 @@
                             <path d="M3 17V3H7V17H3ZM9 17V9H13V17H9ZM15 17V5H19V17H15Z" fill="currentColor"/>
                         </svg>
                     </div>
-                    <span>Measuring stability & latency</span>
+                    <span>Measuring connection stability</span>
                 </li>
                 <li class="step" data-step="privacy">
                     <div class="step-icon">
@@ -331,12 +331,12 @@
                     </div>
                     <div class="metric-card">
                         <div class="metric-icon">📡</div>
-                        <span class="metric-label">Latency</span>
+                        <span class="metric-label">Response Time</span>
                         <span class="metric-value" id="latencyMetric">- ms</span>
                     </div>
                     <div class="metric-card">
                         <div class="metric-icon">📊</div>
-                        <span class="metric-label">Jitter</span>
+                        <span class="metric-label">Variation</span>
                         <span class="metric-value" id="jitterMetric">- ms</span>
                     </div>
                 </div>
@@ -372,9 +372,9 @@
                         </div>
                     </div>
                     <div class="help-item">
-                        <strong>Latency (Ping):</strong> The time it takes for data to travel to a server and back. Lower is better, especially for gaming and video calls. Good: &lt;50ms, Fair: 50-100ms, Poor: &gt;100ms.
+                        <strong>Response Time (Latency):</strong> The time it takes for data to travel to a server and back. Lower is better, especially for gaming and video calls. Good: &lt;50ms, Fair: 50-100ms, Poor: &gt;100ms.
                         <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
-                            <strong>Common Causes of High Latency:</strong>
+                            <strong>Common Causes of Slow Response Time:</strong>
                             <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
                                 <li>Using WiFi instead of wired connection</li>
                                 <li>Geographic distance from the server</li>
@@ -385,9 +385,9 @@
                         </div>
                     </div>
                     <div class="help-item">
-                        <strong>Jitter:</strong> Variation in latency over time. Lower is better for stable connections. Good: &lt;10ms, Fair: 10-30ms, Poor: &gt;30ms. High jitter causes stuttering in calls and games.
+                        <strong>Signal Variation (Jitter):</strong> How much your connection speed varies over time. Lower is better for stable connections. Good: &lt;10ms, Fair: 10-30ms, Poor: &gt;30ms. High variation causes stuttering in calls and games.
                         <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
-                            <strong>Common Causes of High Jitter:</strong>
+                            <strong>Common Causes of Connection Variation:</strong>
                             <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
                                 <li>WiFi signal fluctuations or interference</li>
                                 <li>Network congestion from multiple devices</li>
@@ -402,7 +402,7 @@
                         <div style="margin-top: 8px; padding-left: 12px; border-left: 3px solid #00E5FF;">
                             <strong>Common Causes of Low Security:</strong>
                             <ul style="margin-top: 4px; padding-left: 20px; list-style-type: disc;">
-                                <li>Not using HTTPS when accessing websites</li>
+                                <li>Using HTTP instead of HTTPS for the current site</li>
                                 <li>Outdated browser or security settings</li>
                                 <li>Public WiFi without VPN protection</li>
                                 <li>Weak or no encryption on router (WEP/open network)</li>
