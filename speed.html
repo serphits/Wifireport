@@ -54,36 +54,36 @@
     </script>
     
     <style>
-        /* Space Theme Variables */
+        /* Starlink-inspired Theme Variables */
         :root {
-            --space-black: #0a0a0a;
-            --space-dark: #1a1a1a;
-            --space-gray: #2a2a2a;
-            --electric-blue: #00d9ff;
-            --neon-cyan: #00ffff;
+            --starlink-black: #000000;
+            --starlink-dark: #0d0d0d;
+            --starlink-gray: #1a1a1a;
+            --starlink-blue: #0070d2;
+            --starlink-light-blue: #00a8ff;
             --bright-white: #ffffff;
-            --dim-white: #e0e0e0;
-            --glow-blue: rgba(0, 217, 255, 0.5);
+            --dim-white: #b8b8b8;
+            --glow-blue: rgba(0, 168, 255, 0.3);
         }
         
         body {
-            background: var(--space-black);
+            background: var(--starlink-black);
             color: var(--bright-white);
         }
         
         .speed-container {
-            min-height: 80vh;
+            min-height: 85vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            background: linear-gradient(180deg, #0a0a0a 0%, #000000 50%, #0a0a0a 100%);
+            padding: 3rem 2rem;
+            background: var(--starlink-black);
             position: relative;
             overflow: hidden;
         }
         
-        /* Starfield effect */
+        /* Subtle starfield effect - more minimal for Starlink style */
         .speed-container::before {
             content: '';
             position: absolute;
@@ -92,62 +92,50 @@
             right: 0;
             bottom: 0;
             background-image: 
-                radial-gradient(2px 2px at 20% 30%, white, transparent),
-                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 20% 30%, white, transparent),
+                radial-gradient(1px 1px at 60% 70%, white, transparent),
                 radial-gradient(1px 1px at 50% 50%, white, transparent),
                 radial-gradient(1px 1px at 80% 10%, white, transparent),
-                radial-gradient(2px 2px at 90% 60%, white, transparent),
-                radial-gradient(1px 1px at 33% 80%, white, transparent),
-                radial-gradient(1px 1px at 15% 60%, white, transparent);
-            background-size: 200% 200%;
+                radial-gradient(1px 1px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent);
+            background-size: 100% 100%;
             background-position: 0% 0%;
-            opacity: 0.3;
+            opacity: 0.15;
             pointer-events: none;
-            animation: twinkle 200s linear infinite;
-        }
-        
-        @keyframes twinkle {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 100% 100%; }
         }
         
         .speed-display {
-            font-family: 'Space Mono', monospace;
-            font-size: 12rem;
-            font-weight: 950;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 10rem;
+            font-weight: 300;
             line-height: 1;
-            color: var(--electric-blue);
+            color: var(--bright-white);
             margin: 0;
             padding: 0;
             text-align: center;
-            letter-spacing: -0.05em;
-            text-shadow: 
-                0 0 20px var(--glow-blue),
-                0 0 40px var(--glow-blue),
-                0 0 60px var(--glow-blue);
+            letter-spacing: -0.02em;
             position: relative;
             z-index: 1;
         }
         
         .speed-unit {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 2rem;
+            font-weight: 400;
             color: var(--dim-white);
-            margin-top: 1rem;
+            margin-top: 0.5rem;
             text-align: center;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.05em;
         }
         
         .speed-status {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--neon-cyan);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--dim-white);
             margin-top: 2rem;
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.02em;
         }
         
         .action-buttons {
@@ -161,17 +149,16 @@
         }
         
         .btn {
-            padding: 1rem 2rem;
-            font-family: 'Space Mono', monospace;
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            border: 2px solid var(--electric-blue);
-            background: transparent;
-            color: var(--electric-blue);
+            padding: 0.875rem 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--starlink-blue);
+            color: var(--bright-white);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -180,53 +167,30 @@
             overflow: hidden;
         }
         
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--electric-blue);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
-        
-        .btn:hover::before {
-            left: 0;
-        }
-        
         .btn:hover {
-            color: var(--space-black);
-            box-shadow: 
-                0 0 20px var(--glow-blue),
-                0 0 40px var(--glow-blue);
-            transform: translateY(-2px);
+            background: var(--starlink-light-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 112, 210, 0.3);
         }
         
         .btn-secondary {
             background: transparent;
-            color: var(--dim-white);
-            border-color: var(--dim-white);
-        }
-        
-        .btn-secondary::before {
-            background: var(--dim-white);
+            color: var(--bright-white);
+            border: 1px solid var(--dim-white);
         }
         
         .btn-secondary:hover {
-            color: var(--space-black);
-            box-shadow: 
-                0 0 20px rgba(255, 255, 255, 0.3),
-                0 0 40px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--bright-white);
+            box-shadow: none;
         }
         
         .loading-bar {
-            width: 300px;
-            height: 4px;
-            background: var(--space-gray);
+            width: 400px;
+            height: 3px;
+            background: var(--starlink-gray);
             margin-top: 2rem;
-            border: 1px solid var(--electric-blue);
+            border-radius: 2px;
             overflow: hidden;
             position: relative;
             z-index: 1;
@@ -234,14 +198,14 @@
         
         .loading-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--electric-blue), var(--neon-cyan));
+            background: var(--starlink-blue);
             width: 0%;
             transition: width 0.3s ease;
-            box-shadow: 0 0 10px var(--glow-blue);
+            border-radius: 2px;
         }
         
         .additional-metrics {
-            margin-top: 3rem;
+            margin-top: 4rem;
             text-align: center;
             opacity: 0;
             transition: opacity 0.5s ease;
@@ -256,63 +220,39 @@
         .metric-row {
             display: flex;
             justify-content: center;
-            gap: 3rem;
+            gap: 2rem;
             margin-top: 1rem;
             flex-wrap: wrap;
         }
         
         .metric-item {
             text-align: center;
-            padding: 1.5rem;
-            background: rgba(26, 26, 26, 0.6);
-            border: 1px solid var(--electric-blue);
-            border-radius: 8px;
-            min-width: 150px;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            min-width: 140px;
             backdrop-filter: blur(10px);
         }
         
         .metric-label {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             font-size: 0.875rem;
-            color: var(--neon-cyan);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
+            color: var(--dim-white);
+            font-weight: 500;
             margin-bottom: 0.5rem;
         }
         
         .metric-value {
-            font-family: 'Space Mono', monospace;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--electric-blue);
-            text-shadow: 0 0 10px var(--glow-blue);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 1.75rem;
+            font-weight: 300;
+            color: var(--bright-white);
         }
         
         @media (max-width: 768px) {
             .speed-display {
                 font-size: 6rem;
-            }
-            
-            .speed-unit {
-                font-size: 2rem;
-            }
-            
-            .speed-status {
-                font-size: 1.2rem;
-            }
-            
-            .metric-value {
-                font-size: 1.5rem;
-            }
-            
-            .loading-bar {
-                width: 200px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .speed-display {
-                font-size: 4rem;
             }
             
             .speed-unit {
@@ -323,74 +263,101 @@
                 font-size: 1rem;
             }
             
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .loading-bar {
+                width: 280px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .speed-display {
+                font-size: 4rem;
+            }
+            
+            .speed-unit {
+                font-size: 1.25rem;
+            }
+            
+            .speed-status {
+                font-size: 0.875rem;
+            }
+            
             .metric-row {
-                gap: 1.5rem;
+                gap: 1rem;
             }
             
             .metric-value {
                 font-size: 1.25rem;
             }
+            
+            .loading-bar {
+                width: 240px;
+            }
         }
         
-        /* Space-themed Header Override */
+        /* Starlink-themed Header Override */
         .navbar {
-            background: var(--space-black) !important;
-            border-bottom: 1px solid var(--electric-blue) !important;
-            box-shadow: 0 0 20px var(--glow-blue) !important;
+            background: var(--starlink-black) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: none !important;
         }
         
         .logo {
-            color: var(--electric-blue) !important;
-            text-shadow: 0 0 10px var(--glow-blue);
+            color: var(--bright-white) !important;
+            text-shadow: none;
         }
         
         .logo svg path,
         .logo svg rect,
         .logo svg circle {
-            fill: var(--electric-blue) !important;
+            fill: var(--bright-white) !important;
         }
         
         .nav-links a {
             color: var(--dim-white) !important;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         
         .nav-links a:hover {
-            color: var(--electric-blue) !important;
-            text-shadow: 0 0 10px var(--glow-blue);
+            color: var(--bright-white) !important;
+            text-shadow: none;
         }
         
         .nav-links a::after {
-            background: var(--electric-blue) !important;
-            box-shadow: 0 0 10px var(--glow-blue);
+            background: var(--starlink-blue) !important;
+            box-shadow: none;
         }
         
         .nav-links a.nav-extension {
-            background: var(--electric-blue) !important;
-            color: var(--space-black) !important;
-            border: 2px solid var(--electric-blue) !important;
-            box-shadow: 0 0 10px var(--glow-blue);
+            background: var(--starlink-blue) !important;
+            color: var(--bright-white) !important;
+            border: none !important;
+            box-shadow: none;
+            border-radius: 6px;
         }
         
         .nav-links a.nav-extension:hover {
-            background: transparent !important;
-            color: var(--electric-blue) !important;
-            box-shadow: 0 0 20px var(--glow-blue) !important;
+            background: var(--starlink-light-blue) !important;
+            color: var(--bright-white) !important;
+            box-shadow: none !important;
         }
         
-        /* Space-themed Footer Override */
+        /* Starlink-themed Footer Override */
         .footer {
-            background: var(--space-black) !important;
-            border-top: 1px solid var(--electric-blue) !important;
+            background: var(--starlink-black) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
         
         .footer .logo {
-            color: var(--electric-blue) !important;
+            color: var(--bright-white) !important;
         }
         
         .footer .logo svg path,
         .footer .logo svg rect {
-            fill: var(--electric-blue) !important;
+            fill: var(--bright-white) !important;
         }
         
         .footer-description {
@@ -398,7 +365,7 @@
         }
         
         .footer-links h4 {
-            color: var(--electric-blue) !important;
+            color: var(--bright-white) !important;
         }
         
         .footer-links a {
@@ -406,12 +373,12 @@
         }
         
         .footer-links a:hover {
-            color: var(--electric-blue) !important;
-            text-shadow: 0 0 5px var(--glow-blue);
+            color: var(--bright-white) !important;
+            text-shadow: none;
         }
         
         .footer-bottom {
-            border-top: 1px solid var(--space-gray) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
         
         .footer-bottom p {
