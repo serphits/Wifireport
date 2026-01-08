@@ -401,7 +401,7 @@
     <!-- Navigation will be injected by script.js -->
     
     <div class="speed-container">
-        <!-- Animated face made of 200 squares -->
+        <!-- Animated 32x32 pixel-grid face with digital scan effect -->
         <div id="animatedFace"></div>
         <div id="speedDisplay" class="speed-display">—</div>
         <div id="speedUnit" class="speed-unit">Mbps</div>
@@ -837,13 +837,19 @@
             
             // Grid configuration
             const GRID_SIZE = 32;
-            const TOTAL_PIXELS = GRID_SIZE * GRID_SIZE; // 1024 pixels
             
             // Digital scan effect configuration
             const SCAN_SPEED = 0.03; // Speed of scan line movement
             const SCAN_HEIGHT = 3; // Height of the bright scan line in rows
             const SCAN_BRIGHTNESS = 0.9; // Maximum brightness of scan line
             const BASE_BRIGHTNESS = 0.15; // Base brightness for face pixels
+            
+            // Eye positions for "looking around" effect
+            const LEFT_EYE_X = 12;
+            const LEFT_EYE_Y = 13;
+            const RIGHT_EYE_X = 20;
+            const RIGHT_EYE_Y = 13;
+            const EYE_RADIUS = 2;
             
             // Mouse tracking for "looking around" effect
             let mouseX = window.innerWidth / 2;
@@ -855,11 +861,7 @@
             // Scan line position (0 to GRID_SIZE)
             let scanLineY = 0;
             
-            // Define a simple face pattern (1 = face pixel, 0 = background)
-            // This creates a basic portrait-like face
-            const facePattern = [];
-            
-            // Create 32x32 grid elements and face pattern
+            // Create 32x32 grid elements
             const pixels = [];
             for (let row = 0; row < GRID_SIZE; row++) {
                 for (let col = 0; col < GRID_SIZE; col++) {
@@ -869,7 +871,6 @@
                     
                     // Determine if this pixel is part of the face
                     const isFace = isPartOfFace(row, col);
-                    facePattern.push(isFace);
                     
                     pixels.push({
                         element: pixel,
@@ -896,14 +897,8 @@
                 const headDist = Math.sqrt((dx / headWidth) ** 2 + (dy / headHeight) ** 2);
                 
                 // Eyes (two circular regions)
-                const leftEyeX = 12;
-                const leftEyeY = 13;
-                const rightEyeX = 20;
-                const rightEyeY = 13;
-                const eyeRadius = 2;
-                
-                const leftEyeDist = Math.sqrt((col - leftEyeX) ** 2 + (row - leftEyeY) ** 2);
-                const rightEyeDist = Math.sqrt((col - rightEyeX) ** 2 + (row - rightEyeY) ** 2);
+                const leftEyeDist = Math.sqrt((col - LEFT_EYE_X) ** 2 + (row - LEFT_EYE_Y) ** 2);
+                const rightEyeDist = Math.sqrt((col - RIGHT_EYE_X) ** 2 + (row - RIGHT_EYE_Y) ** 2);
                 
                 // Nose (small vertical line)
                 const isNose = col >= 15 && col <= 17 && row >= 17 && row <= 20;
@@ -917,8 +912,8 @@
                 
                 // Combine features
                 const isHead = headDist <= 1.0;
-                const isLeftEye = leftEyeDist <= eyeRadius;
-                const isRightEye = rightEyeDist <= eyeRadius;
+                const isLeftEye = leftEyeDist <= EYE_RADIUS;
+                const isRightEye = rightEyeDist <= EYE_RADIUS;
                 
                 return isHead || isLeftEye || isRightEye || isNose || isMouth;
             }
@@ -959,8 +954,8 @@
                     const eyeShiftY = Math.round(normMouseY * 2);
                     
                     // Check if this pixel should be "eyes" that move
-                    const isLeftEye = isEyePixel(pixel.row - eyeShiftY, pixel.col - eyeShiftX, 13, 12);
-                    const isRightEye = isEyePixel(pixel.row - eyeShiftY, pixel.col - eyeShiftX, 13, 20);
+                    const isLeftEye = isEyePixel(pixel.row - eyeShiftY, pixel.col - eyeShiftX, LEFT_EYE_Y, LEFT_EYE_X);
+                    const isRightEye = isEyePixel(pixel.row - eyeShiftY, pixel.col - eyeShiftX, RIGHT_EYE_Y, RIGHT_EYE_X);
                     
                     // Base opacity for face pixels
                     let opacity = BASE_BRIGHTNESS;
@@ -985,9 +980,8 @@
             
             // Helper function to check if a pixel is part of an eye
             function isEyePixel(row, col, eyeY, eyeX) {
-                const eyeRadius = 2;
                 const dist = Math.sqrt((col - eyeX) ** 2 + (row - eyeY) ** 2);
-                return dist <= eyeRadius;
+                return dist <= EYE_RADIUS;
             }
             
             // Event listeners
