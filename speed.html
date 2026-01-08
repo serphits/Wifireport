@@ -83,7 +83,7 @@
             overflow: hidden;
         }
         
-        /* Animated face background */
+        /* Animated face background - Interactive face animation with 200 squares */
         #animatedFace {
             position: absolute;
             top: 0;
@@ -957,10 +957,9 @@
                     sq.element.style.top = finalY + '%';
                     
                     // Pulse opacity based on position and time
-                    const distanceFromMouse = Math.sqrt(
-                        Math.pow((finalX - normMouseX * 50 - 50), 2) + 
-                        Math.pow((finalY - normMouseY * 50 - 50), 2)
-                    );
+                    const dx = finalX - normMouseX * 50 - 50;
+                    const dy = finalY - normMouseY * 50 - 50;
+                    const distanceFromMouse = Math.sqrt(dx * dx + dy * dy);
                     const pulseOpacity = 0.2 + Math.sin(time * 2 + sq.phase) * 0.15;
                     const proximityOpacity = Math.max(0.2, 1 - distanceFromMouse / 80);
                     sq.element.style.opacity = Math.min(pulseOpacity + proximityOpacity * 0.5, 0.9);
