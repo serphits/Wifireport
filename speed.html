@@ -820,7 +820,14 @@
             const faceContainer = document.getElementById('animatedFace');
             if (!faceContainer) return;
             
+            // Animation constants
             const NUM_SQUARES = 200;
+            const MIN_SQUARE_SIZE = 3;
+            const SIZE_VARIATION = 8;
+            const CLICK_RADIUS = 30;
+            const FLASH_DURATION_MS = 200;
+            const MOUSE_LERP_FACTOR = 0.05;
+            
             const squares = [];
             let mouseX = window.innerWidth / 2;
             let mouseY = window.innerHeight / 2;
@@ -833,7 +840,7 @@
                 square.className = 'face-square';
                 
                 // Vary square sizes for visual interest
-                const size = 3 + Math.random() * 8;
+                const size = MIN_SQUARE_SIZE + Math.random() * SIZE_VARIATION;
                 square.style.width = size + 'px';
                 square.style.height = size + 'px';
                 
@@ -872,9 +879,9 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
                     // Scatter effect
-                    if (distance < 30) {
+                    if (distance < CLICK_RADIUS) {
                         const angle = Math.atan2(dy, dx);
-                        const pushDistance = (30 - distance) * 2;
+                        const pushDistance = (CLICK_RADIUS - distance) * 2;
                         sq.baseX += Math.cos(angle) * pushDistance;
                         sq.baseY += Math.sin(angle) * pushDistance;
                         
@@ -886,7 +893,7 @@
                         sq.element.style.opacity = '1';
                         setTimeout(() => {
                             sq.element.style.opacity = 0.3 + Math.random() * 0.5;
-                        }, 200);
+                        }, FLASH_DURATION_MS);
                     }
                 });
             }
@@ -894,8 +901,8 @@
             // Animation loop - creates "face looking around" effect
             function animate() {
                 // Smooth mouse position interpolation
-                mouseX += (targetMouseX - mouseX) * 0.05;
-                mouseY += (targetMouseY - mouseY) * 0.05;
+                mouseX += (targetMouseX - mouseX) * MOUSE_LERP_FACTOR;
+                mouseY += (targetMouseY - mouseY) * MOUSE_LERP_FACTOR;
                 
                 const time = Date.now() * 0.001;
                 
