@@ -880,6 +880,12 @@
             let rotationVelocity = { x: 0.002, y: 0.001 }; // Auto-rotation speed
             let lastTouchDistance = 0; // For pinch-to-zoom
             
+            // Zoom constants
+            const ZOOM_MIN = 1.5;
+            const ZOOM_MAX = 5;
+            const ZOOM_SPEED_WHEEL = 0.1;
+            const ZOOM_SPEED_PINCH = 0.01;
+            
             // Show satellite info on load
             satelliteInfo.style.display = 'block';
             
@@ -932,9 +938,9 @@
                     
                     if (lastTouchDistance > 0) {
                         const delta = distance - lastTouchDistance;
-                        camera.position.z -= delta * 0.01;
+                        camera.position.z -= delta * ZOOM_SPEED_PINCH;
                         // Limit zoom range
-                        camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+                        camera.position.z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, camera.position.z));
                     }
                     
                     lastTouchDistance = distance;
@@ -971,11 +977,10 @@
             // Mouse wheel zoom
             container.addEventListener('wheel', (e) => {
                 e.preventDefault();
-                const zoomSpeed = 0.1;
-                camera.position.z += e.deltaY * 0.001 * zoomSpeed;
+                camera.position.z += e.deltaY * 0.001 * ZOOM_SPEED_WHEEL;
                 
                 // Limit zoom range
-                camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+                camera.position.z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, camera.position.z));
             }, { passive: false });
             
             // Handle window resize for responsiveness
