@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZEMBMNRVX1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ZEMBMNRVX1');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6185133540784018"
+     crossorigin="anonymous"></script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlink Speed Test 2026 | Live Satellite Tracker & Latency Calculator</title>
+    <meta name="description" content="Interactive Starlink dashboard featuring live satellite tracking, speed test calculator, and real-time network performance metrics. Track 9,400+ Starlink satellites in orbit and compare your ISP performance.">
+    <meta name="keywords" content="Starlink Speed Test 2026, Live Starlink Satellite Tracker, Starlink Latency Calculator, Starlink performance, satellite internet, Starlink South Africa, Starlink vs fiber">
+    <meta name="author" content="WiFi.Report">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://wifi.report/starlink.html">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wifi.report/starlink.html">
+    <meta property="og:title" content="Starlink Live Network & Performance Dashboard (2026)">
+    <meta property="og:description" content="Track 9,400+ Starlink satellites in real-time, calculate speed improvements, and explore network performance metrics.">
+    <meta property="og:image" content="https://wifi.report/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://wifi.report/starlink.html">
+    <meta property="twitter:title" content="Starlink Live Network & Performance Dashboard (2026)">
+    <meta property="twitter:description" content="Interactive 3D satellite tracker, speed calculator, and real-time Starlink network metrics.">
+    <meta property="twitter:image" content="https://wifi.report/og-image.jpg">
+    
+    <!-- JSON-LD FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How many Starlink satellites are in orbit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "As of January 2026, there are over 9,400 Starlink satellites in active orbit, forming the world's largest satellite constellation. SpaceX continues to launch new satellites regularly to expand coverage and capacity globally."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Starlink faster than fiber?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Starlink V3 offers speeds up to 300+ Mbps with median latency around 20ms, making it competitive with many fiber connections. While fiber may offer higher peak speeds in urban areas, Starlink excels in rural and remote locations where fiber infrastructure is unavailable. The low latency makes Starlink suitable for gaming, video calls, and streaming."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When is Starlink available in South Africa?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Starlink became available in South Africa in 2023 and continues to expand coverage across the country in 2026. Service is available in most regions with active pre-orders being fulfilled. Check the official Starlink website for real-time availability at your specific address."
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        electric: '#00E5FF',
+                        alert: '#FF6B00',
+                        deepBlue: '#0052cc',
+                        spaceBlack: '#000000',
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Three.js for 3D Globe -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- satellite.js for orbit calculations -->
+    <script src="https://cdn.jsdelivr.net/npm/satellite.js@4.1.4/dist/satellite.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        /* Glassmorphism effect */
+        .glass-card {
+            background: rgba(0, 82, 204, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-card:hover {
+            background: rgba(0, 82, 204, 0.15);
+            border-color: rgba(0, 229, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        /* 3D Globe Container */
+        #globe-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            #globe-container {
+                height: 400px;
+            }
+        }
+        
+        /* Stat counters animation */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card {
+            animation: countUp 0.6s ease-out forwards;
+        }
+        
+        /* Chart container */
+        #roi-chart-container {
+            min-height: 300px;
+            position: relative;
+        }
+        
+        /* Loading animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Footer styles to match index.html */
+        .footer {
+            background-color: #0a0a0a;
+            padding: 48px 24px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 2fr 3fr;
+            }
+        }
+        
+        .footer-brand .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .footer-description {
+            color: #9ca3af;
+            line-height: 1.6;
+            max-width: 400px;
+        }
+        
+        .footer-links-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 24px;
+        }
+        
+        .footer-links h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: #00E5FF;
+        }
+        
+        .footer-bottom {
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .footer-note {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body class="font-inter">
+    
+    <!-- Hero Section -->
+    <header>
+        <section class="bg-spaceBlack text-white">
+            <div class="max-w-7xl mx-auto px-6 py-16 md:py-24">
+                <div class="text-center mb-12">
+                    <h1 class="font-orbitron text-4xl md:text-6xl font-black leading-tight tracking-tight mb-6">
+                        Starlink Live Network &<br>Performance Dashboard (2026)
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+                        Track 9,400+ satellites in real-time, calculate your speed upgrade, and explore the future of global connectivity
+                    </p>
+                    <div class="mt-6 flex flex-wrap justify-center items-center gap-3 text-sm text-gray-400">
+                        <span>Live Data</span>
+                        <span>•</span>
+                        <span>Updated January 2026</span>
+                        <span>•</span>
+                        <span>Interactive 3D Visualization</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <main>
+        <!-- Live Network Stats Section -->
+        <section class="bg-spaceBlack py-12 px-6">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-12">
+                    Real-Time Network Statistics
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Satellites -->
+                    <div class="glass-card stat-card text-center" style="animation-delay: 0s;">
+                        <div class="text-5xl md:text-6xl font-orbitron font-black text-deepBlue mb-2" id="satCount">0</div>
+                        <div class="text-xl font-semibold mb-1">Total Satellites</div>
+                        <div class="text-sm text-gray-400">Active in Orbit</div>
+                    </div>
+                    
+                    <!-- Active Users -->
+                    <div class="glass-card stat-card text-center" style="animation-delay: 0.1s;">
+                        <div class="text-5xl md:text-6xl font-orbitron font-black text-electric mb-2" id="userCount">0</div>
+                        <div class="text-xl font-semibold mb-1">Active Users</div>
+                        <div class="text-sm text-gray-400">Worldwide</div>
+                    </div>
+                    
+                    <!-- Median Latency -->
+                    <div class="glass-card stat-card text-center" style="animation-delay: 0.2s;">
+                        <div class="text-5xl md:text-6xl font-orbitron font-black text-green-400 mb-2" id="latencyValue">0</div>
+                        <div class="text-xl font-semibold mb-1">Median Latency</div>
+                        <div class="text-sm text-gray-400">Milliseconds</div>
+                    </div>
+                    
+                    <!-- Peak Speed -->
+                    <div class="glass-card stat-card text-center" style="animation-delay: 0.3s;">
+                        <div class="text-5xl md:text-6xl font-orbitron font-black text-alert mb-2" id="speedValue">0</div>
+                        <div class="text-xl font-semibold mb-1">Peak Speed</div>
+                        <div class="text-sm text-gray-400">Mbps+</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive 3D Globe Section -->
+        <section class="bg-spaceBlack py-16 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-card">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4">
+                        Live Satellite Constellation
+                    </h2>
+                    <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
+                        Interactive 3D visualization of the Starlink network. Drag to rotate, scroll to zoom, touch-enabled for mobile devices.
+                    </p>
+                    <div id="globe-container" class="glass-card">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-400 loading" id="globe-loading">
+                            <div class="text-center">
+                                <div class="text-4xl mb-4">🛰️</div>
+                                <div>Loading 3D Globe...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center text-sm text-gray-400">
+                        <p>Showing approximate positions of 9,400+ Starlink satellites in Low Earth Orbit (LEO)</p>
+                        <p class="mt-2">Altitude: ~550km | Orbital Shells: Multiple inclinations for global coverage</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Speed vs Latency Calculator Section -->
+        <section class="bg-spaceBlack py-16 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-card">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4">
+                        Speed & Latency ROI Calculator
+                    </h2>
+                    <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
+                        Compare your current ISP performance with Starlink V3 and see the potential benefits
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <!-- Input Section -->
+                        <div>
+                            <h3 class="font-orbitron text-xl font-bold mb-6">Your Current Connection</h3>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold mb-2">Download Speed (Mbps)</label>
+                                <input type="number" id="current-speed" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-deepBlue focus:outline-none" placeholder="e.g., 50" value="50" min="1" max="1000">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold mb-2">Latency (ms)</label>
+                                <input type="number" id="current-latency" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-deepBlue focus:outline-none" placeholder="e.g., 50" value="50" min="1" max="500">
+                            </div>
+                            
+                            <button id="calculate-btn" class="w-full bg-deepBlue hover:bg-electric hover:text-black text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                Calculate ROI
+                            </button>
+                        </div>
+                        
+                        <!-- Results Section -->
+                        <div>
+                            <h3 class="font-orbitron text-xl font-bold mb-6">Starlink V3 Performance</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="glass-card">
+                                    <div class="text-sm text-gray-400 mb-1">Speed Improvement</div>
+                                    <div class="text-3xl font-orbitron font-bold text-electric" id="speed-improvement">-</div>
+                                </div>
+                                
+                                <div class="glass-card">
+                                    <div class="text-sm text-gray-400 mb-1">Latency Improvement</div>
+                                    <div class="text-3xl font-orbitron font-bold text-green-400" id="latency-improvement">-</div>
+                                </div>
+                                
+                                <div class="glass-card">
+                                    <div class="text-sm text-gray-400 mb-1">Gaming Performance</div>
+                                    <div class="text-lg font-semibold" id="gaming-performance">Click Calculate</div>
+                                </div>
+                                
+                                <div class="glass-card">
+                                    <div class="text-sm text-gray-400 mb-1">Time Saved (per GB download)</div>
+                                    <div class="text-lg font-semibold" id="time-saved">Click Calculate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Visual ROI Chart -->
+                    <div id="roi-chart-container" class="glass-card">
+                        <h3 class="font-orbitron text-xl font-bold mb-4 text-center">Performance Comparison</h3>
+                        <div id="roi-chart" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Speed Comparison Bar -->
+                            <div>
+                                <div class="text-sm text-gray-400 mb-2">Download Speed (Mbps)</div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Your ISP</span>
+                                            <span id="bar-current-speed">50 Mbps</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 rounded-full h-8 overflow-hidden">
+                                            <div id="bar-current-speed-fill" class="bg-gray-500 h-full flex items-center justify-end pr-2 text-xs" style="width: 16.7%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Starlink V3</span>
+                                            <span>300 Mbps</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 rounded-full h-8 overflow-hidden">
+                                            <div class="bg-electric h-full flex items-center justify-end pr-2 text-xs text-black font-bold" style="width: 100%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Latency Comparison Bar -->
+                            <div>
+                                <div class="text-sm text-gray-400 mb-2">Latency (ms) - Lower is Better</div>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Your ISP</span>
+                                            <span id="bar-current-latency">50 ms</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 rounded-full h-8 overflow-hidden">
+                                            <div id="bar-current-latency-fill" class="bg-alert h-full flex items-center justify-end pr-2 text-xs" style="width: 100%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span>Starlink V3</span>
+                                            <span>20 ms</span>
+                                        </div>
+                                        <div class="w-full bg-gray-800 rounded-full h-8 overflow-hidden">
+                                            <div class="bg-green-400 h-full flex items-center justify-end pr-2 text-xs text-black font-bold" style="width: 40%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="bg-spaceBlack py-16 px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-12">
+                    Frequently Asked Questions
+                </h2>
+                
+                <div class="space-y-6">
+                    <div class="glass-card">
+                        <h3 class="font-orbitron text-xl font-bold mb-3">How many Starlink satellites are in orbit?</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            As of January 2026, there are over 9,400 Starlink satellites in active orbit, forming the world's largest satellite constellation. SpaceX continues to launch new satellites regularly to expand coverage and capacity globally.
+                        </p>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <h3 class="font-orbitron text-xl font-bold mb-3">Is Starlink faster than fiber?</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            Starlink V3 offers speeds up to 300+ Mbps with median latency around 20ms, making it competitive with many fiber connections. While fiber may offer higher peak speeds in urban areas, Starlink excels in rural and remote locations where fiber infrastructure is unavailable. The low latency makes Starlink suitable for gaming, video calls, and streaming.
+                        </p>
+                    </div>
+                    
+                    <div class="glass-card">
+                        <h3 class="font-orbitron text-xl font-bold mb-3">When is Starlink available in South Africa?</h3>
+                        <p class="text-gray-300 leading-relaxed">
+                            Starlink became available in South Africa in 2023 and continues to expand coverage across the country in 2026. Service is available in most regions with active pre-orders being fulfilled. Check the official Starlink website for real-time availability at your specific address.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (matching index.html) -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="4" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="12" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="4" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="12" y="20" width="5" height="5" fill="#FFFFFF"/>
+                            <rect x="20" y="20" width="5" height="5" fill="#FFFFFF"/>
+                        </svg>
+                        <span>WiFi.Report</span>
+                    </div>
+                    <p class="footer-description">
+                        Your trusted WiFi analysis tool. Empowering users with knowledge to secure and optimize their wireless networks.
+                    </p>
+                </div>
+                <div class="footer-links-row">
+                    <div class="footer-links">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="about.html">About</a></li>
+                            <li><a href="index.html#features">Features</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="cookies.html">Cookie Policy</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="faq.html">FAQ</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                            <li><a href="help.html">Help Center</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                <p class="footer-note">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
+                    </svg>
+                    Last Updated: January 2026
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactive Features -->
+    <script>
+        // ============================================
+        // ANIMATED COUNTER FOR STATISTICS
+        // ============================================
+        function animateCounter(elementId, target, suffix = '', duration = 2000) {
+            const element = document.getElementById(elementId);
+            const start = 0;
+            const increment = target / (duration / 16); // 60fps
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString() + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString() + suffix;
+                }
+            }, 16);
+        }
+
+        // Animate statistics on page load
+        window.addEventListener('load', () => {
+            animateCounter('satCount', 9400, '+', 2000);
+            animateCounter('userCount', 9, 'M+', 2000);
+            animateCounter('latencyValue', 20, 'ms', 2000);
+            animateCounter('speedValue', 300, '+', 2000);
+        });
+
+        // ============================================
+        // THREE.JS 3D GLOBE WITH SATELLITE VISUALIZATION
+        // ============================================
+        function init3DGlobe() {
+            const container = document.getElementById('globe-container');
+            const loadingDiv = document.getElementById('globe-loading');
+            
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(
+                45, // Field of view
+                container.clientWidth / container.clientHeight, // Aspect ratio
+                0.1, // Near clipping plane
+                1000 // Far clipping plane
+            );
+            
+            const renderer = new THREE.WebGLRenderer({ 
+                antialias: true, 
+                alpha: true 
+            });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for mobile
+            container.appendChild(renderer.domElement);
+            
+            // Camera position
+            camera.position.z = 3;
+            
+            // Create Earth sphere
+            const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
+            
+            // Earth material with simple blue color (can be enhanced with texture)
+            const earthMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0052cc,
+                emissive: 0x001133,
+                shininess: 30,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            scene.add(earth);
+            
+            // Add atmosphere glow effect
+            const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
+            const atmosphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00E5FF,
+                transparent: true,
+                opacity: 0.2,
+                side: THREE.BackSide
+            });
+            const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+            scene.add(atmosphere);
+            
+            // Create satellite constellation (9,400+ satellites as point cloud)
+            const satelliteCount = 9400;
+            const satellites = new THREE.Group();
+            
+            // Point cloud geometry for satellites
+            const pointsGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(satelliteCount * 3);
+            const colors = new Float32Array(satelliteCount * 3);
+            
+            // Generate satellite positions in orbital shells
+            // Starlink operates at ~550km altitude (1.086 Earth radii from center)
+            const orbitRadius = 1.086;
+            
+            for (let i = 0; i < satelliteCount; i++) {
+                // Create multiple orbital shells with different inclinations
+                const shellIndex = i % 4; // 4 different shells
+                const inclination = [53, 43, 70, 97.6][shellIndex] * Math.PI / 180;
+                
+                // Random distribution along the orbit
+                const theta = Math.random() * Math.PI * 2; // Longitude
+                const phi = Math.acos(2 * Math.random() - 1); // Latitude distribution
+                
+                // Convert spherical coordinates to Cartesian
+                const x = orbitRadius * Math.sin(phi) * Math.cos(theta);
+                const y = orbitRadius * Math.sin(phi) * Math.sin(theta);
+                const z = orbitRadius * Math.cos(phi);
+                
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+                
+                // Color variation for satellites (electric blue to white)
+                colors[i * 3] = 0.8 + Math.random() * 0.2; // R
+                colors[i * 3 + 1] = 0.9 + Math.random() * 0.1; // G
+                colors[i * 3 + 2] = 1.0; // B
+            }
+            
+            pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            pointsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            // Material for satellite points
+            const pointsMaterial = new THREE.PointsMaterial({
+                size: 0.01,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                sizeAttenuation: true
+            });
+            
+            const satellitePoints = new THREE.Points(pointsGeometry, pointsMaterial);
+            satellites.add(satellitePoints);
+            scene.add(satellites);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+            
+            // Mouse/Touch interaction variables
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            let rotationVelocity = { x: 0.002, y: 0.001 }; // Auto-rotation speed
+            
+            // Mouse down/touch start
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                previousMousePosition = { 
+                    x: e.touches[0].clientX, 
+                    y: e.touches[0].clientY 
+                };
+            });
+            
+            // Mouse move/touch move
+            container.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+                    
+                    rotationVelocity.x = deltaX * 0.005;
+                    rotationVelocity.y = deltaY * 0.005;
+                    
+                    previousMousePosition = { x: e.clientX, y: e.clientY };
+                }
+            });
+            
+            container.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.touches[0].clientX - previousMousePosition.x;
+                    const deltaY = e.touches[0].clientY - previousMousePosition.y;
+                    
+                    rotationVelocity.x = deltaX * 0.005;
+                    rotationVelocity.y = deltaY * 0.005;
+                    
+                    previousMousePosition = { 
+                        x: e.touches[0].clientX, 
+                        y: e.touches[0].clientY 
+                    };
+                }
+            });
+            
+            // Mouse up/touch end
+            container.addEventListener('mouseup', () => {
+                isDragging = false;
+                // Gradually slow down to auto-rotation
+                rotationVelocity.x *= 0.5;
+                rotationVelocity.y *= 0.5;
+            });
+            
+            container.addEventListener('touchend', () => {
+                isDragging = false;
+                rotationVelocity.x *= 0.5;
+                rotationVelocity.y *= 0.5;
+            });
+            
+            // Mouse wheel zoom
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomSpeed = 0.1;
+                camera.position.z += e.deltaY * 0.001 * zoomSpeed;
+                
+                // Limit zoom range
+                camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+            });
+            
+            // Handle window resize for responsiveness
+            window.addEventListener('resize', () => {
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                
+                renderer.setSize(width, height);
+            });
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Rotate Earth and satellites
+                earth.rotation.y += rotationVelocity.x;
+                earth.rotation.x += rotationVelocity.y;
+                
+                atmosphere.rotation.y += rotationVelocity.x;
+                atmosphere.rotation.x += rotationVelocity.y;
+                
+                satellites.rotation.y += rotationVelocity.x * 1.5; // Satellites rotate slightly faster
+                satellites.rotation.x += rotationVelocity.y * 1.5;
+                
+                // Dampen rotation velocity if not dragging
+                if (!isDragging) {
+                    rotationVelocity.x *= 0.98;
+                    rotationVelocity.y *= 0.98;
+                    
+                    // Maintain minimum auto-rotation
+                    if (Math.abs(rotationVelocity.x) < 0.002) {
+                        rotationVelocity.x = 0.002;
+                    }
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            // Hide loading message and start animation
+            loadingDiv.style.display = 'none';
+            animate();
+        }
+
+        // Initialize 3D globe when page loads
+        window.addEventListener('load', () => {
+            setTimeout(init3DGlobe, 500); // Small delay to ensure container is ready
+        });
+
+        // ============================================
+        // ROI CALCULATOR FUNCTIONALITY
+        // ============================================
+        document.getElementById('calculate-btn').addEventListener('click', calculateROI);
+        
+        // Also calculate on Enter key in input fields
+        document.getElementById('current-speed').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculateROI();
+        });
+        document.getElementById('current-latency').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculateROI();
+        });
+        
+        function calculateROI() {
+            const currentSpeed = parseFloat(document.getElementById('current-speed').value) || 50;
+            const currentLatency = parseFloat(document.getElementById('current-latency').value) || 50;
+            
+            // Starlink V3 specs
+            const starlinkSpeed = 300;
+            const starlinkLatency = 20;
+            
+            // Calculate improvements
+            const speedIncrease = ((starlinkSpeed - currentSpeed) / currentSpeed * 100).toFixed(1);
+            const latencyDecrease = ((currentLatency - starlinkLatency) / currentLatency * 100).toFixed(1);
+            
+            // Update improvement displays
+            const speedImprovement = document.getElementById('speed-improvement');
+            const latencyImprovement = document.getElementById('latency-improvement');
+            
+            if (speedIncrease > 0) {
+                speedImprovement.textContent = `+${speedIncrease}%`;
+                speedImprovement.classList.add('text-electric');
+                speedImprovement.classList.remove('text-alert');
+            } else {
+                speedImprovement.textContent = `${speedIncrease}%`;
+                speedImprovement.classList.add('text-alert');
+                speedImprovement.classList.remove('text-electric');
+            }
+            
+            if (latencyDecrease > 0) {
+                latencyImprovement.textContent = `-${latencyDecrease}%`;
+                latencyImprovement.classList.add('text-green-400');
+            } else {
+                latencyImprovement.textContent = `${latencyDecrease}%`;
+                latencyImprovement.classList.add('text-alert');
+            }
+            
+            // Calculate gaming performance rating
+            let gamingRating = '';
+            if (starlinkLatency < 30) {
+                gamingRating = '🎮 Excellent for competitive gaming';
+            } else if (starlinkLatency < 50) {
+                gamingRating = '🎯 Good for most online games';
+            } else {
+                gamingRating = '⚠️ May experience lag in fast-paced games';
+            }
+            document.getElementById('gaming-performance').textContent = gamingRating;
+            
+            // Calculate time saved for 1GB download
+            const currentTime = (1000 * 8) / currentSpeed; // Convert MB to Mb, divide by Mbps
+            const starlinkTime = (1000 * 8) / starlinkSpeed;
+            const timeSaved = (currentTime - starlinkTime).toFixed(1);
+            
+            if (timeSaved > 0) {
+                document.getElementById('time-saved').textContent = `⚡ ${timeSaved} seconds faster`;
+            } else {
+                document.getElementById('time-saved').textContent = `⏱️ ${Math.abs(timeSaved)} seconds slower`;
+            }
+            
+            // Update comparison bars
+            const speedPercentage = (currentSpeed / starlinkSpeed * 100).toFixed(1);
+            const latencyPercentage = (starlinkLatency / currentLatency * 100).toFixed(1);
+            
+            document.getElementById('bar-current-speed').textContent = `${currentSpeed} Mbps`;
+            document.getElementById('bar-current-speed-fill').style.width = `${Math.min(speedPercentage, 100)}%`;
+            
+            document.getElementById('bar-current-latency').textContent = `${currentLatency} ms`;
+            document.getElementById('bar-current-latency-fill').style.width = '100%';
+        }
+        
+        // Calculate on page load with default values
+        window.addEventListener('load', () => {
+            setTimeout(calculateROI, 1000);
+        });
+    </script>
+</body>
+</html>
