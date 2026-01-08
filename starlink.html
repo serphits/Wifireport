@@ -39,7 +39,7 @@
     <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
     
     <!-- Three.js for 3D Globe -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -589,7 +589,7 @@
             container.appendChild(renderer.domElement);
             
             // Create Earth sphere (monochrome wireframe)
-            const earthGeometry = new THREE.SphereGeometry(1, 32, 32);
+            const earthGeometry = new THREE.SphereGeometry(1, 16, 16);
             const earthMaterial = new THREE.MeshBasicMaterial({
                 color: 0xFFFFFF,
                 wireframe: true,
@@ -758,12 +758,11 @@
         }
         
         // Initialize globe when page loads
+        const initWithDelay = () => setTimeout(init3DGlobe, 500);
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(init3DGlobe, 500);
-            });
+            document.addEventListener('DOMContentLoaded', initWithDelay);
         } else {
-            setTimeout(init3DGlobe, 500);
+            initWithDelay();
         }
     </script>
 </body>
