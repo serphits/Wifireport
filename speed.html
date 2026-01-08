@@ -97,7 +97,8 @@
         .face-square {
             position: absolute;
             background: var(--bright-white);
-            transition: all 0.3s ease-out;
+            transition: opacity 0.3s ease-out;
+            will-change: transform, opacity;
         }
         
         .speed-display {
@@ -845,8 +846,7 @@
                 square.style.height = size + 'px';
                 
                 // Random initial position
-                square.style.left = Math.random() * 100 + '%';
-                square.style.top = Math.random() * 100 + '%';
+                square.style.transform = `translate(${Math.random() * 100}vw, ${Math.random() * 100}vh)`;
                 square.style.opacity = 0.1 + Math.random() * 0.6;
                 
                 faceContainer.appendChild(square);
@@ -959,8 +959,8 @@
                     const finalX = sq.baseX + floatX;
                     const finalY = sq.baseY + floatY;
                     
-                    sq.element.style.left = finalX + '%';
-                    sq.element.style.top = finalY + '%';
+                    // Use transform for better performance (GPU-accelerated)
+                    sq.element.style.transform = `translate(${finalX}vw, ${finalY}vh)`;
                     
                     // Pulse opacity based on position and time
                     const dx = finalX - normMouseX * 50 - 50;
@@ -974,17 +974,17 @@
                 requestAnimationFrame(animate);
             }
             
-            // Event listeners
-            document.addEventListener('mousemove', updateMousePosition);
+            // Event listeners with performance optimizations
+            document.addEventListener('mousemove', updateMousePosition, { passive: true });
             document.addEventListener('click', handleClick);
             
-            // Handle touch events for mobile
+            // Handle touch events for mobile with passive listeners
             document.addEventListener('touchmove', (e) => {
                 if (e.touches.length > 0) {
                     targetMouseX = e.touches[0].clientX;
                     targetMouseY = e.touches[0].clientY;
                 }
-            });
+            }, { passive: true });
             
             document.addEventListener('touchstart', (e) => {
                 if (e.touches.length > 0) {
@@ -993,7 +993,7 @@
                         clientY: e.touches[0].clientY
                     });
                 }
-            });
+            }, { passive: true });
             
             // Start animation
             animate();
