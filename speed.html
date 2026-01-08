@@ -83,21 +83,26 @@
             overflow: hidden;
         }
         
-        /* Animated face background - Interactive animated face: 200 squares that track mouse and respond to clicks */
+        /* Animated face background - 32x32 pixel-grid portrait with digital scan effect */
         #animatedFace {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(32, 1fr);
+            grid-template-rows: repeat(32, 1fr);
+            width: 320px;
+            height: 320px;
+            gap: 0;
             pointer-events: none;
             z-index: 0;
         }
         
         .face-square {
-            position: absolute;
             background: var(--bright-white);
-            transition: all 0.3s ease-out;
+            opacity: 0.1;
+            transition: opacity 0.1s ease-out;
         }
         
         .speed-display {
@@ -266,6 +271,11 @@
             .loading-bar {
                 width: 280px;
             }
+            
+            #animatedFace {
+                width: 240px;
+                height: 240px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -291,6 +301,11 @@
             
             .loading-bar {
                 width: 240px;
+            }
+            
+            #animatedFace {
+                width: 192px;
+                height: 192px;
             }
         }
         
@@ -813,94 +828,109 @@
         }
         
         // ============================================================================
-        // ANIMATED FACE WITH 200 SQUARES
+        // ANIMATED 32x32 PIXEL-GRID FACE WITH DIGITAL SCAN EFFECT
         // ============================================================================
         
         (function() {
             const faceContainer = document.getElementById('animatedFace');
             if (!faceContainer) return;
             
-            // Animation constants
-            const NUM_SQUARES = 200;
-            const MIN_SQUARE_SIZE = 3;
-            const SIZE_VARIATION = 8;
-            const CLICK_RADIUS = 30;
-            const FLASH_DURATION_MS = 200;
-            const MOUSE_LERP_FACTOR = 0.05;
+            // Grid configuration
+            const GRID_SIZE = 32;
+            const TOTAL_PIXELS = GRID_SIZE * GRID_SIZE; // 1024 pixels
             
-            const squares = [];
-            let mouseX = window.innerWidth > 0 ? window.innerWidth / 2 : 640;
-            let mouseY = window.innerHeight > 0 ? window.innerHeight / 2 : 360;
+            // Digital scan effect configuration
+            const SCAN_SPEED = 0.03; // Speed of scan line movement
+            const SCAN_HEIGHT = 3; // Height of the bright scan line in rows
+            const SCAN_BRIGHTNESS = 0.9; // Maximum brightness of scan line
+            const BASE_BRIGHTNESS = 0.15; // Base brightness for face pixels
+            
+            // Mouse tracking for "looking around" effect
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
             let targetMouseX = mouseX;
             let targetMouseY = mouseY;
+            const MOUSE_LERP_FACTOR = 0.05;
             
-            // Create 200 squares with initial random positions
-            for (let i = 0; i < NUM_SQUARES; i++) {
-                const square = document.createElement('div');
-                square.className = 'face-square';
-                
-                // Vary square sizes for visual interest
-                const size = MIN_SQUARE_SIZE + Math.random() * SIZE_VARIATION;
-                square.style.width = size + 'px';
-                square.style.height = size + 'px';
-                
-                // Random initial position
-                square.style.left = Math.random() * 100 + '%';
-                square.style.top = Math.random() * 100 + '%';
-                square.style.opacity = 0.1 + Math.random() * 0.6;
-                
-                faceContainer.appendChild(square);
-                
-                squares.push({
-                    element: square,
-                    baseX: Math.random() * 100,
-                    baseY: Math.random() * 100,
-                    size: size,
-                    speed: 0.3 + Math.random() * 0.5,
-                    phase: Math.random() * Math.PI * 2
-                });
+            // Scan line position (0 to GRID_SIZE)
+            let scanLineY = 0;
+            
+            // Define a simple face pattern (1 = face pixel, 0 = background)
+            // This creates a basic portrait-like face
+            const facePattern = [];
+            
+            // Create 32x32 grid elements and face pattern
+            const pixels = [];
+            for (let row = 0; row < GRID_SIZE; row++) {
+                for (let col = 0; col < GRID_SIZE; col++) {
+                    const pixel = document.createElement('div');
+                    pixel.className = 'face-square';
+                    faceContainer.appendChild(pixel);
+                    
+                    // Determine if this pixel is part of the face
+                    const isFace = isPartOfFace(row, col);
+                    facePattern.push(isFace);
+                    
+                    pixels.push({
+                        element: pixel,
+                        row: row,
+                        col: col,
+                        isFace: isFace
+                    });
+                }
             }
             
-            // Smooth mouse tracking
+            // Define which pixels are part of the face (simple portrait)
+            function isPartOfFace(row, col) {
+                const centerX = 16;
+                const centerY = 16;
+                
+                // Calculate distance from center
+                const dx = col - centerX;
+                const dy = row - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Head outline (ellipse)
+                const headWidth = 10;
+                const headHeight = 13;
+                const headDist = Math.sqrt((dx / headWidth) ** 2 + (dy / headHeight) ** 2);
+                
+                // Eyes (two circular regions)
+                const leftEyeX = 12;
+                const leftEyeY = 13;
+                const rightEyeX = 20;
+                const rightEyeY = 13;
+                const eyeRadius = 2;
+                
+                const leftEyeDist = Math.sqrt((col - leftEyeX) ** 2 + (row - leftEyeY) ** 2);
+                const rightEyeDist = Math.sqrt((col - rightEyeX) ** 2 + (row - rightEyeY) ** 2);
+                
+                // Nose (small vertical line)
+                const isNose = col >= 15 && col <= 17 && row >= 17 && row <= 20;
+                
+                // Mouth (horizontal curved line)
+                const mouthY = 23;
+                const mouthCurve = Math.abs(col - centerX) * 0.3;
+                const isMouth = row >= mouthY && row <= mouthY + 1 && 
+                               col >= 12 && col <= 20 && 
+                               row <= mouthY + mouthCurve;
+                
+                // Combine features
+                const isHead = headDist <= 1.0;
+                const isLeftEye = leftEyeDist <= eyeRadius;
+                const isRightEye = rightEyeDist <= eyeRadius;
+                
+                return isHead || isLeftEye || isRightEye || isNose || isMouth;
+            }
+            
+            // Mouse tracking
             function updateMousePosition(e) {
                 targetMouseX = e.clientX;
                 targetMouseY = e.clientY;
             }
             
-            // Click interaction - squares scatter and reform
-            function handleClick(e) {
-                const clickX = (e.clientX / window.innerWidth) * 100;
-                const clickY = (e.clientY / window.innerHeight) * 100;
-                
-                squares.forEach((sq, i) => {
-                    // Calculate distance from click
-                    const dx = sq.baseX - clickX;
-                    const dy = sq.baseY - clickY;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    // Scatter effect
-                    if (distance < CLICK_RADIUS) {
-                        const angle = Math.atan2(dy, dx);
-                        const pushDistance = (CLICK_RADIUS - distance) * 2;
-                        sq.baseX += Math.cos(angle) * pushDistance;
-                        sq.baseY += Math.sin(angle) * pushDistance;
-                        
-                        // Keep within bounds
-                        sq.baseX = Math.max(5, Math.min(95, sq.baseX));
-                        sq.baseY = Math.max(5, Math.min(95, sq.baseY));
-                        
-                        // Flash effect
-                        sq.element.style.opacity = '1';
-                        setTimeout(() => {
-                            sq.element.style.opacity = 0.3 + Math.random() * 0.5;
-                        }, FLASH_DURATION_MS);
-                    }
-                });
-            }
-            
-            // Animation loop - creates "face looking around" effect
+            // Animation loop
             function animate() {
-                // Pause animation when page is not visible to save resources
                 if (document.hidden) {
                     requestAnimationFrame(animate);
                     return;
@@ -910,88 +940,64 @@
                 mouseX += (targetMouseX - mouseX) * MOUSE_LERP_FACTOR;
                 mouseY += (targetMouseY - mouseY) * MOUSE_LERP_FACTOR;
                 
-                const time = Date.now() * 0.001;
+                // Calculate normalized mouse position for "looking around" effect
+                const normMouseX = ((mouseX / window.innerWidth) - 0.5) * 2;
+                const normMouseY = ((mouseY / window.innerHeight) - 0.5) * 2;
                 
-                // Calculate normalized mouse position (-1 to 1)
-                const normMouseX = (mouseX / window.innerWidth - 0.5) * 2;
-                const normMouseY = (mouseY / window.innerHeight - 0.5) * 2;
+                // Update scan line position (loops from top to bottom)
+                scanLineY = (scanLineY + SCAN_SPEED) % GRID_SIZE;
                 
-                squares.forEach((sq, i) => {
-                    // Create face-like clustering with "eyes"
-                    const angle = (i / NUM_SQUARES) * Math.PI * 2;
-                    const radius = 15 + Math.sin(angle * 3) * 10;
-                    
-                    // Left and right eye centers
-                    const leftEyeX = 40 + Math.sin(time + sq.phase) * 2;
-                    const leftEyeY = 40 + Math.cos(time * 0.8 + sq.phase) * 2;
-                    const rightEyeX = 60 + Math.sin(time + sq.phase) * 2;
-                    const rightEyeY = 40 + Math.cos(time * 0.8 + sq.phase) * 2;
-                    
-                    // Determine if square belongs to left eye, right eye, or distributed
-                    let targetX, targetY;
-                    
-                    if (i < NUM_SQUARES * 0.35) {
-                        // Left eye cluster
-                        const eyeAngle = (i / (NUM_SQUARES * 0.35)) * Math.PI * 2;
-                        targetX = leftEyeX + Math.cos(eyeAngle) * (radius + normMouseX * 8);
-                        targetY = leftEyeY + Math.sin(eyeAngle) * (radius + normMouseY * 8);
-                    } else if (i < NUM_SQUARES * 0.7) {
-                        // Right eye cluster
-                        const eyeAngle = ((i - NUM_SQUARES * 0.35) / (NUM_SQUARES * 0.35)) * Math.PI * 2;
-                        targetX = rightEyeX + Math.cos(eyeAngle) * (radius + normMouseX * 8);
-                        targetY = rightEyeY + Math.sin(eyeAngle) * (radius + normMouseY * 8);
-                    } else {
-                        // Scattered around to create face outline
-                        const faceAngle = ((i - NUM_SQUARES * 0.7) / (NUM_SQUARES * 0.3)) * Math.PI * 2;
-                        const faceRadius = 35 + Math.sin(faceAngle * 2) * 5;
-                        targetX = 50 + Math.cos(faceAngle) * faceRadius + normMouseX * 5;
-                        targetY = 50 + Math.sin(faceAngle) * faceRadius + normMouseY * 5;
+                // Update each pixel
+                pixels.forEach((pixel) => {
+                    if (!pixel.isFace) {
+                        pixel.element.style.opacity = '0.05';
+                        return;
                     }
                     
-                    // Smooth interpolation to target position
-                    sq.baseX += (targetX - sq.baseX) * sq.speed * 0.1;
-                    sq.baseY += (targetY - sq.baseY) * sq.speed * 0.1;
+                    // Calculate eye shift based on mouse position
+                    const eyeShiftX = Math.round(normMouseX * 2);
+                    const eyeShiftY = Math.round(normMouseY * 2);
                     
-                    // Add subtle floating motion
-                    const floatX = Math.sin(time * 0.5 + sq.phase) * 1;
-                    const floatY = Math.cos(time * 0.3 + sq.phase) * 1;
+                    // Check if this pixel should be "eyes" that move
+                    const isLeftEye = isEyePixel(pixel.row - eyeShiftY, pixel.col - eyeShiftX, 13, 12);
+                    const isRightEye = isEyePixel(pixel.row - eyeShiftY, pixel.col - eyeShiftX, 13, 20);
                     
-                    const finalX = sq.baseX + floatX;
-                    const finalY = sq.baseY + floatY;
+                    // Base opacity for face pixels
+                    let opacity = BASE_BRIGHTNESS;
                     
-                    sq.element.style.left = finalX + '%';
-                    sq.element.style.top = finalY + '%';
+                    // Increase opacity for eyes
+                    if (isLeftEye || isRightEye) {
+                        opacity = BASE_BRIGHTNESS + 0.3;
+                    }
                     
-                    // Pulse opacity based on position and time
-                    const dx = finalX - normMouseX * 50 - 50;
-                    const dy = finalY - normMouseY * 50 - 50;
-                    const distanceFromMouse = Math.sqrt(dx * dx + dy * dy);
-                    const pulseOpacity = 0.2 + Math.sin(time * 2 + sq.phase) * 0.15;
-                    const proximityOpacity = Math.max(0.2, 1 - distanceFromMouse / 80);
-                    sq.element.style.opacity = Math.min(pulseOpacity + proximityOpacity * 0.5, 0.9);
+                    // Apply scan line effect (bright horizontal line)
+                    const distanceFromScan = Math.abs(pixel.row - scanLineY);
+                    if (distanceFromScan < SCAN_HEIGHT) {
+                        const scanIntensity = 1 - (distanceFromScan / SCAN_HEIGHT);
+                        opacity = Math.max(opacity, SCAN_BRIGHTNESS * scanIntensity);
+                    }
+                    
+                    pixel.element.style.opacity = opacity;
                 });
                 
                 requestAnimationFrame(animate);
             }
             
+            // Helper function to check if a pixel is part of an eye
+            function isEyePixel(row, col, eyeY, eyeX) {
+                const eyeRadius = 2;
+                const dist = Math.sqrt((col - eyeX) ** 2 + (row - eyeY) ** 2);
+                return dist <= eyeRadius;
+            }
+            
             // Event listeners
             document.addEventListener('mousemove', updateMousePosition);
-            document.addEventListener('click', handleClick);
             
             // Handle touch events for mobile
             document.addEventListener('touchmove', (e) => {
                 if (e.touches.length > 0) {
                     targetMouseX = e.touches[0].clientX;
                     targetMouseY = e.touches[0].clientY;
-                }
-            });
-            
-            document.addEventListener('touchstart', (e) => {
-                if (e.touches.length > 0) {
-                    handleClick({
-                        clientX: e.touches[0].clientX,
-                        clientY: e.touches[0].clientY
-                    });
                 }
             });
             
