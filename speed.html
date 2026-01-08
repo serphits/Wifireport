@@ -83,25 +83,21 @@
             overflow: hidden;
         }
         
-        /* Subtle starfield effect - more minimal for Starlink style */
-        .speed-container::before {
-            content: '';
+        /* Animated face background */
+        #animatedFace {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(1px 1px at 20% 30%, white, transparent),
-                radial-gradient(1px 1px at 60% 70%, white, transparent),
-                radial-gradient(1px 1px at 50% 50%, white, transparent),
-                radial-gradient(1px 1px at 80% 10%, white, transparent),
-                radial-gradient(1px 1px at 90% 60%, white, transparent),
-                radial-gradient(1px 1px at 33% 80%, white, transparent);
-            background-size: 100% 100%;
-            background-position: 0% 0%;
-            opacity: 0.15;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
+            z-index: 0;
+        }
+        
+        .face-square {
+            position: absolute;
+            background: var(--bright-white);
+            transition: all 0.3s ease-out;
         }
         
         .speed-display {
@@ -390,6 +386,8 @@
     <!-- Navigation will be injected by script.js -->
     
     <div class="speed-container">
+        <!-- Animated face made of 200 squares -->
+        <div id="animatedFace"></div>
         <div id="speedDisplay" class="speed-display">—</div>
         <div id="speedUnit" class="speed-unit">Mbps</div>
         <div id="speedStatus" class="speed-status">Click Start to test your speed</div>
@@ -813,6 +811,181 @@
             const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
             window.open(xUrl, '_blank', 'width=550,height=420');
         }
+        
+        // ============================================================================
+        // ANIMATED FACE WITH 200 SQUARES
+        // ============================================================================
+        
+        (function() {
+            const faceContainer = document.getElementById('animatedFace');
+            if (!faceContainer) return;
+            
+            const NUM_SQUARES = 200;
+            const squares = [];
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let targetMouseX = mouseX;
+            let targetMouseY = mouseY;
+            
+            // Create 200 squares with initial random positions
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                const square = document.createElement('div');
+                square.className = 'face-square';
+                
+                // Vary square sizes for visual interest
+                const size = 3 + Math.random() * 8;
+                square.style.width = size + 'px';
+                square.style.height = size + 'px';
+                
+                // Random initial position
+                square.style.left = Math.random() * 100 + '%';
+                square.style.top = Math.random() * 100 + '%';
+                square.style.opacity = 0.1 + Math.random() * 0.6;
+                
+                faceContainer.appendChild(square);
+                
+                squares.push({
+                    element: square,
+                    baseX: Math.random() * 100,
+                    baseY: Math.random() * 100,
+                    size: size,
+                    speed: 0.3 + Math.random() * 0.5,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+            
+            // Smooth mouse tracking
+            function updateMousePosition(e) {
+                targetMouseX = e.clientX;
+                targetMouseY = e.clientY;
+            }
+            
+            // Click interaction - squares scatter and reform
+            function handleClick(e) {
+                const clickX = (e.clientX / window.innerWidth) * 100;
+                const clickY = (e.clientY / window.innerHeight) * 100;
+                
+                squares.forEach((sq, i) => {
+                    // Calculate distance from click
+                    const dx = sq.baseX - clickX;
+                    const dy = sq.baseY - clickY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Scatter effect
+                    if (distance < 30) {
+                        const angle = Math.atan2(dy, dx);
+                        const pushDistance = (30 - distance) * 2;
+                        sq.baseX += Math.cos(angle) * pushDistance;
+                        sq.baseY += Math.sin(angle) * pushDistance;
+                        
+                        // Keep within bounds
+                        sq.baseX = Math.max(5, Math.min(95, sq.baseX));
+                        sq.baseY = Math.max(5, Math.min(95, sq.baseY));
+                        
+                        // Flash effect
+                        sq.element.style.opacity = '1';
+                        setTimeout(() => {
+                            sq.element.style.opacity = 0.3 + Math.random() * 0.5;
+                        }, 200);
+                    }
+                });
+            }
+            
+            // Animation loop - creates "face looking around" effect
+            function animate() {
+                // Smooth mouse position interpolation
+                mouseX += (targetMouseX - mouseX) * 0.05;
+                mouseY += (targetMouseY - mouseY) * 0.05;
+                
+                const time = Date.now() * 0.001;
+                
+                // Calculate normalized mouse position (-1 to 1)
+                const normMouseX = (mouseX / window.innerWidth - 0.5) * 2;
+                const normMouseY = (mouseY / window.innerHeight - 0.5) * 2;
+                
+                squares.forEach((sq, i) => {
+                    // Create face-like clustering with "eyes"
+                    const angle = (i / NUM_SQUARES) * Math.PI * 2;
+                    const radius = 15 + Math.sin(angle * 3) * 10;
+                    
+                    // Left and right eye centers
+                    const leftEyeX = 40 + Math.sin(time + sq.phase) * 2;
+                    const leftEyeY = 40 + Math.cos(time * 0.8 + sq.phase) * 2;
+                    const rightEyeX = 60 + Math.sin(time + sq.phase) * 2;
+                    const rightEyeY = 40 + Math.cos(time * 0.8 + sq.phase) * 2;
+                    
+                    // Determine if square belongs to left eye, right eye, or distributed
+                    let targetX, targetY;
+                    
+                    if (i < NUM_SQUARES * 0.35) {
+                        // Left eye cluster
+                        const eyeAngle = (i / (NUM_SQUARES * 0.35)) * Math.PI * 2;
+                        targetX = leftEyeX + Math.cos(eyeAngle) * (radius + normMouseX * 8);
+                        targetY = leftEyeY + Math.sin(eyeAngle) * (radius + normMouseY * 8);
+                    } else if (i < NUM_SQUARES * 0.7) {
+                        // Right eye cluster
+                        const eyeAngle = ((i - NUM_SQUARES * 0.35) / (NUM_SQUARES * 0.35)) * Math.PI * 2;
+                        targetX = rightEyeX + Math.cos(eyeAngle) * (radius + normMouseX * 8);
+                        targetY = rightEyeY + Math.sin(eyeAngle) * (radius + normMouseY * 8);
+                    } else {
+                        // Scattered around to create face outline
+                        const faceAngle = ((i - NUM_SQUARES * 0.7) / (NUM_SQUARES * 0.3)) * Math.PI * 2;
+                        const faceRadius = 35 + Math.sin(faceAngle * 2) * 5;
+                        targetX = 50 + Math.cos(faceAngle) * faceRadius + normMouseX * 5;
+                        targetY = 50 + Math.sin(faceAngle) * faceRadius + normMouseY * 5;
+                    }
+                    
+                    // Smooth interpolation to target position
+                    sq.baseX += (targetX - sq.baseX) * sq.speed * 0.1;
+                    sq.baseY += (targetY - sq.baseY) * sq.speed * 0.1;
+                    
+                    // Add subtle floating motion
+                    const floatX = Math.sin(time * 0.5 + sq.phase) * 1;
+                    const floatY = Math.cos(time * 0.3 + sq.phase) * 1;
+                    
+                    const finalX = sq.baseX + floatX;
+                    const finalY = sq.baseY + floatY;
+                    
+                    sq.element.style.left = finalX + '%';
+                    sq.element.style.top = finalY + '%';
+                    
+                    // Pulse opacity based on position and time
+                    const distanceFromMouse = Math.sqrt(
+                        Math.pow((finalX - normMouseX * 50 - 50), 2) + 
+                        Math.pow((finalY - normMouseY * 50 - 50), 2)
+                    );
+                    const pulseOpacity = 0.2 + Math.sin(time * 2 + sq.phase) * 0.15;
+                    const proximityOpacity = Math.max(0.2, 1 - distanceFromMouse / 80);
+                    sq.element.style.opacity = Math.min(pulseOpacity + proximityOpacity * 0.5, 0.9);
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Event listeners
+            document.addEventListener('mousemove', updateMousePosition);
+            document.addEventListener('click', handleClick);
+            
+            // Handle touch events for mobile
+            document.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    targetMouseX = e.touches[0].clientX;
+                    targetMouseY = e.touches[0].clientY;
+                }
+            });
+            
+            document.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 0) {
+                    handleClick({
+                        clientX: e.touches[0].clientX,
+                        clientY: e.touches[0].clientY
+                    });
+                }
+            });
+            
+            // Start animation
+            animate();
+        })();
     </script>
 </body>
 </html>
