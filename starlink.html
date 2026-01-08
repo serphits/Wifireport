@@ -139,12 +139,34 @@
             position: relative;
             border-radius: 16px;
             overflow: hidden;
+            touch-action: none; /* Prevent browser scroll/zoom interference on mobile */
         }
         
         @media (max-width: 768px) {
             #globe-container {
-                height: 400px;
+                height: 450px; /* Increased for better mobile visibility */
             }
+        }
+        
+        /* Satellite info tooltip */
+        #satellite-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-size: 13px;
+            line-height: 1.6;
+            pointer-events: none;
+            z-index: 10;
+            min-width: 200px;
+        }
+        
+        #satellite-info .info-label {
+            color: #00E5FF;
+            font-weight: 600;
         }
         
         /* Stat counters animation */
@@ -344,6 +366,12 @@
                                 <div class="text-4xl mb-4">🛰️</div>
                                 <div>Loading 3D Globe...</div>
                             </div>
+                        </div>
+                        <div id="satellite-info" style="display: none;">
+                            <div><span class="info-label">Satellites Visible:</span> <span id="sat-count-display">9,400+</span></div>
+                            <div><span class="info-label">Coverage:</span> <span id="coverage-display">Global</span></div>
+                            <div><span class="info-label">Orbit Altitude:</span> 550 km</div>
+                            <div class="mt-2 text-xs text-gray-400">Drag to rotate • Scroll to zoom • Tap countries for info</div>
                         </div>
                     </div>
                     <div class="mt-4 text-center text-sm text-gray-400">
@@ -602,11 +630,12 @@
         });
 
         // ============================================
-        // THREE.JS 3D GLOBE WITH SATELLITE VISUALIZATION
+        // THREE.JS 3D GLOBE WITH SATELLITE VISUALIZATION AND COUNTRY BORDERS
         // ============================================
         function init3DGlobe() {
             const container = document.getElementById('globe-container');
             const loadingDiv = document.getElementById('globe-loading');
+            const satelliteInfo = document.getElementById('satellite-info');
             
             // Scene setup
             const scene = new THREE.Scene();
@@ -654,6 +683,123 @@
             const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
             scene.add(atmosphere);
             
+            // Add country borders using simplified coordinates
+            const countryBordersGroup = new THREE.Group();
+            
+            // Function to convert lat/lon to 3D sphere coordinates
+            function latLonToVector3(lat, lon, radius) {
+                const phi = (90 - lat) * (Math.PI / 180);
+                const theta = (lon + 180) * (Math.PI / 180);
+                
+                const x = -(radius * Math.sin(phi) * Math.cos(theta));
+                const z = (radius * Math.sin(phi) * Math.sin(theta));
+                const y = (radius * Math.cos(phi));
+                
+                return new THREE.Vector3(x, y, z);
+            }
+            
+            // Simplified major country borders (sample of major countries for performance)
+            const countryData = [
+                // North America
+                { name: 'USA', borders: [
+                    [49, -125], [49, -95], [49, -67], [45, -67], [41, -71], [32, -117], 
+                    [32, -95], [29, -95], [26, -97], [26, -80], [31, -81], [39, -75], 
+                    [42, -83], [46, -84], [48, -123], [49, -125]
+                ]},
+                { name: 'Canada', borders: [
+                    [49, -125], [60, -135], [69, -141], [70, -100], [69, -90], [58, -79], 
+                    [48, -69], [46, -64], [44, -63], [49, -67], [49, -95], [49, -125]
+                ]},
+                { name: 'Mexico', borders: [
+                    [32, -117], [32, -95], [29, -95], [26, -97], [19, -104], [16, -95], 
+                    [18, -88], [21, -87], [26, -109], [32, -117]
+                ]},
+                // South America
+                { name: 'Brazil', borders: [
+                    [-5, -35], [0, -50], [-10, -68], [-18, -70], [-23, -70], [-33, -53], 
+                    [-28, -48], [-23, -44], [-15, -39], [-5, -35]
+                ]},
+                { name: 'Argentina', borders: [
+                    [-23, -65], [-28, -68], [-40, -71], [-52, -69], [-52, -68], [-40, -63], 
+                    [-34, -58], [-27, -54], [-23, -65]
+                ]},
+                // Europe
+                { name: 'UK', borders: [
+                    [50, -5], [52, -2], [55, -3], [58, -3], [58, -2], [55, 0], [52, 1], [50, -1], [50, -5]
+                ]},
+                { name: 'France', borders: [
+                    [51, 2], [49, 8], [47, 7], [43, 2], [43, -1], [47, -4], [49, -1], [51, 2]
+                ]},
+                { name: 'Germany', borders: [
+                    [55, 8], [54, 14], [50, 15], [47, 10], [49, 6], [51, 6], [55, 8]
+                ]},
+                { name: 'Spain', borders: [
+                    [43, -9], [42, -7], [37, -7], [36, -5], [38, 0], [42, 3], [43, -2], [43, -9]
+                ]},
+                { name: 'Italy', borders: [
+                    [47, 13], [45, 12], [41, 15], [38, 16], [37, 15], [41, 9], [44, 8], [46, 12], [47, 13]
+                ]},
+                // Africa
+                { name: 'South Africa', borders: [
+                    [-22, 17], [-26, 20], [-29, 25], [-34, 27], [-34, 18], [-29, 17], [-22, 17]
+                ]},
+                { name: 'Egypt', borders: [
+                    [31, 25], [31, 35], [30, 35], [22, 32], [22, 25], [31, 25]
+                ]},
+                { name: 'Nigeria', borders: [
+                    [14, 3], [13, 14], [11, 13], [7, 9], [5, 3], [7, 3], [14, 3]
+                ]},
+                // Asia
+                { name: 'China', borders: [
+                    [53, 125], [50, 135], [42, 130], [40, 120], [32, 121], [23, 110], 
+                    [20, 100], [28, 90], [36, 80], [43, 87], [48, 90], [50, 115], [53, 125]
+                ]},
+                { name: 'India', borders: [
+                    [35, 75], [32, 78], [28, 88], [22, 88], [20, 85], [15, 80], [10, 77], 
+                    [8, 73], [12, 68], [23, 68], [28, 70], [32, 75], [35, 75]
+                ]},
+                { name: 'Japan', borders: [
+                    [46, 142], [44, 145], [36, 141], [34, 135], [35, 133], [38, 138], [46, 142]
+                ]},
+                { name: 'Russia', borders: [
+                    [70, 180], [70, -170], [66, -169], [60, -170], [55, 160], [50, 140], 
+                    [50, 120], [55, 100], [65, 80], [70, 60], [65, 40], [56, 38], [50, 48], 
+                    [50, 60], [55, 80], [60, 100], [65, 120], [70, 150], [70, 180]
+                ]},
+                // Australia
+                { name: 'Australia', borders: [
+                    [-10, 142], [-12, 130], [-20, 120], [-35, 115], [-38, 140], [-38, 150], 
+                    [-28, 153], [-20, 149], [-10, 142]
+                ]},
+            ];
+            
+            // Create lines for country borders
+            countryData.forEach(country => {
+                const points = [];
+                country.borders.forEach(([lat, lon]) => {
+                    points.push(latLonToVector3(lat, lon, 1.002)); // Slightly above surface
+                });
+                // Close the border
+                if (country.borders.length > 0) {
+                    points.push(latLonToVector3(country.borders[0][0], country.borders[0][1], 1.002));
+                }
+                
+                if (points.length > 1) {
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const material = new THREE.LineBasicMaterial({
+                        color: 0x00E5FF,
+                        transparent: true,
+                        opacity: 0.6,
+                        linewidth: 1
+                    });
+                    const line = new THREE.Line(geometry, material);
+                    line.userData = { countryName: country.name };
+                    countryBordersGroup.add(line);
+                }
+            });
+            
+            earth.add(countryBordersGroup);
+            
             // Create satellite constellation (9,400+ satellites as point cloud)
             const satelliteCount = 9400;
             const satellites = new THREE.Group();
@@ -696,7 +842,7 @@
             
             // Material for satellite points
             const pointsMaterial = new THREE.PointsMaterial({
-                size: 0.01,
+                size: 0.015, // Slightly larger for better visibility
                 vertexColors: true,
                 transparent: true,
                 opacity: 0.8,
@@ -720,6 +866,9 @@
             let previousMousePosition = { x: 0, y: 0 };
             let rotationVelocity = { x: 0.002, y: 0.001 }; // Auto-rotation speed
             
+            // Show satellite info on load
+            satelliteInfo.style.display = 'block';
+            
             // Mouse down/touch start
             container.addEventListener('mousedown', (e) => {
                 isDragging = true;
@@ -727,12 +876,13 @@
             });
             
             container.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent page scrolling
                 isDragging = true;
                 previousMousePosition = { 
                     x: e.touches[0].clientX, 
                     y: e.touches[0].clientY 
                 };
-            });
+            }, { passive: false });
             
             // Mouse move/touch move
             container.addEventListener('mousemove', (e) => {
@@ -748,6 +898,7 @@
             });
             
             container.addEventListener('touchmove', (e) => {
+                e.preventDefault(); // Prevent page scrolling
                 if (isDragging) {
                     const deltaX = e.touches[0].clientX - previousMousePosition.x;
                     const deltaY = e.touches[0].clientY - previousMousePosition.y;
@@ -760,7 +911,7 @@
                         y: e.touches[0].clientY 
                     };
                 }
-            });
+            }, { passive: false });
             
             // Mouse up/touch end
             container.addEventListener('mouseup', () => {
@@ -784,7 +935,7 @@
                 
                 // Limit zoom range
                 camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
-            });
+            }, { passive: false });
             
             // Handle window resize for responsiveness
             window.addEventListener('resize', () => {
