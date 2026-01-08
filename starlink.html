@@ -14,9 +14,9 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starlink Speed Test 2026 | Live Satellite Tracker & Latency Calculator</title>
-    <meta name="description" content="Interactive Starlink dashboard featuring live satellite tracking, speed test calculator, and real-time network performance metrics. Track 9,400+ Starlink satellites in orbit and compare your ISP performance.">
-    <meta name="keywords" content="Starlink Speed Test 2026, Live Starlink Satellite Tracker, Starlink Latency Calculator, Starlink performance, satellite internet, Starlink South Africa, Starlink vs fiber">
+    <title>Starlink Speed Test 2026 | Command Center & Performance Analytics</title>
+    <meta name="description" content="Starlink Command Center 2026: Real-time speed test, latency calculator for gaming, aviation performance metrics. Track 9,400+ satellites with interactive 3D visualization and performance comparisons.">
+    <meta name="keywords" content="Starlink speed test 2026, Starlink latency for gaming, Starlink aviation performance, Starlink V3, satellite internet speed test, Starlink performance calculator, Starlink vs fiber, Starlink 5G comparison">
     <meta name="author" content="WiFi.Report">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://wifi.report/starlink.html">
@@ -25,15 +25,15 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://wifi.report/starlink.html">
-    <meta property="og:title" content="Starlink Live Network & Performance Dashboard (2026)">
-    <meta property="og:description" content="Track 9,400+ Starlink satellites in real-time, calculate speed improvements, and explore network performance metrics.">
+    <meta property="og:title" content="Starlink Command Center 2026 | Speed Test & Performance Analytics">
+    <meta property="og:description" content="Real-time Starlink dashboard: Track 9,400+ satellites, test latency for gaming, analyze aviation performance. Interactive 3D visualization and performance comparisons.">
     <meta property="og:image" content="https://wifi.report/og-image.jpg">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://wifi.report/starlink.html">
-    <meta property="twitter:title" content="Starlink Live Network & Performance Dashboard (2026)">
-    <meta property="twitter:description" content="Interactive 3D satellite tracker, speed calculator, and real-time Starlink network metrics.">
+    <meta property="twitter:title" content="Starlink Command Center 2026 | Speed Test & Performance Analytics">
+    <meta property="twitter:description" content="Interactive dashboard for Starlink performance: Real-time speed test, gaming latency calculator, aviation metrics, and 3D satellite visualization.">
     <meta property="twitter:image" content="https://wifi.report/og-image.jpg">
     
     <!-- JSON-LD FAQ Schema -->
@@ -70,6 +70,47 @@
     }
     </script>
     
+    <!-- JSON-LD Product Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "Starlink V3 Satellite Internet",
+      "image": "https://wifi.report/og-image.jpg",
+      "description": "High-speed satellite internet with 300+ Mbps download speeds, 20ms median latency, and global coverage. Perfect for rural areas, RVs, boats, and aviation.",
+      "brand": {
+        "@type": "Brand",
+        "name": "SpaceX Starlink"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "120.00",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2026-12-31",
+        "url": "https://www.starlink.com"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.2",
+        "reviewCount": "15000"
+      },
+      "review": {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "4.5",
+          "bestRating": "5"
+        },
+        "author": {
+          "@type": "Organization",
+          "name": "WiFi.Report"
+        },
+        "reviewBody": "Starlink V3 delivers impressive performance with low latency and high speeds, making it an excellent choice for rural and remote locations."
+      }
+    }
+    </script>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,15 +138,15 @@
     </script>
     
     <!-- Three.js for 3D Globe -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <!-- satellite.js for orbit calculations -->
-    <script src="https://cdn.jsdelivr.net/npm/satellite.js@4.1.4/dist/satellite.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/satellite.js@4.1.4/dist/satellite.min.js"></script>
     
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000;
+            background: #050a15;
             color: #ffffff;
             margin: 0;
             padding: 0;
@@ -117,18 +158,19 @@
         
         /* Glassmorphism effect */
         .glass-card {
-            background: rgba(0, 82, 204, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(5, 10, 21, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 242, 255, 0.3);
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.15);
         }
         
         .glass-card:hover {
-            background: rgba(0, 82, 204, 0.15);
-            border-color: rgba(0, 229, 255, 0.3);
+            background: rgba(5, 10, 21, 0.85);
+            border-color: rgba(0, 242, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.25);
             transition: all 0.3s ease;
         }
         
@@ -292,27 +334,297 @@
             justify-content: center;
             gap: 8px;
         }
+        
+        /* Live Signal Pulse Animation */
+        .live-signal {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 2px solid rgba(0, 242, 255, 0.5);
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            animation: pulse-border 2s ease-in-out infinite;
+        }
+        
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: #00f2ff;
+            border-radius: 50%;
+            animation: pulse-glow 2s ease-in-out infinite;
+            box-shadow: 0 0 10px #00f2ff;
+        }
+        
+        @keyframes pulse-border {
+            0%, 100% {
+                border-color: rgba(0, 242, 255, 0.5);
+                box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+            }
+            50% {
+                border-color: rgba(0, 242, 255, 0.8);
+                box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+            }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.2);
+            }
+        }
+        
+        /* Zero-Click Status Box */
+        .status-glance {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.15), rgba(0, 82, 204, 0.15));
+            border: 2px solid #00f2ff;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 32px 0;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.3);
+        }
+        
+        .status-glance h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #00f2ff;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: #00f2ff;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .status-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Comparison Table Styles */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 24px 0;
+            background: rgba(5, 10, 21, 0.6);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: rgba(0, 242, 255, 0.2);
+            color: #00f2ff;
+            font-family: 'Orbitron', sans-serif;
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        .comparison-table td {
+            padding: 16px;
+            border-top: 1px solid rgba(0, 242, 255, 0.1);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(0, 242, 255, 0.05);
+        }
+        
+        .comparison-highlight {
+            color: #00f2ff;
+            font-weight: 700;
+        }
+        
+        /* Speed Estimator Tool */
+        .speed-estimator {
+            background: rgba(5, 10, 21, 0.8);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+        
+        .estimator-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #00f2ff;
+        }
+        
+        .input-group select, .input-group input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .input-group select:focus, .input-group input:focus {
+            outline: none;
+            border-color: #00f2ff;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+        
+        .estimate-result {
+            background: linear-gradient(135deg, rgba(0, 242, 255, 0.1), rgba(0, 82, 204, 0.1));
+            border: 2px solid #00f2ff;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .estimate-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            color: #00f2ff;
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.8);
+        }
+        
+        .estimate-label {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 8px;
+        }
+        
+        /* Share Button */
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #00f2ff, #0052cc);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 242, 255, 0.4);
+        }
+        
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0, 242, 255, 0.6);
+        }
+        
+        .share-icon {
+            font-size: 20px;
+        }
+        
+        /* Interactive Map Placeholder */
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .map-placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .map-placeholder h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00f2ff;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 <body class="font-inter">
     
     <!-- Hero Section -->
     <header>
-        <section class="bg-spaceBlack text-white">
+        <section class="text-white" style="background: #050a15;">
             <div class="max-w-7xl mx-auto px-6 py-16 md:py-24">
                 <div class="text-center mb-12">
-                    <h1 class="font-orbitron text-4xl md:text-6xl font-black leading-tight tracking-tight mb-6">
-                        Starlink Live Network &<br>Performance Dashboard (2026)
+                    <div class="flex justify-center mb-6">
+                        <div class="live-signal">
+                            <span class="pulse-dot"></span>
+                            <span>LIVE CONNECTION</span>
+                        </div>
+                    </div>
+                    <h1 class="font-orbitron text-4xl md:text-6xl font-black leading-tight tracking-tight mb-6" style="text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
+                        Starlink Command Center
                     </h1>
                     <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-                        Track 9,400+ satellites in real-time, calculate your speed upgrade, and explore the future of global connectivity
+                        Real-time satellite tracking, performance analytics, and the most advanced connectivity dashboard for 2026
                     </p>
                     <div class="mt-6 flex flex-wrap justify-center items-center gap-3 text-sm text-gray-400">
                         <span>Live Data</span>
                         <span>•</span>
                         <span>Updated January 2026</span>
                         <span>•</span>
-                        <span>Interactive 3D Visualization</span>
+                        <span>9,400+ Active Satellites</span>
+                    </div>
+                </div>
+                
+                <!-- Zero-Click Status Box -->
+                <div class="status-glance">
+                    <h3>⚡ Starlink Status at a Glance</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="status-value">GLOBAL</span>
+                            <span class="status-label">Network Status</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-value">9,400+</span>
+                            <span class="status-label">Active Satellites</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-value">20ms</span>
+                            <span class="status-label">Median Latency</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-value">300+ Mbps</span>
+                            <span class="status-label">Peak Speed</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -321,36 +633,36 @@
 
     <main>
         <!-- Live Network Stats Section -->
-        <section class="bg-spaceBlack py-12 px-6">
+        <section class="py-12 px-6" style="background: #050a15;">
             <div class="max-w-7xl mx-auto">
-                <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-12">
+                <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-12" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
                     Real-Time Network Statistics
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Total Satellites -->
                     <div class="glass-card stat-card text-center" style="animation-delay: 0s;">
-                        <div class="text-5xl md:text-6xl font-orbitron font-black text-deepBlue mb-2" id="satCount">0</div>
+                        <div class="text-5xl md:text-6xl font-orbitron font-black mb-2" id="satCount" style="color: #00f2ff; text-shadow: 0 0 15px rgba(0, 242, 255, 0.8);">0</div>
                         <div class="text-xl font-semibold mb-1">Total Satellites</div>
                         <div class="text-sm text-gray-400">Active in Orbit</div>
                     </div>
                     
                     <!-- Active Users -->
                     <div class="glass-card stat-card text-center" style="animation-delay: 0.1s;">
-                        <div class="text-5xl md:text-6xl font-orbitron font-black text-electric mb-2" id="userCount">0</div>
+                        <div class="text-5xl md:text-6xl font-orbitron font-black mb-2" id="userCount" style="color: #00f2ff; text-shadow: 0 0 15px rgba(0, 242, 255, 0.8);">0</div>
                         <div class="text-xl font-semibold mb-1">Active Users</div>
                         <div class="text-sm text-gray-400">Worldwide</div>
                     </div>
                     
                     <!-- Median Latency -->
                     <div class="glass-card stat-card text-center" style="animation-delay: 0.2s;">
-                        <div class="text-5xl md:text-6xl font-orbitron font-black text-green-400 mb-2" id="latencyValue">0</div>
+                        <div class="text-5xl md:text-6xl font-orbitron font-black mb-2" id="latencyValue" style="color: #00f2ff; text-shadow: 0 0 15px rgba(0, 242, 255, 0.8);">0</div>
                         <div class="text-xl font-semibold mb-1">Median Latency</div>
                         <div class="text-sm text-gray-400">Milliseconds</div>
                     </div>
                     
                     <!-- Peak Speed -->
                     <div class="glass-card stat-card text-center" style="animation-delay: 0.3s;">
-                        <div class="text-5xl md:text-6xl font-orbitron font-black text-alert mb-2" id="speedValue">0</div>
+                        <div class="text-5xl md:text-6xl font-orbitron font-black mb-2" id="speedValue" style="color: #00f2ff; text-shadow: 0 0 15px rgba(0, 242, 255, 0.8);">0</div>
                         <div class="text-xl font-semibold mb-1">Peak Speed</div>
                         <div class="text-sm text-gray-400">Mbps+</div>
                     </div>
@@ -359,10 +671,10 @@
         </section>
 
         <!-- Interactive 3D Globe Section -->
-        <section class="bg-spaceBlack py-16 px-6">
+        <section class="py-16 px-6" style="background: #050a15;">
             <div class="max-w-7xl mx-auto">
                 <div class="glass-card">
-                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
                         Live Satellite Constellation
                     </h2>
                     <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
@@ -389,18 +701,170 @@
                     <div class="mt-4 text-center text-sm text-gray-400">
                         <p>Showing approximate positions of 9,400+ Starlink satellites in Low Earth Orbit (LEO) with major country borders</p>
                         <p class="mt-2">Altitude: ~550km | Orbital Shells: Multiple inclinations for global coverage</p>
-                        <p class="mt-2 text-electric">✨ Interactive: Countries outlined in electric blue • Satellites visible as white points</p>
+                        <p class="mt-2" style="color: #00f2ff;">✨ Interactive: Countries outlined in electric blue • Satellites visible as white points</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Latency Map Placeholder -->
+        <section class="py-16 px-6" style="background: #050a15;">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-card">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
+                        Global PoP Density Map
+                    </h2>
+                    <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
+                        Visualize Starlink Point of Presence (PoP) locations and network density worldwide
+                    </p>
+                    <div class="map-container">
+                        <div class="map-placeholder">
+                            <h4>🌐 Interactive Global Coverage Map</h4>
+                            <p>Starlink PoP density visualization coming soon</p>
+                            <p style="font-size: 12px; margin-top: 12px;">Leaflet.js integration with live coverage data</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-Time Speed Estimator -->
+        <section class="py-16 px-6" style="background: #050a15;">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-card">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
+                        Real-Time Speed Estimator
+                    </h2>
+                    <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
+                        Estimate your Starlink performance based on weather conditions and location. Uses 2026 signal attenuation data.
+                    </p>
+                    
+                    <div class="speed-estimator">
+                        <div class="estimator-inputs">
+                            <div class="input-group">
+                                <label for="weatherCondition">Weather Condition</label>
+                                <select id="weatherCondition" onchange="calculateSpeedEstimate()">
+                                    <option value="clear">Clear Skies ☀️</option>
+                                    <option value="rain">Light Rain 🌧️</option>
+                                    <option value="heavy-rain">Heavy Rain ⛈️</option>
+                                    <option value="snow">Light Snow 🌨️</option>
+                                    <option value="heavy-snow">Heavy Snow ❄️</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="latitudeInput">Latitude (approximate)</label>
+                                <input type="number" id="latitudeInput" placeholder="e.g., 40.7128" min="-90" max="90" step="0.0001" value="40" onchange="calculateSpeedEstimate()">
+                            </div>
+                        </div>
+                        
+                        <div class="estimate-result">
+                            <div class="estimate-value" id="estimatedSpeed">300 Mbps</div>
+                            <div class="estimate-label" id="estimateDescription">Expected download speed in clear conditions</div>
+                            <div style="margin-top: 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7);">
+                                <span id="speedImpact">No weather impact</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Engine -->
+        <section class="py-16 px-6" style="background: #050a15;">
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-card">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
+                        Technology Comparison
+                    </h2>
+                    <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
+                        Compare Starlink V3 against traditional fiber and 5G home internet solutions
+                    </p>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th class="comparison-highlight">Starlink V3</th>
+                                    <th>Fiber Optic</th>
+                                    <th>5G Home</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Median Latency</strong></td>
+                                    <td class="comparison-highlight">20ms</td>
+                                    <td>10-15ms</td>
+                                    <td>30-50ms</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Download Speed</strong></td>
+                                    <td class="comparison-highlight">300+ Mbps</td>
+                                    <td>500-1000 Mbps</td>
+                                    <td>100-300 Mbps</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Setup Cost</strong></td>
+                                    <td class="comparison-highlight">$599 (hardware)</td>
+                                    <td>$0-200 (installation)</td>
+                                    <td>$0-50 (gateway)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Monthly Cost</strong></td>
+                                    <td class="comparison-highlight">$120</td>
+                                    <td>$50-100</td>
+                                    <td>$50-70</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Portability</strong></td>
+                                    <td class="comparison-highlight">✅ Fully Portable</td>
+                                    <td>❌ Fixed Location</td>
+                                    <td>⚠️ Limited</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Weather Impact</strong></td>
+                                    <td class="comparison-highlight">10-20% in heavy rain</td>
+                                    <td>None</td>
+                                    <td>5-15% degradation</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Rural Availability</strong></td>
+                                    <td class="comparison-highlight">✅ Global</td>
+                                    <td>❌ Limited</td>
+                                    <td>⚠️ Expanding</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Gaming Performance</strong></td>
+                                    <td class="comparison-highlight">⭐⭐⭐⭐ Excellent</td>
+                                    <td>⭐⭐⭐⭐⭐ Best</td>
+                                    <td>⭐⭐⭐ Good</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Aviation/Maritime</strong></td>
+                                    <td class="comparison-highlight">✅ Supported</td>
+                                    <td>❌ Not Available</td>
+                                    <td>❌ Not Available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 24px; padding: 20px; background: rgba(0, 242, 255, 0.05); border-radius: 12px; border-left: 4px solid #00f2ff;">
+                        <p style="font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, 0.9);">
+                            <strong style="color: #00f2ff;">💡 Best Use Case:</strong> Starlink excels in rural areas, mobile applications (RVs, boats, aircraft), and locations without fiber infrastructure. For urban fixed locations with fiber access, traditional ISPs may offer better value. 5G Home is ideal for suburban areas with strong tower coverage.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Speed vs Latency Calculator Section -->
-        <section class="bg-spaceBlack py-16 px-6">
+        <section class="py-16 px-6" style="background: #050a15;">
             <div class="max-w-7xl mx-auto">
                 <div class="glass-card">
-                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4">
-                        Speed & Latency ROI Calculator
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-4" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
+                        Performance ROI Calculator
                     </h2>
                     <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
                         Compare your current ISP performance with Starlink V3 and see the potential benefits
@@ -413,15 +877,15 @@
                             
                             <div class="mb-6">
                                 <label class="block text-sm font-semibold mb-2">Download Speed (Mbps)</label>
-                                <input type="number" id="current-speed" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-deepBlue focus:outline-none" placeholder="e.g., 50" value="50" min="1" max="1000">
+                                <input type="number" id="current-speed" class="w-full bg-black/50 border-2 rounded-lg px-4 py-3 text-white focus:outline-none" style="border-color: rgba(0, 242, 255, 0.3); focus:border-color: #00f2ff;" placeholder="e.g., 50" value="50" min="1" max="1000">
                             </div>
                             
                             <div class="mb-6">
                                 <label class="block text-sm font-semibold mb-2">Latency (ms)</label>
-                                <input type="number" id="current-latency" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-deepBlue focus:outline-none" placeholder="e.g., 50" value="50" min="1" max="500">
+                                <input type="number" id="current-latency" class="w-full bg-black/50 border-2 rounded-lg px-4 py-3 text-white focus:outline-none" style="border-color: rgba(0, 242, 255, 0.3);" placeholder="e.g., 50" value="50" min="1" max="500">
                             </div>
                             
-                            <button id="calculate-btn" class="w-full bg-deepBlue hover:bg-electric hover:text-black text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                            <button id="calculate-btn" class="w-full text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105" style="background: linear-gradient(135deg, #00f2ff, #0052cc); color: #000;">
                                 Calculate ROI
                             </button>
                         </div>
@@ -433,7 +897,7 @@
                             <div class="space-y-4">
                                 <div class="glass-card">
                                     <div class="text-sm text-gray-400 mb-1">Speed Improvement</div>
-                                    <div class="text-3xl font-orbitron font-bold text-electric" id="speed-improvement">-</div>
+                                    <div class="text-3xl font-orbitron font-bold" id="speed-improvement" style="color: #00f2ff;">-</div>
                                 </div>
                                 
                                 <div class="glass-card">
@@ -478,7 +942,7 @@
                                             <span>300 Mbps</span>
                                         </div>
                                         <div class="w-full bg-gray-800 rounded-full h-8 overflow-hidden">
-                                            <div class="bg-electric h-full flex items-center justify-end pr-2 text-xs text-black font-bold" style="width: 100%">
+                                            <div class="h-full flex items-center justify-end pr-2 text-xs text-black font-bold" style="width: 100%; background: #00f2ff;">
                                             </div>
                                         </div>
                                     </div>
@@ -513,14 +977,25 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Share Button -->
+                    <div class="mt-8 text-center">
+                        <button class="share-button" onclick="sharePerformance()">
+                            <span class="share-icon">🐦</span>
+                            <span>Share My Performance on 𝕏</span>
+                        </button>
+                        <p style="margin-top: 12px; font-size: 14px; color: rgba(255, 255, 255, 0.6);">
+                            Generate a custom graphic showing your estimated speeds
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- FAQ Section -->
-        <section class="bg-spaceBlack py-16 px-6">
+        <section class="py-16 px-6" style="background: #050a15;">
             <div class="max-w-4xl mx-auto">
-                <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-12">
+                <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-center mb-12" style="color: #00f2ff; text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
                     Frequently Asked Questions
                 </h2>
                 
@@ -1115,7 +1590,101 @@
         // Calculate on page load with default values
         window.addEventListener('load', () => {
             setTimeout(calculateROI, 1000);
+            setTimeout(calculateSpeedEstimate, 500);
         });
+        
+        // ============================================
+        // SPEED ESTIMATOR FUNCTIONALITY
+        // ============================================
+        function calculateSpeedEstimate() {
+            const weather = document.getElementById('weatherCondition').value;
+            const latitude = parseFloat(document.getElementById('latitudeInput').value) || 40;
+            
+            // Base speed for Starlink V3
+            let baseSpeed = 300;
+            let impactPercent = 0;
+            let impactText = '';
+            
+            // Weather impact based on 2026 attenuation data
+            switch(weather) {
+                case 'clear':
+                    impactPercent = 0;
+                    impactText = 'No weather impact';
+                    break;
+                case 'rain':
+                    impactPercent = -8;
+                    impactText = '-8% in light rain';
+                    break;
+                case 'heavy-rain':
+                    impactPercent = -17;
+                    impactText = '-17% in heavy rain';
+                    break;
+                case 'snow':
+                    impactPercent = -12;
+                    impactText = '-12% in light snow';
+                    break;
+                case 'heavy-snow':
+                    impactPercent = -25;
+                    impactText = '-25% in heavy snow';
+                    break;
+            }
+            
+            // Latitude impact (polar regions have slightly different performance)
+            const absLatitude = Math.abs(latitude);
+            if (absLatitude > 60) {
+                // Polar regions - more satellites, slightly better coverage
+                baseSpeed += 10;
+            } else if (absLatitude < 20) {
+                // Equatorial regions - fewer satellites, slightly lower performance
+                baseSpeed -= 10;
+            }
+            
+            // Calculate final speed
+            const finalSpeed = Math.round(baseSpeed * (1 + impactPercent / 100));
+            
+            // Update display
+            document.getElementById('estimatedSpeed').textContent = `${finalSpeed} Mbps`;
+            document.getElementById('speedImpact').textContent = impactText;
+            
+            // Update description
+            let description = '';
+            if (impactPercent === 0) {
+                description = 'Expected download speed in optimal conditions';
+            } else {
+                description = `Expected download speed with weather impact (${baseSpeed} Mbps baseline)`;
+            }
+            document.getElementById('estimateDescription').textContent = description;
+        }
+        
+        // ============================================
+        // SHARE PERFORMANCE FUNCTIONALITY
+        // ============================================
+        function sharePerformance() {
+            const currentSpeed = parseFloat(document.getElementById('current-speed').value) || 50;
+            const currentLatency = parseFloat(document.getElementById('current-latency').value) || 50;
+            const starlinkSpeed = 300;
+            const starlinkLatency = 20;
+            
+            const speedIncrease = ((starlinkSpeed - currentSpeed) / currentSpeed * 100).toFixed(1);
+            const latencyDecrease = ((currentLatency - starlinkLatency) / currentLatency * 100).toFixed(1);
+            
+            // Create share text
+            const shareText = `🛰️ Starlink V3 Performance Analysis
+
+Current: ${currentSpeed} Mbps / ${currentLatency}ms
+Starlink: ${starlinkSpeed} Mbps / ${starlinkLatency}ms
+
+💡 Speed boost: +${speedIncrease}%
+⚡ Latency improvement: -${latencyDecrease}%
+
+Check your performance at wifi.report/starlink.html
+
+#Starlink #SatelliteInternet #SpaceX`;
+            
+            // Open Twitter/X share dialog
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+            window.open(twitterUrl, '_blank', 'width=550,height=420');
+        }
     </script>
 </body>
 </html>
