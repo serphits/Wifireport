@@ -86,7 +86,7 @@
           "name": "What is the peak speed of Starlink V3?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Starlink V3 offers peak capacity of 1.2 Gbps (1200 Mbps) with typical download speeds of 300-500 Mbps."
+            "text": "Starlink V3 offers peak capacity of 1.2 Gbps (1200 Mbps) with typical download speeds of 500 Mbps under optimal conditions."
           }
         }
       ]
@@ -766,7 +766,7 @@
                 LATENCY FOR GAMING INDEX
             </h2>
             <p class="text-center text-secondary mb-8 text-lg">
-                Real-World Starlink V3 Latency Averages (Jan 2026)
+                Real-World Starlink V3 Latency Averages (January 2026)
             </p>
             
             <div class="gaming-grid">
@@ -807,7 +807,7 @@
             </div>
             
             <p class="text-center text-secondary mt-6 text-sm">
-                Based on community-reported data from North American servers • Jan 2026
+                Based on community-reported data from North American servers • January 2026
             </p>
         </div>
     </section>
@@ -876,7 +876,7 @@
     
     <!-- Performance Simulator JavaScript -->
     <script>
-        // Performance Simulator Logic (Jan 2026 V3 Specs)
+        // Performance Simulator Logic (Starlink V3 Specifications - January 2026)
         const weatherSelect = document.getElementById('weather-select');
         const obstructionSlider = document.getElementById('obstruction-slider');
         const obstructionValue = document.getElementById('obstruction-value');
@@ -886,9 +886,9 @@
         const typicalResult = document.getElementById('typical-result');
         const reliabilityResult = document.getElementById('reliability-result');
         
-        // V3 Base Specifications (Jan 2026)
+        // V3 Base Specifications (January 2026 - 1.2 Gbps peak capacity)
         const BASE_PEAK_SPEED = 1200; // Mbps (1.2 Gbps)
-        const BASE_TYPICAL_SPEED = 500; // Mbps
+        const BASE_TYPICAL_SPEED = 500; // Mbps (under optimal conditions)
         const BASE_LATENCY = 20; // ms
         const BASE_UPTIME = 99.9; // %
         
@@ -921,8 +921,10 @@
                     break;
             }
             
-            // Calculate obstruction impact (linear degradation)
+            // Calculate obstruction impact
+            // Linear speed degradation: 1% obstruction = 1% speed loss
             const obstructionMultiplier = 1 - (obstruction / 100);
+            // Latency penalty: 1% obstruction = 0.5ms added latency
             const obstructionLatencyAdd = obstruction * 0.5;
             
             // Combined calculations
@@ -937,7 +939,7 @@
             latencyResult.textContent = finalLatency;
             reliabilityResult.textContent = finalUptime + '%';
             
-            // Color coding for latency
+            // Color coding for latency (green: excellent, orange: acceptable, red: poor)
             if (finalLatency <= 25) {
                 latencyResult.style.color = '#10B981'; // Green
             } else if (finalLatency <= 40) {
