@@ -153,7 +153,8 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            background: rgba(0, 0, 0, 0.8);
+            right: 10px;
+            background: rgba(0, 0, 0, 0.85);
             padding: 12px 16px;
             border-radius: 8px;
             border: 1px solid rgba(0, 229, 255, 0.3);
@@ -161,7 +162,14 @@
             line-height: 1.6;
             pointer-events: none;
             z-index: 10;
-            min-width: 200px;
+            max-width: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            #satellite-info {
+                right: auto;
+                max-width: 300px;
+            }
         }
         
         #satellite-info .info-label {
@@ -358,7 +366,7 @@
                         Live Satellite Constellation
                     </h2>
                     <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">
-                        Interactive 3D visualization of the Starlink network. Drag to rotate, scroll to zoom, touch-enabled for mobile devices.
+                        Interactive 3D visualization of the Starlink network with country borders. Drag to rotate, scroll to zoom, touch-enabled for mobile devices.
                     </p>
                     <div id="globe-container" class="glass-card">
                         <div class="absolute inset-0 flex items-center justify-center text-gray-400 loading" id="globe-loading">
@@ -371,12 +379,17 @@
                             <div><span class="info-label">Satellites Visible:</span> <span id="sat-count-display">9,400+</span></div>
                             <div><span class="info-label">Coverage:</span> <span id="coverage-display">Global</span></div>
                             <div><span class="info-label">Orbit Altitude:</span> 550 km</div>
-                            <div class="mt-2 text-xs text-gray-400">Drag to rotate • Scroll to zoom • Tap countries for info</div>
+                            <div class="mt-2 text-xs text-gray-400">
+                                <div>🖱️ Desktop: Drag to rotate • Scroll to zoom</div>
+                                <div>📱 Mobile: Swipe to rotate • Pinch to zoom</div>
+                                <div>🌍 Electric blue lines show country borders</div>
+                            </div>
                         </div>
                     </div>
                     <div class="mt-4 text-center text-sm text-gray-400">
-                        <p>Showing approximate positions of 9,400+ Starlink satellites in Low Earth Orbit (LEO)</p>
+                        <p>Showing approximate positions of 9,400+ Starlink satellites in Low Earth Orbit (LEO) with major country borders</p>
                         <p class="mt-2">Altitude: ~550km | Orbital Shells: Multiple inclinations for global coverage</p>
+                        <p class="mt-2 text-electric">✨ Interactive: Countries outlined in electric blue • Satellites visible as white points</p>
                     </div>
                 </div>
             </div>
@@ -865,6 +878,7 @@
             let isDragging = false;
             let previousMousePosition = { x: 0, y: 0 };
             let rotationVelocity = { x: 0.002, y: 0.001 }; // Auto-rotation speed
+            let lastTouchDistance = 0; // For pinch-to-zoom
             
             // Show satellite info on load
             satelliteInfo.style.display = 'block';
@@ -877,11 +891,21 @@
             
             container.addEventListener('touchstart', (e) => {
                 e.preventDefault(); // Prevent page scrolling
-                isDragging = true;
-                previousMousePosition = { 
-                    x: e.touches[0].clientX, 
-                    y: e.touches[0].clientY 
-                };
+                
+                if (e.touches.length === 2) {
+                    // Two-finger touch - prepare for pinch zoom
+                    isDragging = false;
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+                } else if (e.touches.length === 1) {
+                    // Single touch - prepare for rotation
+                    isDragging = true;
+                    previousMousePosition = { 
+                        x: e.touches[0].clientX, 
+                        y: e.touches[0].clientY 
+                    };
+                }
             }, { passive: false });
             
             // Mouse move/touch move
@@ -899,7 +923,23 @@
             
             container.addEventListener('touchmove', (e) => {
                 e.preventDefault(); // Prevent page scrolling
-                if (isDragging) {
+                
+                if (e.touches.length === 2) {
+                    // Two-finger pinch zoom
+                    const dx = e.touches[0].clientX - e.touches[1].clientX;
+                    const dy = e.touches[0].clientY - e.touches[1].clientY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (lastTouchDistance > 0) {
+                        const delta = distance - lastTouchDistance;
+                        camera.position.z -= delta * 0.01;
+                        // Limit zoom range
+                        camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+                    }
+                    
+                    lastTouchDistance = distance;
+                } else if (e.touches.length === 1 && isDragging) {
+                    // Single finger rotation
                     const deltaX = e.touches[0].clientX - previousMousePosition.x;
                     const deltaY = e.touches[0].clientY - previousMousePosition.y;
                     
@@ -923,6 +963,7 @@
             
             container.addEventListener('touchend', () => {
                 isDragging = false;
+                lastTouchDistance = 0; // Reset pinch zoom distance
                 rotationVelocity.x *= 0.5;
                 rotationVelocity.y *= 0.5;
             });
