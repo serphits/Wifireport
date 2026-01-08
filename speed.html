@@ -83,7 +83,7 @@
             overflow: hidden;
         }
         
-        /* Animated face background - Interactive face animation with 200 squares */
+        /* Animated face background - Interactive animated face: 200 squares that track mouse and respond to clicks */
         #animatedFace {
             position: absolute;
             top: 0;
@@ -829,8 +829,8 @@
             const MOUSE_LERP_FACTOR = 0.05;
             
             const squares = [];
-            let mouseX = window.innerWidth / 2;
-            let mouseY = window.innerHeight / 2;
+            let mouseX = window.innerWidth > 0 ? window.innerWidth / 2 : 640;
+            let mouseY = window.innerHeight > 0 ? window.innerHeight / 2 : 360;
             let targetMouseX = mouseX;
             let targetMouseY = mouseY;
             
@@ -900,6 +900,12 @@
             
             // Animation loop - creates "face looking around" effect
             function animate() {
+                // Pause animation when page is not visible to save resources
+                if (document.hidden) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
+                
                 // Smooth mouse position interpolation
                 mouseX += (targetMouseX - mouseX) * MOUSE_LERP_FACTOR;
                 mouseY += (targetMouseY - mouseY) * MOUSE_LERP_FACTOR;
