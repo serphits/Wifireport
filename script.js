@@ -1059,9 +1059,9 @@ function updatePersistentProtectionBar() {
     
     // Check if privacy is exposed (not protected)
     if (results.privacy && results.privacy.isProtected === false) {
-        // Show privacy notice with red background and white text
-        protectionBar.style.background = '#C14A2E';
-        protectionBar.style.borderColor = '#C14A2E';
+        // Show privacy notice with blue background and black text
+        protectionBar.style.background = '#00E5FF';
+        protectionBar.style.borderColor = '#00E5FF';
         protectionBar.classList.remove('bg-black');
         protectionBar.style.animation = 'urgentPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite';
         
@@ -1072,7 +1072,7 @@ function updatePersistentProtectionBar() {
         const descText = document.createTextNode(' Your IP address is currently visible. ');
         const spanEl = document.createElement('span');
         spanEl.style.opacity = '0.9';
-        spanEl.style.fontSize = '0.9em';
+        spanEl.style.fontSize = '0.85em';
         spanEl.textContent = 'Consider using a VPN for enhanced privacy';
         protectionBarText.appendChild(strongEl);
         protectionBarText.appendChild(descText);
@@ -1080,12 +1080,12 @@ function updatePersistentProtectionBar() {
         
         // Update button with clear call-to-action
         protectionBarButton.textContent = 'Get NordVPN Protection';
-        protectionBarButton.style.background = '#FFFFFF';
-        protectionBarButton.style.color = '#C14A2E';
+        protectionBarButton.style.background = '#000000';
+        protectionBarButton.style.color = '#FFFFFF';
         protectionBarButton.style.fontWeight = '700';
         protectionBarButton.style.textTransform = 'none';
         protectionBarButton.style.letterSpacing = '0.5px';
-        protectionBarButton.style.padding = '0.6rem 1.2rem';
+        protectionBarButton.style.padding = '0.5rem 1rem';
         protectionBarButton.style.borderRadius = '4px';
         protectionBarButton.style.transition = 'all 0.2s ease';
         
@@ -1231,7 +1231,7 @@ function displayCategoryResult(category, result) {
             detailsHTML += `<span class="vpn-icon"></span>`;
             detailsHTML += `<span class="vpn-text">Get NordVPN</span>`;
             detailsHTML += `</a>`;
-            detailsHTML += `<p class="affiliate-disclosure" style="margin-top: 8px; font-size: 0.85em; opacity: 0.7;">Affiliate link - we may earn a commission</p>`;
+            detailsHTML += `<p class="affiliate-disclosure" style="margin-top: 6px; font-size: 0.7em; opacity: 0.7;">Affiliate link - we may earn a commission</p>`;
             detailsHTML += `</div>`;
         } else {
             detailsHTML += `<p class="unknown-message">ℹ️ ${result.details}</p>`;
