@@ -1067,6 +1067,7 @@ function updatePersistentProtectionBar() {
         
         // Update text to be informative but not alarmist
         protectionBarText.textContent = '';
+        protectionBarText.style.color = '#000000'; // Explicitly set black text color
         const strongEl = document.createElement('strong');
         strongEl.textContent = '🔒 Privacy Notice:';
         const descText = document.createTextNode(' Your IP address is currently visible. ');
@@ -1193,8 +1194,8 @@ function displayCategoryResult(category, result) {
             badgeEl.classList.add('protected');
             badgeEl.textContent = 'PROTECTED';
         } else if (result.isProtected === false) {
-            badgeEl.classList.add('exposed');
-            badgeEl.textContent = 'EXPOSED';
+            // Hide the badge when exposed - don't show EXPOSED badge
+            badgeEl.style.display = 'none';
         } else {
             // Moderate/Unknown status (null)
             badgeEl.classList.add('good');
