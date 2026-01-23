@@ -36,6 +36,13 @@ const PAGE_CONFIG = {
     _blogDefault: { priority: '0.7', changefreq: 'monthly' }
 };
 
+/**
+ * Get default blog configuration
+ */
+function getDefaultBlogConfig() {
+    return PAGE_CONFIG._blogDefault;
+}
+
 // Pages to exclude from sitemap
 const EXCLUDE_PAGES = [
     'blog-backup.html',
@@ -77,12 +84,13 @@ function generateSitemap() {
     const rootDir = __dirname;
     const blogDir = path.join(rootDir, 'blog');
     
-    let urlEntries = [];
+    const mainPageEntries = [];
+    const blogPostEntries = [];
     
     // Add root URL (points to index.html)
     const indexConfig = PAGE_CONFIG['index.html'];
     const indexDate = getFileDate(path.join(rootDir, 'index.html'));
-    urlEntries.push(generateUrlEntry(
+    mainPageEntries.push(generateUrlEntry(
         `${BASE_URL}/`,
         indexDate,
         indexConfig.changefreq,
@@ -102,7 +110,7 @@ function generateSitemap() {
         const lastmod = getFileDate(filepath);
         const url = `${BASE_URL}/${file}`;
         
-        urlEntries.push(generateUrlEntry(url, lastmod, config.changefreq, config.priority));
+        mainPageEntries.push(generateUrlEntry(url, lastmod, config.changefreq, config.priority));
         console.log(`✅ Added: ${file} (${lastmod})`);
     }
     
@@ -114,13 +122,13 @@ function generateSitemap() {
         
         console.log(`\n📝 Processing ${blogFiles.length} blog posts...\n`);
         
+        const defaultBlogConfig = getDefaultBlogConfig();
         for (const file of blogFiles) {
             const filepath = path.join(blogDir, file);
-            const config = PAGE_CONFIG._blogDefault;
             const lastmod = getFileDate(filepath);
             const url = `${BASE_URL}/blog/${file}`;
             
-            urlEntries.push(generateUrlEntry(url, lastmod, config.changefreq, config.priority));
+            blogPostEntries.push(generateUrlEntry(url, lastmod, defaultBlogConfig.changefreq, defaultBlogConfig.priority));
             console.log(`✅ Added: blog/${file} (${lastmod})`);
         }
     }
@@ -133,10 +141,10 @@ function generateSitemap() {
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
     <!-- Main Pages -->
-${urlEntries.slice(0, htmlFiles.length + 1).join('\n    \n')}
+${mainPageEntries.join('\n    \n')}
     
     <!-- Blog Posts -->
-${urlEntries.slice(htmlFiles.length + 1).join('\n    \n')}
+${blogPostEntries.join('\n    \n')}
     
 </urlset>`;
     
@@ -144,8 +152,9 @@ ${urlEntries.slice(htmlFiles.length + 1).join('\n    \n')}
     const outputPath = path.join(rootDir, OUTPUT_FILE);
     fs.writeFileSync(outputPath, xmlContent);
     
+    const totalUrls = mainPageEntries.length + blogPostEntries.length;
     console.log(`\n✅ Sitemap generated successfully!`);
-    console.log(`📝 Total URLs: ${urlEntries.length}`);
+    console.log(`📝 Total URLs: ${totalUrls}`);
     console.log(`📍 Saved to: ${outputPath}`);
     console.log(`\n💡 Tip: Add this to your build process with: npm run build:sitemap`);
 }
