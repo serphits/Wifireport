@@ -1,122 +1,5 @@
 [
   {
-    "filename": "identity-theft-vs-vpn-cost-comparison.html",
-    "url": "blog/identity-theft-vs-vpn-cost-comparison.html",
-    "title": "The Cost of Identity Theft vs. the Cost of a VPN: A Brutal Comparison",
-    "description": "Is a VPN worth the monthly fee? Compare the average financial and emotional costs of identity theft against a $3/month VPN subscription. See the 2026 data.",
-    "tags": [
-      "Identity Theft Cost",
-      "VPN Worth It"
-    ],
-    "readingTime": "18 min read",
-    "date": "Dec 29, 2025",
-    "icon": "💰"
-  },
-  {
-    "filename": "vpn-travel-hacks-cheap-flights-hotels-2026.html",
-    "url": "blog/vpn-travel-hacks-cheap-flights-hotels-2026.html",
-    "title": "How to Use a VPN to Get Cheaper Flights and Hotel Bookings in 2026",
-    "description": "Unlock regional pricing and save hundreds on travel. Learn the exact VPN workflow to find hidden flight deals and cheaper hotel bookings in 2026.",
-    "tags": [
-      "VPN Travel Hacks",
-      "Cheaper Flights"
-    ],
-    "readingTime": "14 min read",
-    "date": "Dec 29, 2025",
-    "icon": "🌍"
-  },
-  {
-    "filename": "incognito-mode-is-a-lie-isp-tracking-guide.html",
-    "url": "blog/incognito-mode-is-a-lie-isp-tracking-guide.html",
-    "title": "Incognito Mode is a Lie: Here is Exactly What Your ISP Can Still See",
-    "description": "Think private browsing keeps you hidden? Learn exactly what your ISP and websites can still track while you are in Incognito mode and how to actually stay private.",
-    "tags": [
-      "Incognito Mode Privacy",
-      "ISP Tracking"
-    ],
-    "readingTime": "7 min read",
-    "date": "Dec 29, 2025",
-    "icon": "🕵️"
-  },
-  {
-    "filename": "digital-nomad-secure-connection-global-guide.html",
-    "url": "blog/digital-nomad-secure-connection-global-guide.html",
-    "title": "Digital Nomad Guide: How to Secure Your Connection in 5 Different Countries",
-    "description": "Traveling the world while working? Learn how to secure your internet connection across different countries, avoid local tracking, and maintain high speeds for remote work.",
-    "tags": [
-      "Digital Nomad Wifi",
-      "Travel VPN"
-    ],
-    "readingTime": "15 min read",
-    "date": "Dec 29, 2025",
-    "icon": "✈️"
-  },
-  {
-    "filename": "encrypted-dns-vs-vpn-privacy-guide.html",
-    "url": "blog/encrypted-dns-vs-vpn-privacy-guide.html",
-    "title": "Understanding Encrypted DNS (DoH): Does It Replace the Need for a VPN?",
-    "description": "Is DNS over HTTPS (DoH) enough for privacy? Compare Encrypted DNS vs. VPNs to understand what each secures and why you might need both for total network protection.",
-    "tags": [
-      "DNS over HTTPS",
-      "DoH vs VPN"
-    ],
-    "readingTime": "12 min read",
-    "date": "Dec 29, 2025",
-    "icon": "🔐"
-  },
-  {
-    "filename": "force-isp-full-speed-optimization-guide.html",
-    "url": "blog/force-isp-full-speed-optimization-guide.html",
-    "title": "How to Force Your ISP to Give You the Full Speed You Pay For",
-    "description": "Is your internet slower than advertised? Learn how to identify ISP throttling, optimize your hardware, and hold your provider accountable for the speeds you pay for.",
-    "tags": [
-      "ISP Throttling",
-      "Internet Speed Fix"
-    ],
-    "readingTime": "10 min read",
-    "date": "Dec 29, 2025",
-    "icon": "⚡"
-  },
-  {
-    "filename": "hidden-dns-leak-browser-privacy-guide.html",
-    "url": "blog/hidden-dns-leak-browser-privacy-guide.html",
-    "title": "The Hidden DNS Leak: How Your Browser is Quietly Giving Away Your Location",
-    "description": "A DNS leak can expose your real location and browsing habits even if you use a VPN. Learn how to identify, test, and fix DNS leaks to protect your privacy.",
-    "tags": [
-      "DNS Leak",
-      "Browser Privacy"
-    ],
-    "readingTime": "8 min read",
-    "date": "Dec 29, 2025",
-    "icon": "🔓"
-  },
-  {
-    "filename": "webrtc-vs-dns-leaks-identity-risk-guide.html",
-    "url": "blog/webrtc-vs-dns-leaks-identity-risk-guide.html",
-    "title": "WebRTC vs. DNS Leaks: Which One is Putting Your Identity at Risk?",
-    "description": "Understand the difference between WebRTC and DNS leaks. Learn how these browser vulnerabilities expose your real IP address and how to fix them for total privacy.",
-    "tags": [
-      "WebRTC Leak",
-      "DNS Leak"
-    ],
-    "readingTime": "11 min read",
-    "date": "Dec 29, 2025",
-    "icon": "🛡️"
-  },
-  {
-    "filename": "why-free-public-vpns-are-dangerous-guide.html",
-    "url": "blog/why-free-public-vpns-are-dangerous-guide.html",
-    "title": "Why You Should Never Use a 'Free' Public VPN (And What to Use Instead)",
-    "description": "Free VPNs often come with a hidden price: your data. Learn the risks of using free public VPNs and find the best secure alternatives for your home and mobile devices.",
-    "tags": [
-      "Free VPN Risks",
-      "VPN Security"
-    ],
-    "readingTime": "8 min read",
-    "date": "Dec 29, 2025",
-    "icon": "⚠️"
-  },
-  {
     "filename": "best-router-placement-signal-strength-guide.html",
     "url": "blog/best-router-placement-signal-strength-guide.html",
     "title": "Best Router Placement: Step-by-Step Signal Strength Guide",
@@ -126,73 +9,57 @@
       "Wifi Signal Strength Meter"
     ],
     "readingTime": "3 min read",
-    "date": "Dec 23, 2025",
-    "icon": "📡"
-  },
-  {
-    "filename": "hidden-ssids-security-myth-vs-reality.html",
-    "url": "blog/hidden-ssids-security-myth-vs-reality.html",
-    "title": "Hidden SSIDs: Do They Actually Make Your Network More Secure?",
-    "description": "Is hiding your WiFi name a good security move? Discover the truth about hidden SSIDs, why they might make you less safe, and better ways to secure your network.",
-    "tags": [
-      "Hidden Ssid",
-      "Hide Wifi Name"
-    ],
-    "readingTime": "3 min read",
-    "date": "Dec 23, 2025",
-    "icon": "📱"
-  },
-  {
-    "filename": "how-to-fix-wifi-authentication-error.html",
-    "url": "blog/how-to-fix-wifi-authentication-error.html",
-    "title": "How to Fix WiFi Authentication Error on Android & iPhone (2025)",
-    "description": "Getting a WiFi authentication error? Learn how to fix connection issues on Android and iOS with our step-by-step troubleshooting guide for 2025.",
-    "tags": [
-      "Wifi Authentication Error",
-      "Android Wifi Fix"
-    ],
-    "readingTime": "2 min read",
-    "date": "Dec 23, 2025",
-    "icon": "💼"
-  },
-  {
-    "filename": "why-is-my-wifi-strong-but-internet-slow.html",
-    "url": "blog/why-is-my-wifi-strong-but-internet-slow.html",
-    "title": "WiFi Signal Strong but Internet Slow? 7 Fixes for 2025",
-    "description": "Full bars but no speed? Discover why your WiFi signal is strong but the internet is slow. Troubleshooting tips for interference, bandwidth, and router settings.",
-    "tags": [
-      "Wifi Strong But Internet Slow",
-      "Full Bars No Internet"
-    ],
-    "readingTime": "3 min read",
-    "date": "Dec 23, 2025",
-    "icon": "🔧"
-  },
-  {
-    "filename": "wifi-dead-zone-mapping-home-coverage.html",
-    "url": "blog/wifi-dead-zone-mapping-home-coverage.html",
-    "title": "What is a WiFi Dead Zone? How to Map Your House for Coverage",
-    "description": "Discover what causes WiFi dead zones and follow our guide to mapping your home's signal strength. Eliminate signal gaps and boost your coverage today.",
-    "tags": [
-      "Wifi Dead Zone",
-      "Signal Mapping"
-    ],
-    "readingTime": "3 min read",
-    "date": "Dec 23, 2025",
-    "icon": "⚠️"
+    "date": "Jan 23, 2026",
+    "icon": "📝"
   },
   {
     "filename": "boost-wifi-speed.html",
     "url": "blog/boost-wifi-speed.html",
-    "title": "10 Simple Ways to Boost Your WiFi Speed Instantly",
-    "description": "Discover proven techniques to improve your WiFi speed without upgrading your plan. Expert tips on router placement, channel optimization, and more.",
+    "title": "boost-wifi-speed",
+    "description": "",
+    "tags": [],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📡"
+  },
+  {
+    "filename": "digital-nomad-secure-connection-global-guide.html",
+    "url": "blog/digital-nomad-secure-connection-global-guide.html",
+    "title": "Digital Nomad Guide: How to Secure Your Connection in 5 Different Countries",
+    "description": "Traveling the world while working? Learn how to secure your internet connection across different countries, avoid local tracking, and maintain high speeds for remote work.",
     "tags": [
-      "Boost Wifi Speed",
-      "Improve Wifi"
+      "Digital Nomad Wifi",
+      "Secure Connection Abroad"
+    ],
+    "readingTime": "4 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "encrypted-dns-vs-vpn-privacy-guide.html",
+    "url": "blog/encrypted-dns-vs-vpn-privacy-guide.html",
+    "title": "Understanding Encrypted DNS (DoH): Does It Replace a VPN?",
+    "description": "Is DNS over HTTPS (DoH) enough for privacy? Compare Encrypted DNS vs. VPNs to understand what each secures and why you might need both for total network protection.",
+    "tags": [
+      "DNS Over HTTPS",
+      "DoH Vs VPN"
+    ],
+    "readingTime": "4 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "force-isp-full-speed-optimization-guide.html",
+    "url": "blog/force-isp-full-speed-optimization-guide.html",
+    "title": "How to Force Your ISP to Give You the Full Speed You Pay For",
+    "description": "Is your internet slower than advertised? Learn how to identify ISP throttling, optimize your hardware, and hold your provider accountable for the speeds you pay for.",
+    "tags": [
+      "ISP Throttling",
+      "Slow Internet Fix"
     ],
     "readingTime": "3 min read",
-    "date": "Dec 22, 2025",
-    "icon": "📈"
+    "date": "Jan 23, 2026",
+    "icon": "📝"
   },
   {
     "filename": "gaming-wifi-latency.html",
@@ -203,9 +70,9 @@
       "Gaming Wifi",
       "Reduce Lag"
     ],
-    "readingTime": "4 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🔐"
+    "readingTime": "5 min read",
+    "date": "Jan 23, 2026",
+    "icon": "🎮"
   },
   {
     "filename": "guest-network-setup.html",
@@ -217,8 +84,73 @@
       "Guest Network"
     ],
     "readingTime": "3 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🚀"
+    "date": "Jan 23, 2026",
+    "icon": "💼"
+  },
+  {
+    "filename": "hidden-dns-leak-browser-privacy-guide.html",
+    "url": "blog/hidden-dns-leak-browser-privacy-guide.html",
+    "title": "The Hidden DNS Leak: How Your Browser Gives Away Your Location",
+    "description": "A DNS leak can expose your real location and browsing habits even if you use a VPN. Learn how to identify, test, and fix DNS leaks to protect your privacy.",
+    "tags": [
+      "DNS Leak",
+      "Browser Privacy"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "hidden-ssids-security-myth-vs-reality.html",
+    "url": "blog/hidden-ssids-security-myth-vs-reality.html",
+    "title": "Hidden SSIDs: Do They Actually Make Your Network More Secure?",
+    "description": "Is hiding your WiFi name a good security move? Discover the truth about hidden SSIDs, why they might make you less safe, and better ways to secure your network.",
+    "tags": [
+      "Hidden Ssid",
+      "Hide Wifi Name"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "how-to-fix-wifi-authentication-error.html",
+    "url": "blog/how-to-fix-wifi-authentication-error.html",
+    "title": "How to Fix WiFi Authentication Error on Android & iPhone (2025)",
+    "description": "Getting a WiFi authentication error? Learn how to fix connection issues on Android and iOS with our step-by-step troubleshooting guide for 2025.",
+    "tags": [
+      "Wifi Authentication Error",
+      "Android Wifi Fix"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "identity-theft-vs-vpn-cost-comparison.html",
+    "url": "blog/identity-theft-vs-vpn-cost-comparison.html",
+    "title": "The Cost of Identity Theft vs. the Cost of a VPN: A Brutal Comparison",
+    "description": "Is a VPN worth the monthly fee? Compare the average financial and emotional costs of identity theft against a $3/month VPN subscription. See the 2026 data.",
+    "tags": [
+      "Cost Of Identity Theft 2026",
+      "VPN Vs Identity Theft"
+    ],
+    "readingTime": "4 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "incognito-mode-is-a-lie-isp-tracking-guide.html",
+    "url": "blog/incognito-mode-is-a-lie-isp-tracking-guide.html",
+    "title": "Incognito Mode is a Lie: What Your ISP Can Still See",
+    "description": "Think private browsing keeps you hidden? Learn exactly what your ISP and websites can still track while you are in Incognito mode and how to actually stay private.",
+    "tags": [
+      "Incognito Mode Privacy",
+      "Isp Tracking"
+    ],
+    "readingTime": "4 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
   },
   {
     "filename": "mesh-wifi-vs-routers.html",
@@ -229,9 +161,9 @@
       "Mesh Wifi",
       "Mesh Network"
     ],
-    "readingTime": "2 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🎮"
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📶"
   },
   {
     "filename": "router-placement-guide.html",
@@ -243,8 +175,8 @@
       "Wifi Positioning"
     ],
     "readingTime": "3 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🔒"
+    "date": "Jan 23, 2026",
+    "icon": "🏠"
   },
   {
     "filename": "secure-home-wifi.html",
@@ -256,8 +188,8 @@
       "Secure Wifi"
     ],
     "readingTime": "8 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🌟"
+    "date": "Jan 23, 2026",
+    "icon": "👥"
   },
   {
     "filename": "troubleshooting-wifi.html",
@@ -269,8 +201,8 @@
       "Fix Wifi Problems"
     ],
     "readingTime": "3 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🌍"
+    "date": "Jan 23, 2026",
+    "icon": "🛠️"
   },
   {
     "filename": "understanding-speed-tests.html",
@@ -282,8 +214,73 @@
       "Internet Speed"
     ],
     "readingTime": "3 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🎯"
+    "date": "Jan 23, 2026",
+    "icon": "⚡"
+  },
+  {
+    "filename": "vpn-travel-hacks-cheap-flights-hotels-2026.html",
+    "url": "blog/vpn-travel-hacks-cheap-flights-hotels-2026.html",
+    "title": "How to Use a VPN to Get Cheaper Flights and Hotels in 2026",
+    "description": "Unlock regional pricing and save hundreds on travel. Learn the exact VPN workflow to find hidden flight deals and cheaper hotel bookings in 2026.",
+    "tags": [
+      "VPN Flight Hacks",
+      "Cheaper Hotel Bookings"
+    ],
+    "readingTime": "4 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "webrtc-vs-dns-leaks-identity-risk-guide.html",
+    "url": "blog/webrtc-vs-dns-leaks-identity-risk-guide.html",
+    "title": "WebRTC vs. DNS Leaks: Which One is Putting Your Identity at Risk?",
+    "description": "Understand the difference between WebRTC and DNS leaks. Learn how these browser vulnerabilities expose your real IP address and how to fix them for total privacy.",
+    "tags": [
+      "WebRTC Leak",
+      "DNS Leak"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "why-free-public-vpns-are-dangerous-guide.html",
+    "url": "blog/why-free-public-vpns-are-dangerous-guide.html",
+    "title": "Why You Should Never Use a 'Free' Public VPN",
+    "description": "Free VPNs often come with a hidden price: your data. Learn the risks of using free public VPNs and find the best secure alternatives for your home and mobile devices.",
+    "tags": [
+      "Free Vpn Risks",
+      "Public Vpn Safety"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "why-is-my-wifi-strong-but-internet-slow.html",
+    "url": "blog/why-is-my-wifi-strong-but-internet-slow.html",
+    "title": "WiFi Signal Strong but Internet Slow? 7 Fixes for 2025",
+    "description": "Full bars but no speed? Discover why your WiFi signal is strong but the internet is slow. Troubleshooting tips for interference, bandwidth, and router settings.",
+    "tags": [
+      "Wifi Strong But Internet Slow",
+      "Full Bars No Internet"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
+  },
+  {
+    "filename": "wifi-dead-zone-mapping-home-coverage.html",
+    "url": "blog/wifi-dead-zone-mapping-home-coverage.html",
+    "title": "What is a WiFi Dead Zone? How to Map Your House for Coverage",
+    "description": "Discover what causes WiFi dead zones and follow our guide to mapping your home's signal strength. Eliminate signal gaps and boost your coverage today.",
+    "tags": [
+      "Wifi Dead Zone",
+      "Signal Mapping"
+    ],
+    "readingTime": "3 min read",
+    "date": "Jan 23, 2026",
+    "icon": "📝"
   },
   {
     "filename": "wifi-security-wpa3-vs-wpa2.html",
@@ -291,12 +288,12 @@
     "title": "Complete Guide to WiFi Security: WPA3 vs WPA2",
     "description": "Learn the differences between WiFi security protocols WPA3 and WPA2. Understand why upgrading to WPA3 is crucial for protecting your network from modern threats.",
     "tags": [
-      "Wpa3",
-      "Wpa2"
+      "WPA3",
+      "WPA2"
     ],
     "readingTime": "4 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🎛️"
+    "date": "Jan 23, 2026",
+    "icon": "🔒"
   },
   {
     "filename": "wifi6-vs-wifi6e.html",
@@ -304,11 +301,11 @@
     "title": "WiFi 6E vs WiFi 6: Should You Upgrade Your Router?",
     "description": "Compare WiFi 6E and WiFi 6 routers. Learn about 6GHz band benefits, device compatibility, cost analysis, and whether upgrading makes sense for your needs.",
     "tags": [
-      "Wifi 6E",
+      "Wifi 6e",
       "Wifi 6"
     ],
     "readingTime": "6 min read",
-    "date": "Dec 22, 2025",
-    "icon": "🛠️"
+    "date": "Jan 23, 2026",
+    "icon": "🌐"
   }
 ]

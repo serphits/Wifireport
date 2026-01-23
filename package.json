@@ -6,6 +6,8 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "build:blog": "node generate-blog-list.js"
+    "build:blog": "node generate-blog-list.js",
+    "build:sitemap": "node generate-sitemap.js",
+    "build": "npm run build:blog && npm run build:sitemap"
   }
 }
