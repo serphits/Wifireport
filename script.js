@@ -487,13 +487,16 @@ async function runSpeedTest() {
             speed.metrics.latency = Math.round(avgLatency);
             latencyMeasurements = latencies;
             
-            // Calculate jitter
-            if (latencies.length >= 2) {
-                let jitterSum = 0;
-                for (let i = 1; i < latencies.length; i++) {
-                    jitterSum += Math.abs(latencies[i] - latencies[i - 1]);
+            // Calculate jitter as standard deviation using same trimmed data for consistency
+            const jitterData = trimmed.length > 0 ? trimmed : latencies;
+            if (jitterData.length >= 2) {
+                const mean = jitterData.reduce((a, b) => a + b, 0) / jitterData.length;
+                let variance = 0;
+                for (let i = 0; i < jitterData.length; i++) {
+                    variance += Math.pow(jitterData[i] - mean, 2);
                 }
-                speed.metrics.jitter = Math.round(jitterSum / (latencies.length - 1));
+                const stdDev = Math.sqrt(variance / jitterData.length);
+                speed.metrics.jitter = Math.round(stdDev);
             }
         } else {
             speed.metrics.latency = 50;
@@ -731,8 +734,11 @@ async function measureUploadMbps(bytes) {
         const seconds = (performance.now() - start) / 1000;
         clearTimeout(timeout);
         
-        if (seconds === 0) return 0;
-        return calculateMbps(bytes, seconds);
+        // Use actual data size for accurate calculation
+        const uploadedBytes = data.byteLength;
+        
+        if (seconds === 0 || uploadedBytes === 0) return 0;
+        return calculateMbps(uploadedBytes, seconds);
     } catch (e) {
         clearTimeout(timeout);
         return 0;
