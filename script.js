@@ -487,14 +487,15 @@ async function runSpeedTest() {
             speed.metrics.latency = Math.round(avgLatency);
             latencyMeasurements = latencies;
             
-            // Calculate jitter as standard deviation of latencies
-            if (latencies.length >= 2) {
-                const mean = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+            // Calculate jitter as standard deviation using same trimmed data for consistency
+            const jitterData = trimmed.length > 0 ? trimmed : latencies;
+            if (jitterData.length >= 2) {
+                const mean = jitterData.reduce((a, b) => a + b, 0) / jitterData.length;
                 let variance = 0;
-                for (let i = 0; i < latencies.length; i++) {
-                    variance += Math.pow(latencies[i] - mean, 2);
+                for (let i = 0; i < jitterData.length; i++) {
+                    variance += Math.pow(jitterData[i] - mean, 2);
                 }
-                const stdDev = Math.sqrt(variance / latencies.length);
+                const stdDev = Math.sqrt(variance / jitterData.length);
                 speed.metrics.jitter = Math.round(stdDev);
             }
         } else {
