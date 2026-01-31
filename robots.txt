@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://wifi.report/sitemap.xml
+
+# Allow all important pages
+Allow: /index.html
+Allow: /about.html
+Allow: /blog.html
+Allow: /blog/
+Allow: /speed.html
+Allow: /starlink.html
+Allow: /help.html
+Allow: /faq.html
+Allow: /contact.html
+Allow: /stats.html
+Allow: /privacy.html
+Allow: /terms.html
+Allow: /cookies.html
+
+# Disallow backup and temporary files
+Disallow: /blog-backup.html
+Disallow: /blog-clean.html
