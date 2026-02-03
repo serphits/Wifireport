@@ -30,6 +30,8 @@ npm run build
 - Fixed duplicate URL issue where both "/" and "/index.html" were included
 - This was causing Google Search Console indexing discrepancies
 - Sitemap now correctly shows 36 unique URLs instead of 37
+- **Important**: The homepage (index.html) IS included in the sitemap as "/" - this is the correct SEO practice
+- Added `noindex, nofollow` meta tags to backup files (blog-backup.html, blog-clean.html) to prevent unwanted indexing
 
 ### Before
 - Static, hardcoded lastmod dates that quickly became outdated
@@ -87,3 +89,13 @@ A: This was fixed! The sitemap previously included duplicate URLs for the homepa
 
 **Q: Why does the sitemap show 36 URLs when I have 12 main pages + 24 blog posts?**  
 A: The homepage is represented as "/" (root URL), and index.html is not listed separately to avoid duplication. This gives us: 1 (root) + 11 (other main pages) + 24 (blog posts) = 36 unique URLs.
+
+**Q: Is index.html included in the sitemap?**  
+A: Yes! The homepage (index.html) IS included in the sitemap as the root URL "/". This is the correct SEO practice - we don't list both "/" and "/index.html" because they point to the same page, which would create duplicate content issues.
+
+**Q: Why are blog-backup.html and blog-clean.html excluded?**  
+A: These are backup/temporary files that should not be indexed by search engines. They are:
+- Excluded from the sitemap (in EXCLUDE_PAGES)
+- Blocked in robots.txt (Disallow directives)
+- Tagged with `noindex, nofollow` meta tags
+- Have canonical tags pointing to the main blog.html page
