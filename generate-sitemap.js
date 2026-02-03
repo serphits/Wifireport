@@ -90,10 +90,11 @@ function generateSitemap() {
     ));
     console.log(`✅ Added: / (${indexDate})`);
     
-    // Add main HTML pages
+    // Add main HTML pages (excluding index.html as it's already added as root URL)
     const htmlFiles = fs.readdirSync(rootDir)
         .filter(file => file.endsWith('.html'))
         .filter(file => !EXCLUDE_PAGES.includes(file))
+        .filter(file => file !== 'index.html')
         .sort();
     
     for (const file of htmlFiles) {
