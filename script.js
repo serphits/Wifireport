@@ -88,9 +88,11 @@ function applySharedLayout() {
                     <div class="footer-links">
                         <h4>Product</h4>
                         <ul>
-                            <li><a href="/index.html#home">Home</a></li>
+                            <li><a href="/index.html">Home</a></li>
                             <li><a href="/about.html">About</a></li>
-                            <li><a href="/index.html#features">Features</a></li>
+                            <li><a href="/blog.html">Blog</a></li>
+                            <li><a href="/speed.html">Speed Test</a></li>
+                            <li><a href="/starlink.html">Starlink Test</a></li>
                         </ul>
                     </div>
                     <div class="footer-links">
