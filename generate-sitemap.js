@@ -22,7 +22,6 @@ const PAGE_CONFIG = {
     'speed.html': { priority: '0.8', changefreq: 'daily' },
     'starlink.html': { priority: '0.8', changefreq: 'monthly' },
     'about.html': { priority: '0.8', changefreq: 'monthly' },
-    'stats.html': { priority: '0.7', changefreq: 'daily' },
     'help.html': { priority: '0.7', changefreq: 'monthly' },
     'faq.html': { priority: '0.7', changefreq: 'monthly' },
     'contact.html': { priority: '0.7', changefreq: 'monthly' },
@@ -39,7 +38,8 @@ const PAGE_CONFIG = {
 // Pages to exclude from sitemap
 const EXCLUDE_PAGES = [
     'blog-backup.html',
-    'blog-clean.html'
+    'blog-clean.html',
+    'stats.html'  // Admin/password-protected page - not for public indexing
 ];
 
 /**

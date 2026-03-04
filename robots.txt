@@ -14,11 +14,11 @@ Allow: /starlink.html
 Allow: /help.html
 Allow: /faq.html
 Allow: /contact.html
-Allow: /stats.html
 Allow: /privacy.html
 Allow: /terms.html
 Allow: /cookies.html
 
-# Disallow backup and temporary files
+# Disallow admin/private pages and backup files
+Disallow: /stats.html
 Disallow: /blog-backup.html
 Disallow: /blog-clean.html
