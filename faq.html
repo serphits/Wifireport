@@ -28,14 +28,14 @@
     <meta property="og:url" content="https://wifi.report/faq.html">
     <meta property="og:title" content="FAQ - WiFi.Report Network Analysis Tool">
     <meta property="og:description" content="Get answers to common questions about WiFi.Report's network analysis, privacy, security testing, and usage.">
-    <meta property="og:image" content="https://wifi.report/og-image.jpg">
+    <meta property="og:image" content="https://wifi.report/og-image.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://wifi.report/faq.html">
     <meta property="twitter:title" content="FAQ - WiFi.Report Network Analysis Tool">
     <meta property="twitter:description" content="Get answers to common questions about WiFi.Report's network analysis, privacy, security testing, and usage.">
-    <meta property="twitter:image" content="https://wifi.report/og-image.jpg">
+    <meta property="twitter:image" content="https://wifi.report/og-image.png">
     
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -531,6 +531,120 @@
                 item.classList.toggle('active');
             });
         });
+    </script>
+    
+    <!-- FAQPage Structured Data for Rich Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I use WiFi.Report?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Using WiFi.Report is simple: Click the \"Check My Network Now\" button on the homepage or in the Chrome extension. The analysis will run automatically and typically takes about 30 seconds. You'll receive detailed results about your WiFi security, privacy, speed, and stability."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to install any software?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No installation is required for the web version. WiFi.Report runs entirely in your web browser. We also offer a Chrome extension for quicker access, which can be installed from the Chrome Web Store."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What browsers are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WiFi.Report works on all modern browsers including Chrome, Firefox, Safari, and Edge. For the best experience and access to the Chrome extension, we recommend using Chrome. The tool requires JavaScript to be enabled."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is WiFi.Report free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! WiFi.Report is completely free. There are no hidden fees, no premium features, and no paywalls. We provide full access to all network analysis tools at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the Overall Network Score?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Overall Network Score is an average of your four main test categories: Security, Privacy, Speed, and Stability. It gives you a quick 0-100 rating of your overall WiFi health. Scores of 80+ are excellent, 60-79 are good, 40-59 are fair, and below 40 indicate poor performance."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the Security score measure?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Security score evaluates whether your connection uses HTTPS encryption, if you're in a secure context, presence of mixed content, TLS protocol information, and HSTS support. A higher score indicates stronger security protocols protecting your data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the Privacy score measure?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Privacy score checks if your real IP address is visible to websites and whether you're using a VPN or proxy. It also evaluates potential WebRTC leaks and browser fingerprinting capabilities. A higher score means better privacy protection."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What speed metrics are tested?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WiFi.Report measures Download Speed (how fast data comes to you, in Mbps), Upload Speed (how fast you can send data, in Mbps), Latency (the delay in network communication, in milliseconds), and Jitter (variation in latency consistency)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data collected or stored?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All analysis is performed 100% locally in your browser. Your test results are never sent to our servers. We don't collect, store, or track any of your WiFi data or network information. Your privacy is completely protected."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the IP address shown in results?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The IP address displayed is your external IP address - the one visible to websites you visit. If you're NOT using a VPN, this reveals your approximate location and ISP. If you're using a VPN, the displayed IP will be your VPN server's IP, not your real one."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is WiFi.Report safe to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. WiFi.Report is completely safe. It doesn't install any malware, doesn't track you, and doesn't collect your data. The entire analysis happens in your browser using standard web APIs."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are my speed test results showing 0 Mbps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This can happen due to network connectivity issues, browser restrictions on certain networks, corporate or school network firewalls blocking speed tests, or failed connections to test endpoints. Try refreshing the page or switching networks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "The Chrome extension isn't working. What should I do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Try reloading the extension at chrome://extensions/, restarting Chrome completely, uninstalling and reinstalling the extension, clearing your browser cache, or using the web version at wifi.report. If issues persist, contact our support team."
+          }
+        }
+      ]
+    }
     </script>
 </body>
 </html>

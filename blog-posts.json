@@ -1,5 +1,47 @@
 [
   {
+    "filename": "how-to-tell-if-wifi-is-hacked.html",
+    "url": "blog/how-to-tell-if-wifi-is-hacked.html",
+    "title": "How to Tell if Your WiFi Has Been Hacked (7 Warning Signs)",
+    "description": "Worried your WiFi has been hacked? Learn 7 clear warning signs of a compromised network, how to check for unauthorized devices, and how to secure your router immediately.",
+    "tags": [
+      "WiFi Security",
+      "Hacked WiFi",
+      "Router Security"
+    ],
+    "readingTime": "8 min read",
+    "date": "Mar 4, 2026",
+    "icon": "🔒"
+  },
+  {
+    "filename": "wifi-not-connecting-fixes.html",
+    "url": "blog/wifi-not-connecting-fixes.html",
+    "title": "WiFi Not Connecting? 12 Proven Fixes for iPhone, Android & Windows",
+    "description": "WiFi refusing to connect? Get 12 proven fixes for all devices. From authentication errors to IP conflicts — solve your WiFi connection problems fast.",
+    "tags": [
+      "WiFi Troubleshooting",
+      "Fix WiFi",
+      "Network Problems"
+    ],
+    "readingTime": "10 min read",
+    "date": "Mar 4, 2026",
+    "icon": "🔧"
+  },
+  {
+    "filename": "best-wifi-channel-for-faster-speeds.html",
+    "url": "blog/best-wifi-channel-for-faster-speeds.html",
+    "title": "Best WiFi Channel: How to Find & Set the Fastest Channel",
+    "description": "Choosing the right WiFi channel can dramatically improve your network performance. Learn which channels to use on 2.4GHz and 5GHz for maximum speed.",
+    "tags": [
+      "WiFi Channel",
+      "Network Optimization",
+      "Speed"
+    ],
+    "readingTime": "7 min read",
+    "date": "Mar 4, 2026",
+    "icon": "📡"
+  },
+  {
     "filename": "best-router-placement-signal-strength-guide.html",
     "url": "blog/best-router-placement-signal-strength-guide.html",
     "title": "Best Router Placement: Step-by-Step Signal Strength Guide",
