@@ -518,14 +518,14 @@
         page.forEach(code => {
             const rateColor = code.successRate >= 85 ? 'text-emerald-600 font-bold' : 'text-amber-600 font-bold';
             const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-50 transition-colors cursor-pointer';
-            const btn = document.createElement('button');
-            btn.className = 'font-mono text-blue-600 font-semibold hover:underline text-left';
-            btn.textContent = code.code;
-            btn.addEventListener('click', () => showDetail(code.code));
+            tr.className = 'hover:bg-slate-50 transition-colors';
+            const link = document.createElement('a');
+            link.className = 'font-mono text-blue-600 font-semibold hover:underline text-left';
+            link.href = '/error-pages/' + encodeURIComponent(code.code) + '.html';
+            link.textContent = code.code;
             const tdCode = document.createElement('td');
             tdCode.className = 'px-4 py-3';
-            tdCode.appendChild(btn);
+            tdCode.appendChild(link);
             const tdMfr = document.createElement('td');
             tdMfr.className = 'px-4 py-3 text-slate-600 hidden sm:table-cell';
             tdMfr.textContent = code.manufacturer;
@@ -599,10 +599,10 @@
             const div = document.createElement('div');
             div.className = 'result-card bg-white border border-slate-200 rounded-xl p-5 mb-3 fade-in';
 
-            const btn = document.createElement('button');
+            const btn = document.createElement('a');
             btn.className = 'font-mono text-lg font-bold text-blue-600 hover:underline text-left';
+            btn.href = '/error-pages/' + encodeURIComponent(code.code) + '.html';
             btn.textContent = code.code;
-            btn.addEventListener('click', () => showDetail(code.code));
 
             const titleP = document.createElement('p');
             titleP.className = 'text-slate-700 font-medium text-sm mt-0.5';
