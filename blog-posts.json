@@ -349,5 +349,61 @@
     "readingTime": "7 min read",
     "date": "Feb 12, 2026",
     "icon": "🌐"
+  },
+  {
+    "filename": "how-to-check-who-is-on-my-wifi.html",
+    "url": "blog/how-to-check-who-is-on-my-wifi.html",
+    "title": "How to See Who Is Connected to Your WiFi (Every Device)",
+    "description": "Step-by-step guide to check every device on your WiFi right now — from your router, Windows, Mac, iPhone, or Android. Find and block unknown users.",
+    "tags": [
+      "WiFi Security",
+      "Network Monitoring",
+      "Connected Devices"
+    ],
+    "readingTime": "7 min read",
+    "date": "Mar 11, 2026",
+    "icon": "🔍"
+  },
+  {
+    "filename": "wifi-security-checklist-2026.html",
+    "url": "blog/wifi-security-checklist-2026.html",
+    "title": "Ultimate WiFi Security Checklist 2026: 20 Steps to a Secure Network",
+    "description": "20 actionable steps to lock down your home WiFi in 2026. Enable WPA3, fix DNS leaks, block intruders, set up guest networks, and protect every device.",
+    "tags": [
+      "WiFi Security",
+      "Security Checklist",
+      "WPA3"
+    ],
+    "readingTime": "10 min read",
+    "date": "Mar 11, 2026",
+    "icon": "✅"
+  },
+  {
+    "filename": "best-router-security-settings.html",
+    "url": "blog/best-router-security-settings.html",
+    "title": "Best Router Security Settings 2026: Complete Setup Guide",
+    "description": "Configure the best security settings on your router right now. WPA3 encryption, firewall, guest network, firmware updates, and DNS settings with step-by-step instructions.",
+    "tags": [
+      "Router Security",
+      "WiFi Security",
+      "Router Settings"
+    ],
+    "readingTime": "9 min read",
+    "date": "Mar 11, 2026",
+    "icon": "🛡️"
+  },
+  {
+    "filename": "wifi-7-guide-2026.html",
+    "url": "blog/wifi-7-guide-2026.html",
+    "title": "WiFi 7 (802.11be) Guide 2026: Speed, Devices & Should You Upgrade?",
+    "description": "WiFi 7 delivers up to 46 Gbps with Multi-Link Operation. Find out what it means for your home network, which devices support it, and if upgrading makes sense in 2026.",
+    "tags": [
+      "WiFi 7",
+      "802.11be",
+      "WiFi Technology"
+    ],
+    "readingTime": "8 min read",
+    "date": "Mar 11, 2026",
+    "icon": "🚀"
   }
 ]
