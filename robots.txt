@@ -4,6 +4,9 @@ Allow: /
 # Sitemap
 Sitemap: https://wifi.report/sitemap.xml
 
+# RSS Feed
+Allow: /feed.xml
+
 # Allow all important pages
 Allow: /index.html
 Allow: /about.html
