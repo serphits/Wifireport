@@ -49,7 +49,7 @@ function applySharedLayout() {
                 <span>WiFi.Report</span>
             </a>
             <ul class="nav-links">
-                <li><a href="/error">Error Codes</a></li>
+                <li><a href="/error-codes.html">Error Codes</a></li>
                 <li><a href="/blog.html">Blog</a></li>
                 <li><a href="/about.html">About</a></li>
                 <li><a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" class="nav-extension" target="_blank" rel="noopener noreferrer"><span class="ext-icon">⬇</span> Chrome Extension</a></li>
@@ -94,7 +94,7 @@ function applySharedLayout() {
                             <li><a href="/blog.html">Blog</a></li>
                             <li><a href="/speed.html">Speed Test</a></li>
                             <li><a href="/starlink.html">Starlink Test</a></li>
-                            <li><a href="/error">Error Codes</a></li>
+                            <li><a href="/error-codes.html">Error Codes</a></li>
                         </ul>
                     </div>
                     <div class="footer-links">
