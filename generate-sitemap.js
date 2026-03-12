@@ -108,6 +108,7 @@ function generateSitemap() {
     }
     
     // Add blog posts
+    let blogEntries = [];
     if (fs.existsSync(blogDir)) {
         const blogFiles = fs.readdirSync(blogDir)
             .filter(file => file.endsWith('.html'))
@@ -121,11 +122,29 @@ function generateSitemap() {
             const lastmod = getFileDate(filepath);
             const url = `${BASE_URL}/blog/${file}`;
             
-            urlEntries.push(generateUrlEntry(url, lastmod, config.changefreq, config.priority));
+            blogEntries.push(generateUrlEntry(url, lastmod, config.changefreq, config.priority));
             console.log(`✅ Added: blog/${file} (${lastmod})`);
         }
     }
-    
+
+    // Add error pages from master_codes.json
+    let errorEntries = [];
+    const codesPath = path.join(rootDir, 'data', 'master_codes.json');
+    if (fs.existsSync(codesPath)) {
+        const errorCodes = JSON.parse(fs.readFileSync(codesPath, 'utf-8'));
+        console.log(`\n🔴 Processing ${errorCodes.length} error pages...\n`);
+
+        for (const error of errorCodes) {
+            const url = `${BASE_URL}/error-pages/${error.code}.html`;
+            const lastmod = error.lastValidated || new Date().toISOString().split('T')[0];
+            const priority = typeof error.priority === 'number'
+                ? String(error.priority.toFixed(1))
+                : '0.6';
+            errorEntries.push(generateUrlEntry(url, lastmod, 'monthly', priority));
+        }
+        console.log(`✅ Added ${errorCodes.length} error pages`);
+    }
+
     // Generate XML content
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -134,11 +153,14 @@ function generateSitemap() {
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
     <!-- Main Pages -->
-${urlEntries.slice(0, htmlFiles.length + 1).join('\n    \n')}
-    
+${urlEntries.join('\n    \n')}
+
     <!-- Blog Posts -->
-${urlEntries.slice(htmlFiles.length + 1).join('\n    \n')}
-    
+${blogEntries.join('\n    \n')}
+
+    <!-- Error Pages -->
+${errorEntries.join('\n    \n')}
+
 </urlset>`;
     
     // Write to file
@@ -146,7 +168,7 @@ ${urlEntries.slice(htmlFiles.length + 1).join('\n    \n')}
     fs.writeFileSync(outputPath, xmlContent);
     
     console.log(`\n✅ Sitemap generated successfully!`);
-    console.log(`📝 Total URLs: ${urlEntries.length}`);
+    console.log(`📝 Total URLs: ${urlEntries.length + blogEntries.length + errorEntries.length}`);
     console.log(`📍 Saved to: ${outputPath}`);
     console.log(`\n💡 Tip: Add this to your build process with: npm run build:sitemap`);
 }
