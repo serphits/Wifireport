@@ -26,12 +26,67 @@ function escHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+/** Serialize an object to JSON safe for embedding inside <script> tags. */
+function safeJsonLd(obj) {
+  return JSON.stringify(obj).replace(/<\//g, '<\\/');
+}
+
+// Build category map for "Related Errors" section
+const categoryMap = {};
+errorCodes.forEach(error => {
+  if (!categoryMap[error.category]) categoryMap[error.category] = [];
+  categoryMap[error.category].push(error);
+});
+
 errorCodes.forEach((error, index) => {
   const filePath = path.join(outputDir, error.code + '.html');
 
   const stepsHtml = Array.isArray(error.fixSteps) && error.fixSteps.length
     ? error.fixSteps.map(step => `      <li>${escHtml(step)}</li>`).join('\n')
     : '      <li>No fix steps available.</li>';
+
+  // Related Errors: up to 4 errors from the same category, excluding the current one
+  const related = (categoryMap[error.category] || [])
+    .filter(e => e.code !== error.code)
+    .slice(0, 4);
+
+  const relatedHtml = related.length > 0
+    ? `    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+      <h3 class="font-bold text-slate-900 mb-4">Related Errors</h3>
+      <ul class="space-y-2">
+        ${related.map(r => `<li><a href="/error-pages/${escHtml(r.code)}.html" class="text-blue-600 hover:underline text-sm">${escHtml(r.code)} – ${escHtml(r.title)}</a></li>`).join('\n        ')}
+      </ul>
+    </section>`
+    : '';
+
+  // JSON-LD: BreadcrumbList
+  const breadcrumbSchema = safeJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://wifi.report/' },
+      { '@type': 'ListItem', position: 2, name: 'Error Codes', item: 'https://wifi.report/error-codes.html' },
+      { '@type': 'ListItem', position: 3, name: `Error ${error.code}`, item: `https://wifi.report/error-pages/${error.code}.html` },
+    ],
+  });
+
+  // JSON-LD: HowTo for the fix steps
+  const howToSteps = Array.isArray(error.fixSteps) && error.fixSteps.length
+    ? error.fixSteps.map((step, i) => ({ '@type': 'HowToStep', position: i + 1, name: step, text: step }))
+    : [];
+  const howToSchema = safeJsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: `How to Fix Error ${error.code}: ${error.title}`,
+    description: `Fix Error ${error.code} on your ${error.manufacturer} router. ${error.cause}.`,
+    totalTime: 'PT10M',
+    step: howToSteps,
+  });
+
+  const pageTitle = `Error ${escHtml(error.code)}: ${escHtml(error.categoryName)} | WiFi.Report`;
+  const stepCount = Array.isArray(error.fixSteps) ? error.fixSteps.length : 1;
+  const metaDesc = `Fix Error ${escHtml(error.code)} on your ${escHtml(error.manufacturer)} router. ${escHtml(error.cause)}. Follow our ${stepCount}-step guide — ${error.successRate}% success rate.`;
+  const canonicalUrl = `https://wifi.report/error-pages/${escHtml(error.code)}.html`;
 
   const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -48,13 +103,31 @@ errorCodes.forEach((error, index) => {
    crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escHtml(error.code)} – ${escHtml(error.title)} | WiFi.Report</title>
-  <meta name="description" content="Fix ${escHtml(error.code)}: ${escHtml(error.title)}. Cause: ${escHtml(error.cause)}">
+  <title>${pageTitle}</title>
+  <meta name="description" content="${metaDesc}">
   <meta name="author" content="WiFi.Report">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://wifi.report/error-pages/${escHtml(error.code)}.html">
+  <link rel="canonical" href="${canonicalUrl}">
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="${pageTitle}">
+  <meta property="og:description" content="${metaDesc}">
+  <meta property="og:url" content="${canonicalUrl}">
+  <meta property="og:site_name" content="WiFi.Report">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${pageTitle}">
+  <meta name="twitter:description" content="${metaDesc}">
+  <!-- Structured Data: BreadcrumbList -->
+  <script type="application/ld+json">${breadcrumbSchema}</script>
+  <!-- Structured Data: HowTo -->
+  <script type="application/ld+json">${howToSchema}</script>
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/styles.css">
+  <!-- Performance: preconnect to third-party origins -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -73,11 +146,22 @@ errorCodes.forEach((error, index) => {
   <script src="/script.js"></script>
   <main class="max-w-3xl mx-auto px-4 py-10 sm:py-14">
     <nav class="text-sm text-slate-500 mb-6" aria-label="Breadcrumb">
-      <a href="/index.html" class="hover:text-blue-600">Home</a>
-      <span class="mx-2">›</span>
-      <a href="/error-codes.html" class="hover:text-blue-600">Error Codes</a>
-      <span class="mx-2">›</span>
-      <span class="text-slate-800 font-medium">${escHtml(error.code)}</span>
+      <ol class="flex flex-wrap items-center gap-1" itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/index.html" class="hover:text-blue-600" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1">
+        </li>
+        <span class="mx-1" aria-hidden="true">›</span>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a href="/error-codes.html" class="hover:text-blue-600" itemprop="item"><span itemprop="name">Error Codes</span></a>
+          <meta itemprop="position" content="2">
+        </li>
+        <span class="mx-1" aria-hidden="true">›</span>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="text-slate-800 font-medium" itemprop="name">${escHtml(error.code)}</span>
+          <meta itemprop="position" content="3">
+        </li>
+      </ol>
     </nav>
     <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">${escHtml(error.code)}</h1>
     <h2 class="text-xl font-semibold text-slate-600 mb-4">${escHtml(error.title)}</h2>
@@ -97,6 +181,7 @@ errorCodes.forEach((error, index) => {
 ${stepsHtml}
       </ol>
     </section>
+${relatedHtml}
     <a href="/error-codes.html" class="text-blue-600 hover:underline text-sm">← Back to all error codes</a>
   </main>
 </body>
