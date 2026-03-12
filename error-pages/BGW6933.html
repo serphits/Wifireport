@@ -1,45 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZEMBMNRVX1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZEMBMNRVX1');
+  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6185133540784018"
+   crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BGW6933 – Arris BGW6933 Firmware Error | WiFi.Report</title>
   <meta name="description" content="Fix BGW6933: Arris BGW6933 Firmware Error. Cause: Corrupted NVRAM configuration detected">
+  <meta name="author" content="WiFi.Report">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://wifi.report/error-pages/BGW6933.html">
   <link rel="icon" href="/favicon.png" type="image/png">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #1e293b; }
-    h1 { font-size: 1.75rem; font-weight: 800; color: #1e293b; margin-bottom: 0.25rem; }
-    h2 { font-size: 1.1rem; font-weight: 600; color: #475569; margin-top: 0; }
-    .meta { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
-    .badge { background: #f1f5f9; color: #475569; border-radius: 9999px; padding: 2px 10px; font-size: 0.8rem; }
-    .rate { font-size: 2rem; font-weight: 800; }
-    .rate.good { color: #059669; }
-    .rate.ok { color: #d97706; }
-    section { margin-top: 24px; }
-    section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-    ol { padding-left: 1.25rem; line-height: 1.8; }
-    .back { display: inline-block; margin-top: 32px; color: #2563eb; text-decoration: none; font-size: 0.9rem; }
-    .back:hover { text-decoration: underline; }
-    p.cause { color: #475569; line-height: 1.6; }
-  </style>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            electric: '#00E5FF',
+            alert: '#FF6B00',
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
-  <article>
-    <h1>BGW6933</h1>
-    <h2>Arris BGW6933 Firmware Error</h2>
-    <div class="meta">
-      <span class="badge">Arris</span>
-      <span class="badge">Firmware Error</span>
-      <span class="badge">SURFboard</span>
+<body class="bg-gray-50">
+  <script src="/script.js"></script>
+  <main class="max-w-3xl mx-auto px-4 py-10 sm:py-14">
+    <nav class="text-sm text-slate-500 mb-6" aria-label="Breadcrumb">
+      <a href="/index.html" class="hover:text-blue-600">Home</a>
+      <span class="mx-2">›</span>
+      <a href="/error-codes.html" class="hover:text-blue-600">Error Codes</a>
+      <span class="mx-2">›</span>
+      <span class="text-slate-800 font-medium">BGW6933</span>
+    </nav>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">BGW6933</h1>
+    <h2 class="text-xl font-semibold text-slate-600 mb-4">Arris BGW6933 Firmware Error</h2>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span class="bg-slate-100 text-slate-600 rounded-full px-3 py-1 text-sm">Arris</span>
+      <span class="bg-slate-100 text-slate-600 rounded-full px-3 py-1 text-sm">Firmware Error</span>
+      <span class="bg-slate-100 text-slate-600 rounded-full px-3 py-1 text-sm">SURFboard</span>
     </div>
-    <div class="rate good">93% fix rate</div>
-    <section>
-      <h3>Cause</h3>
-      <p class="cause">Corrupted NVRAM configuration detected</p>
+    <div class="text-4xl font-extrabold mb-6 text-emerald-600">93% fix rate</div>
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+      <h3 class="font-bold text-slate-900 mb-2">Cause</h3>
+      <p class="text-slate-600 leading-relaxed">Corrupted NVRAM configuration detected</p>
     </section>
-    <section>
-      <h3>Fix Steps</h3>
-      <ol>
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+      <h3 class="font-bold text-slate-900 mb-4">Fix Steps</h3>
+      <ol class="list-decimal list-outside pl-5 space-y-2 text-slate-700 leading-relaxed">
       <li>Access router admin panel and navigate to Firmware/Software Update</li>
       <li>Check current firmware version and compare to manufacturer&#39;s latest release</li>
       <li>Download latest firmware from manufacturer&#39;s official support page</li>
@@ -48,7 +67,7 @@
       <li>Do NOT interrupt power during firmware flash process</li>
       </ol>
     </section>
-    <a class="back" href="/error-codes.html">← Back to all error codes</a>
-  </article>
+    <a href="/error-codes.html" class="text-blue-600 hover:underline text-sm">← Back to all error codes</a>
+  </main>
 </body>
 </html>
