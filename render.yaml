@@ -2,3 +2,51 @@ services:
   - type: static
     name: wifi-report
     staticPublishPath: ./
+    headers:
+      # Security headers (all pages)
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: geolocation=(), microphone=(), camera=()
+      # Cache HTML pages for 1 hour, allow stale serving while revalidating
+      - path: /*.html
+        name: Cache-Control
+        value: public, max-age=3600, stale-while-revalidate=86400
+      # Cache static assets for 30 days
+      - path: /*.css
+        name: Cache-Control
+        value: public, max-age=2592000, immutable
+      - path: /*.js
+        name: Cache-Control
+        value: public, max-age=2592000, immutable
+      - path: /*.png
+        name: Cache-Control
+        value: public, max-age=2592000, immutable
+      - path: /sitemap.xml
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /robots.txt
+        name: Cache-Control
+        value: public, max-age=86400
+      # Tell search engines not to index the auto-generated thin error pages
+      - path: /error-pages/*
+        name: X-Robots-Tag
+        value: noindex, nofollow
+      # Tell search engines not to index utility/backup pages
+      - path: /stats.html
+        name: X-Robots-Tag
+        value: noindex, nofollow
+      - path: /blog-backup.html
+        name: X-Robots-Tag
+        value: noindex, nofollow
+      - path: /blog-clean.html
+        name: X-Robots-Tag
+        value: noindex, nofollow

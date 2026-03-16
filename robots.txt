@@ -20,8 +20,15 @@ Allow: /contact.html
 Allow: /privacy.html
 Allow: /terms.html
 Allow: /cookies.html
+Allow: /error-codes.html
+
+# Disallow thin auto-generated error pages (preserve crawl budget for important content)
+Disallow: /error-pages/
 
 # Disallow admin/private pages and backup files
 Disallow: /stats.html
 Disallow: /blog-backup.html
 Disallow: /blog-clean.html
+Disallow: /data/
+Disallow: /app/
+Disallow: /lib/
