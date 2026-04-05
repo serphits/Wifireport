@@ -4,23 +4,6 @@ Allow: /
 # Sitemap
 Sitemap: https://wifi.report/sitemap.xml
 
-# RSS Feed
-Allow: /feed.xml
-
-# Allow all important pages
-Allow: /index.html
-Allow: /about.html
-Allow: /blog.html
-Allow: /blog/
-Allow: /speed.html
-Allow: /starlink.html
-Allow: /help.html
-Allow: /faq.html
-Allow: /contact.html
-Allow: /privacy.html
-Allow: /terms.html
-Allow: /cookies.html
-
 # Disallow admin/private pages and backup files
 Disallow: /stats.html
 Disallow: /blog-backup.html
