@@ -4301,7 +4301,7 @@ body::before {
 }
 
 .nav-dropdown-menu a::after {
-    display: none !important;
+    display: none;
 }
 
 @media (max-width: 1024px) {
