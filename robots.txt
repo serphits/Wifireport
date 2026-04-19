@@ -8,3 +8,6 @@ Sitemap: https://wifi.report/sitemap.xml
 Disallow: /stats.html
 Disallow: /blog-backup.html
 Disallow: /blog-clean.html
+Disallow: /IMPLEMENTATION-CHECKLIST.md
+Disallow: /OPTIMIZATION-SUMMARY.md
+Disallow: /QUICK-REFERENCE.md
