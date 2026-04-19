@@ -34,7 +34,7 @@ function applySharedLayout() {
     const navTemplate = `
     <nav class="navbar">
         <div class="nav-container">
-            <a class="logo" href="/index.html">
+            <a class="logo" href="/">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                     <rect x="4" y="4" width="5" height="5" fill="#FFFFFF" opacity="0.4"/>
                     <rect x="12" y="4" width="5" height="5" fill="#FFFFFF"/>
@@ -49,10 +49,19 @@ function applySharedLayout() {
                 <span>WiFi.Report</span>
             </a>
             <ul class="nav-links">
-                <li><a href="/error-codes.html">Error Codes</a></li>
+                <li><a href="/services.html">Services</a></li>
+                <li class="nav-dropdown">
+                    <a href="#">Tools ▾</a>
+                    <div class="nav-dropdown-menu">
+                        <a href="/speed.html">Speed Test</a>
+                        <a href="/index.html#startScan">Security Scanner</a>
+                        <a href="/error-codes.html">Error Code Lookup</a>
+                    </div>
+                </li>
                 <li><a href="/blog.html">Blog</a></li>
                 <li><a href="/about.html">About</a></li>
-                <li><a href="https://chromewebstore.google.com/detail/okgfljikopcnibfldeglddnnjkphjcjl?utm_source=wifi-report" class="nav-extension" target="_blank" rel="noopener noreferrer"><span class="ext-icon">⬇</span> Chrome Extension</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+                <li><a href="/index.html#startScan" class="nav-cta">Get Started Free</a></li>
             </ul>
             <button class="mobile-menu-toggle" aria-label="Toggle menu">
                 <span></span>
@@ -89,12 +98,20 @@ function applySharedLayout() {
                     <div class="footer-links">
                         <h4>Product</h4>
                         <ul>
-                            <li><a href="/index.html">Home</a></li>
-                            <li><a href="/about.html">About</a></li>
-                            <li><a href="/blog.html">Blog</a></li>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/services.html">Services</a></li>
                             <li><a href="/speed.html">Speed Test</a></li>
-                            <li><a href="/starlink.html">Starlink Test</a></li>
                             <li><a href="/error-codes.html">Error Codes</a></li>
+                            <li><a href="/blog.html">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="/about.html">About</a></li>
+                            <li><a href="/contact.html">Contact</a></li>
+                            <li><a href="/faq.html">FAQ</a></li>
+                            <li><a href="/help.html">Help Center</a></li>
                         </ul>
                     </div>
                     <div class="footer-links">
@@ -105,18 +122,10 @@ function applySharedLayout() {
                             <li><a href="/terms.html">Terms of Service</a></li>
                         </ul>
                     </div>
-                    <div class="footer-links">
-                        <h4>Support</h4>
-                        <ul>
-                            <li><a href="/faq.html">FAQ</a></li>
-                            <li><a href="/contact.html">Contact</a></li>
-                            <li><a href="/help.html">Help Center</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 WiFi.Report. All rights reserved.</p>
+                <p>&copy; 2026 WiFi.Report. All rights reserved.</p>
                 <p class="footer-note">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                         <path d="M8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM8 13.5C4.96 13.5 2.5 11.04 2.5 8C2.5 4.96 4.96 2.5 8 2.5C11.04 2.5 13.5 4.96 13.5 8C13.5 11.04 11.04 13.5 8 13.5ZM8.5 5H7V9H11V7.5H8.5V5Z"/>
