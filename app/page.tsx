@@ -17,7 +17,10 @@ export default function HomePage() {
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 sm:py-12">
       {/* Hero */}
-      <section className="text-center mb-12">
+      <section className="mb-12 rounded-3xl border border-slate-200/80 dark:border-slate-700/70 bg-white/90 dark:bg-slate-900/80 shadow-sm p-6 sm:p-10 text-center">
+        <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 mb-4">
+          Professional WiFi Diagnostics
+        </p>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
           WiFi Error Code{" "}
           <span className="text-blue-600 dark:text-blue-400">
@@ -34,7 +37,7 @@ export default function HomePage() {
         <form
           action="/error"
           method="get"
-          className="flex gap-3 max-w-lg mx-auto"
+          className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
           role="search"
           aria-label="WiFi error code search"
         >
@@ -48,7 +51,7 @@ export default function HomePage() {
           />
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-colors shadow-sm"
           >
             Diagnose
           </button>
@@ -95,7 +98,10 @@ export default function HomePage() {
       </section>
 
       {/* Manufacturer Index */}
-      <section aria-labelledby="manufacturers-heading" className="mb-12">
+      <section
+        aria-labelledby="manufacturers-heading"
+        className="mb-12 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6"
+      >
         <h2
           id="manufacturers-heading"
           className="text-2xl font-bold text-slate-900 dark:text-white mb-4"
@@ -118,7 +124,7 @@ export default function HomePage() {
       {/* Feature description — Information Gain content */}
       <section
         aria-labelledby="about-heading"
-        className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-8 border border-slate-200 dark:border-slate-700"
+        className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm"
       >
         <h2
           id="about-heading"
