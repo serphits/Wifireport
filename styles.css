@@ -204,16 +204,17 @@ body {
 /* Mobile Navigation Enhancements */
 @media (max-width: 768px) {
         .nav-links.active a.nav-extension {
-            background: #FFFFFF;
-            color: #000000;
-            border: 2px solid #FFFFFF;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
             width: 100%;
             justify-content: center;
             padding: 0.75rem 1rem;
         }
         
         .nav-links.active a.nav-extension:hover {
-            background: transparent;
+            background: linear-gradient(135deg, #6366F1, #8B5CF6);
             color: #FFFFFF;
         }
         
@@ -241,7 +242,6 @@ body {
         .footer-links a {
             padding: 0.75rem 0.5rem;
         }
-    }
 }
 
 .hero {
@@ -497,7 +497,7 @@ body {
 .loading-square {
     width: 100%;
     height: 100%;
-    background: #000000;
+    background: var(--primary-color);
     opacity: 0;
     animation: squareLoad 2s ease-in-out infinite;
     border: 1px solid transparent;
@@ -1068,11 +1068,11 @@ body {
     font-family: 'Space Mono', monospace;
     font-size: 1.125rem;
     font-weight: 800;
-    color: #000000;
+    color: var(--text-primary);
     background: #FFFFFF;
     padding: 0.5rem 1rem;
-    border: 2px solid #000000;
-    border-radius: 6px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
     word-break: break-all;
     text-align: left;
 }
@@ -1105,7 +1105,7 @@ body {
 }
 
 .ip-details strong {
-    color: #000000;
+    color: var(--text-primary);
     font-weight: 700;
 }
 
@@ -1701,7 +1701,6 @@ body {
         font-size: 1.125rem;
     }
 }
-}
 
 /* Recommendations */
 .recommendations {
@@ -2117,12 +2116,12 @@ body {
         padding: 1rem 2rem;
         font-size: 0.9rem;
         letter-spacing: 1.5px;
-        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
     }
     
     .scan-button:hover {
-        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
-        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        transform: translateY(-2px);
     }
     
     .hero-note {
@@ -2145,11 +2144,11 @@ body {
         padding: 1.25rem 2rem;
         font-size: 0.9rem;
         letter-spacing: 2px;
-        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
     }
     
     .scan-button:hover {
-        box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.12);
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
     }
     
     .hero-note {
@@ -2911,7 +2910,7 @@ body::before {
 .services-overview .section-header h2 {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     letter-spacing: -1px;
 }
@@ -2984,14 +2983,14 @@ body::before {
     font-size: 1.35rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .service-card .service-price {
     font-size: 1.75rem;
     font-weight: 900;
     font-family: 'Space Mono', monospace;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 1.5rem;
 }
 
@@ -3079,7 +3078,7 @@ body::before {
 .tools-showcase .section-header h2 {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     letter-spacing: -1px;
 }
@@ -3131,7 +3130,7 @@ body::before {
     font-size: 1.25rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .tool-card .tool-content p {
@@ -3175,7 +3174,7 @@ body::before {
 .how-it-works .section-header h2 {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     letter-spacing: -1px;
 }
@@ -3210,7 +3209,7 @@ body::before {
     font-size: 1.15rem;
     font-weight: 800;
     margin-bottom: 0.75rem;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .step-card p {
@@ -3317,7 +3316,7 @@ body::before {
 .blog-preview .section-header h2 {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     letter-spacing: -1px;
 }
@@ -3380,7 +3379,7 @@ body::before {
     font-size: 1.1rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    color: #000000;
+    color: var(--text-primary);
     line-height: 1.4;
 }
 
@@ -3428,7 +3427,7 @@ body::before {
 .seo-content h2 {
     font-size: 2rem;
     font-weight: 900;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 2rem;
     letter-spacing: -1px;
 }
@@ -3443,7 +3442,7 @@ body::before {
 .seo-content h3 {
     font-size: 1.25rem;
     font-weight: 800;
-    color: #000000;
+    color: var(--text-primary);
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
@@ -3612,7 +3611,7 @@ body::before {
     font-size: 2rem;
     font-weight: 900;
     margin-bottom: 3rem;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .comparison-table {
@@ -3640,7 +3639,7 @@ body::before {
 .comparison-table td:first-child {
     text-align: left;
     font-weight: 600;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .comparison-table tr:hover td {
@@ -3662,7 +3661,7 @@ body::before {
     font-size: 2rem;
     font-weight: 900;
     margin-bottom: 3rem;
-    color: #000000;
+    color: var(--text-primary);
 }
 
 .faq-item {
@@ -3682,7 +3681,7 @@ body::before {
 .faq-item h3 {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #000000;
+    color: var(--text-primary);
     margin-bottom: 0.75rem;
 }
 
@@ -4372,6 +4371,30 @@ body::before {
     color: var(--text-secondary);
     font-weight: 600;
     margin-top: 0.25rem;
+}
+
+/* Button context overrides for light backgrounds */
+.service-card .btn-secondary,
+.services-section .btn-secondary,
+.blog-preview-footer .btn-secondary {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.service-card .btn-secondary:hover,
+.services-section .btn-secondary:hover,
+.blog-preview-footer .btn-secondary:hover {
+    background: var(--primary-color);
+    color: #FFFFFF;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.service-card .btn-primary {
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    color: #FFFFFF;
+    border: none;
 }
 
 /* Section Container */
